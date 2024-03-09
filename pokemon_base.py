@@ -30,8 +30,8 @@ class TypeEffectiveness:
     Represents the type effectiveness of one Pokemon type against another.
     """
     
-    EFFECT_TABLE = ArrayR(1)
-    EFFECT_TABLE[0] = "Placeholder"
+    # Class variable to store the effectiveness table.
+    EFFECT_TABLE = None
 
     @classmethod
     def get_effectiveness(cls, attack_type: PokeType, defend_type: PokeType) -> float:
@@ -45,51 +45,33 @@ class TypeEffectiveness:
         Returns:
             float: The effectiveness of the attack, as a float value between 0 and 4.
         """
-
-        # * READING AND STORING THE CSV FILE
-        with open('type_effectiveness.csv') as csv:
-            for line in csv:
-                row = line.strip().split(', ')                                  # Split into rows
-                
-                new_size = len(cls.EFFECT_TABLE) + 1                            # Update the size for length of the effect table incremented
-                
-                temp_table = ArrayR(new_size)                                   # Create a temp table as ArrayR for the new size to add another value
-
-                for i in range(len(cls.EFFECT_TABLE)):                          # Loop through the length of the effect table
-                    temp_table[i] = cls.EFFECT_TABLE[i]                         # Make the temp table the same as the effect table
-                
-                temp_table[len(cls.EFFECT_TABLE)] = ArrayR(len(row))            # Add the new row
-                temp_table[len(cls.EFFECT_TABLE)][:] = row                      # Set the new row values
-                
-                cls.EFFECT_TABLE = temp_table                                   # Set the effect table as the temp table
         
-        
-        
-        # * CONVERTING ROWS IN TO ROWS WITH ELEMENTS
-        type_list = ArrayR(len(cls.EFFECT_TABLE) - 1)                           # Initialise a list for the type elements
-        for row in range(len(cls.EFFECT_TABLE) - 1):                            # Looping through every row in the table
-            word = ""                                                           # Initialise word inside the loop
+        # Check if the EFFECT_TABLE hasn't been initialised
+        if cls.EFFECT_TABLE is None:
+            # Create the main ArrayR to store rows for each type
+            cls.EFFECT_TABLE = ArrayR(len(PokeType))
             
-            for char in cls.EFFECT_TABLE[1:][row]:                              # Looping every character in the current row
-                if char == ',':                                                 # If the character is a ','
-                    type_list[row] = word                                       # We got the word so set it
-                    word = ""                                                   # Reset word for the next word.
-                else:                                                           # Otherwise if the character is NOT a ','
-                    word += char                                                # Add the char to the word string
-                    
-            type_list[row] = word                                               # Add the last word after the loop ends
-                
-        for i in range(len(type_list)): 
-            cls.EFFECT_TABLE[i] = type_list[i].split(',')                       # Convert the strings into lists of strings
-        
+            # Initialise every row in EFFECT_TABLE to store the values
+            for i in range(len(cls.EFFECT_TABLE)):
+                cls.EFFECT_TABLE[i] = ArrayR(len(PokeType))
+            
+        with open('type_effectiveness.csv', 'r') as csv:
+            # Skip the header (don't need it for data processing)
+            next(csv)                                                 
 
-        # * SYSTEM FOR CHECK EFFECTIVENESS
-         
-        # NOTE: For getting the effect table [defending type + 1][attacking type]
+            # Loop through each line in the CSV
+            for row_index, line in enumerate(csv):
+                # Split each line by a comma (to get values as strings)
+                eff_values = line.strip().split(',')
+                
+                # Loop through effectiveness values
+                for col_index, value in enumerate(eff_values, start=0):
+                    
+                    # Convert each value to a float
+                    cls.EFFECT_TABLE[row_index][col_index] = float(value)
         
-        
-        
-        return cls.EFFECT_TABLE[PokeType.WATER.value + 1][PokeType.FIRE.value]  # ! TESTING
+        # Get and return the effectiveness
+        return cls.EFFECT_TABLE[attack_type.value][defend_type.value]
             
 
     def __len__(self) -> int:
@@ -97,11 +79,11 @@ class TypeEffectiveness:
         Returns the number of types of Pokemon
         """
         
-        raise NotImplementedError
+        return len(PokeType)
 
 if __name__ == "__main__":
     tei = TypeEffectiveness()
-    print(tei.get_effectiveness(PokeType.FIRE, PokeType.WATER))
+    print(tei.get_effectiveness(PokeType.WATER, PokeType.GRASS))
 
 class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-attributes
     """
