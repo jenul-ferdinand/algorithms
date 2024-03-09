@@ -81,10 +81,6 @@ class TypeEffectiveness:
         
         return len(PokeType)
 
-if __name__ == "__main__":
-    tei = TypeEffectiveness()
-    print(tei.get_effectiveness(PokeType.WATER, PokeType.GRASS))
-
 class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-attributes
     """
     Represents a base Pokemon class with properties and methods common to all Pokemon.
@@ -195,7 +191,18 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         Returns:
             int: The damage that this Pokemon inflicts on the other Pokemon during an attack.
         """
-        raise NotImplementedError
+        
+        # Get the effectiveness
+        my_type = self.get_poketype()
+        other_type = other_pokemon.get_poketype()
+        effectiveness = TypeEffectiveness.get_effectiveness(my_type, other_type)
+        
+        # Calculate the damage
+        my_battle_power = self.get_battle_power()
+        attack = my_battle_power * effectiveness
+        
+        # Return the damage 
+        return attack
 
     def defend(self, damage: int) -> None:
         """
@@ -223,7 +230,18 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         Evolves the Pokemon to the next stage in its evolution line, and updates
           its attributes accordingly.
         """
-        raise NotImplementedError
+        new_name = self.get_evolution()
+        new_level = self.get_level()
+        self.name = new_name[new_level]
+        
+        old_battle_power = self.get_battle_power()
+        old_health = self.get_health()
+        old_defence = self.get_defence()
+        
+        # ? Do we need to round these values
+        self.battle_power = old_battle_power * 1.5
+        self.health = old_health * 1.5
+        self.defence = old_defence * 1.5
 
     def is_alive(self) -> bool:
         """
