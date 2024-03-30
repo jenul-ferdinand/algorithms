@@ -24,14 +24,12 @@ class PokeTeam:
         print('Select up to 6 Pokemon by entering their names. Type "done" to finish:')
         
         while self.team_size < PokeTeam.TEAM_LIMIT:
-            
             user_input = input('Enter Pokemon name or "done" to finish: ').strip()
             
             if user_input.lower() == 'done':
                 break
             
             found = False
-            
             for pokemon_cls in pokemon_list:
                 if user_input.capitalize() == pokemon_cls().get_name():
                     self.team[counter] = pokemon_cls()
@@ -40,11 +38,13 @@ class PokeTeam:
                     counter += 1
                     found = True
                     break
-                
             if not found:
                 print('Invalid Pokemon name, try again.')
-                
-        print(f'Team selection complete, team: {self.team}')
+        
+        for i in range(counter):
+            print(f'Pokemon ({i}): {self.team[i]}')
+            
+        #print(f'Team selection complete, team: {self.team}')
                         
                     
 
@@ -65,11 +65,11 @@ class PokeTeam:
             # Get a random pokemon class 
             pokemon_cls = random.choice(available_pokemon)
             
-            # Add the pokemon to the team
+            # Add the pokemon to the team -- O(1)
             self.team[i] = pokemon_cls()
             
-            # Print out the pokemon that was added
-            print(f'Pokemon {i}: {self.team[i].get_name()}')
+            # Print out the pokemon that was added -- O(1)
+            print(f'Pokemon ({i+1}): {self.team[i].get_name()}')
             
         # Update the team size
         self.team_size = PokeTeam.TEAM_LIMIT
@@ -133,6 +133,6 @@ class Trainer:
 if __name__ == '__main__':
     t = Trainer('Ash')
     print(t)
-    t.pick_team("Manual")
+    t.pick_team("manual")
     print(t)
     #print(t.get_team())
