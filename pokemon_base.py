@@ -29,9 +29,6 @@ class TypeEffectiveness:
     """
     Represents the type effectiveness of one Pokemon type against another.
     """
-    
-    # Class variable to store the effectiveness table.
-    EFFECT_TABLE = None
 
     @classmethod
     def get_effectiveness(cls, attack_type: PokeType, defend_type: PokeType) -> float:
@@ -44,46 +41,15 @@ class TypeEffectiveness:
 
         Returns:
             float: The effectiveness of the attack, as a float value between 0 and 4.
-            
-        :complexity: O(k * m), where k is the number of rows and m is the number of columns.
         """
-        
-        # Check if the EFFECT_TABLE hasn't been initialised
-        if cls.EFFECT_TABLE is None:
-            # Create the main ArrayR to store rows for each type
-            cls.EFFECT_TABLE = ArrayR(len(PokeType))
-            
-            # Initialise every row in EFFECT_TABLE to store the values
-            for i in range(len(cls.EFFECT_TABLE)):
-                cls.EFFECT_TABLE[i] = ArrayR(len(PokeType))
-            
-        with open('type_effectiveness.csv', 'r') as csv:
-            # Skip the header (don't need it for data processing)
-            next(csv)                                                 
-
-            # Loop through each line in the CSV
-            for row_index, line in enumerate(csv):
-                # Split each line by a comma (to get values as strings)
-                eff_values = line.strip().split(',')
-                
-                # Loop through effectiveness values
-                for col_index, value in enumerate(eff_values, start=0):
-                    
-                    # Convert each value to a float
-                    cls.EFFECT_TABLE[row_index][col_index] = float(value)
-        
-        # Get and return the effectiveness
-        return cls.EFFECT_TABLE[attack_type.value][defend_type.value]
-            
+        raise NotImplementedError
 
     def __len__(self) -> int:
         """
         Returns the number of types of Pokemon
-        
-        :complexity: O(1)
         """
-        
-        return len(PokeType)
+        raise NotImplementedError
+
 
 class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-attributes
     """
@@ -92,8 +58,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
     def __init__(self):
         """
         Initializes a new instance of the Pokemon class.
-        
-        :complexity: O(1)
         """
         self.health = None
         self.level = None
@@ -111,8 +75,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             str: The name of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.name
 
@@ -122,8 +84,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The current health of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.health
 
@@ -133,8 +93,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The current level of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.level
 
@@ -144,8 +102,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The current speed of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.speed
 
@@ -155,8 +111,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The current experience of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.experience
 
@@ -166,8 +120,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             PokeType: The type of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.poketype
 
@@ -177,8 +129,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The defence of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.defence
 
@@ -188,8 +138,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             list: The evolution of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.evolution_line
 
@@ -199,12 +147,10 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The battle power of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.battle_power
 
-    def attack(self, other_pokemon) -> int:
+    def attack(self, other_pokemon) -> float:
         """
         Calculates and returns the damage that this Pokemon inflicts on the
         other Pokemon during an attack.
@@ -214,21 +160,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The damage that this Pokemon inflicts on the other Pokemon during an attack.
-            
-        :complexity: O()
         """
-        
-        # Get the effectiveness
-        my_type = self.get_poketype()
-        other_type = other_pokemon.get_poketype()
-        effectiveness = TypeEffectiveness.get_effectiveness(my_type, other_type)
-        
-        # Calculate the damage
-        my_battle_power = self.get_battle_power()
-        attack = my_battle_power * effectiveness
-        
-        # Return the damage 
-        return attack
+        raise NotImplementedError
 
     def defend(self, damage: int) -> None:
         """
@@ -237,8 +170,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Args:
             damage (int): The amount of damage to be inflicted on the Pokemon.
-            
-        :complexity: O(1)
         """
         effective_damage = damage/2 if damage < self.get_defence() else damage
         self.health = self.health - effective_damage
@@ -247,8 +178,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         """
         Increases the level of the Pokemon by 1, and evolves the Pokemon if it has
           reached the level required for evolution.
-          
-        :complexity: O(1)
         """
         self.level += 1
         if len(self.evolution_line) > 0 and self.evolution_line.index\
@@ -259,21 +188,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         """
         Evolves the Pokemon to the next stage in its evolution line, and updates
           its attributes accordingly.
-          
-        :complexity: O(1)
         """
-        new_name = self.get_evolution()
-        new_level = self.get_level()
-        self.name = new_name[new_level]
-        
-        old_battle_power = self.get_battle_power()
-        old_health = self.get_health()
-        old_defence = self.get_defence()
-        
-        # ? Do we need to round these values
-        self.battle_power = old_battle_power * 1.5
-        self.health = old_health * 1.5
-        self.defence = old_defence * 1.5
+        raise NotImplementedError
 
     def is_alive(self) -> bool:
         """
@@ -281,8 +197,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             bool: True if the Pokemon is still alive, False otherwise.
-            
-        :compelxity: O(1)
         """
         return self.get_health() > 0
 
@@ -290,8 +204,5 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         """
         Return a string representation of the Pokemon instance in the format:
         <name> (Level <level>) with <health> health and <experience> experience
-        
-        :complexity: O(1)
         """
-        return f"{self.name} (Level {self.level}) with {self.get_health()} health \
-                and {self.get_experience()} experience"
+        return f"{self.name} (Level {self.level}) with {self.get_health()} health and {self.get_experience()} experience"

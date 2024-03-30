@@ -1002,29 +1002,15 @@ class Dratini(Pokemon):
         self.defence = 10
         self.speed = 86
 
-def get_all_pokemon_types():
+def get_all_pokemon_types() -> ArrayR[Pokemon]:
     all_pokemon = ArrayR(77)
     i = 0
     for name, cls in inspect.getmembers(inspect.getmodule(inspect.currentframe()), inspect.isclass):
-        if name not in ['ABC', 'PokeType', 'Pokemon', 'TypeEffectiveness', 'Enum', 'ArrayR']:
+        if cls != Pokemon and issubclass(cls, Pokemon):
             all_pokemon[i] = cls
             i += 1
     return all_pokemon
 
 
 if __name__ == '__main__':
-    pokemon_list = get_all_pokemon_types()
-    
-    while True:
-        user_input = input('Enter Pokemon name or "done" to finish: ')
-        if user_input.lower() == 'done':
-            break
-        try:
-            for pokemon in pokemon_list:
-                if user_input.capitalize() == pokemon().get_name():
-                    print(f'{pokemon().get_name()} added to the team.')
-                    break
-                else:
-                    print(f'Invalid Pokemon name {pokemon().get_name()}, try again')
-        except Exception as e:
-            print(f'Error adding Pokemon to team, {e}')
+    pass
