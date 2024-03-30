@@ -6,16 +6,54 @@ from data_structures.bset import BSet
 class PokeTeam:
     random.seed(20)
     TEAM_LIMIT = 6
-    POKE_LIST = get_all_pokemon_types()
 
     def __init__(self):
         self.team = ArrayR(self.TEAM_LIMIT)
         self.team_size = 0
 
     def choose_manually(self):
-        raise NotImplementedError
+        
+        # ! There is a bug where if you add the same type of pokemon, the first 
+        # ! index will be fine but the rest will be None
+        # ! We should be able to have multiple of the same pokemon on the team
+        
+        pokemon_list = get_all_pokemon_types()
+        
+        counter = 0
+        
+        print('Select up to 6 Pokemon by entering their names. Type "done" to finish:')
+        
+        while self.team_size < PokeTeam.TEAM_LIMIT:
+            
+            user_input = input('Enter Pokemon name or "done" to finish: ').strip()
+            
+            if user_input.lower() == 'done':
+                break
+            
+            found = False
+            
+            for pokemon_cls in pokemon_list:
+                if user_input.capitalize() == pokemon_cls().get_name():
+                    self.team[counter] = pokemon_cls()
+                    self.team_size += 1
+                    print(f'{pokemon_cls().get_name()} added to the team.')
+                    counter += 1
+                    found = True
+                    break
+                
+            if not found:
+                print('Invalid Pokemon name, try again.')
+                
+        print(f'Team selection complete, team: {self.team}')
+                        
+                    
 
     def choose_randomly(self) -> None:
+        """ Chooses a random team of pokemon for the PokeTeam
+
+        :complexity: O(n^2) where n is the 
+        """
+        
         # Print message
         print('Creating a random team of 6 pokemon')
         
@@ -41,6 +79,10 @@ class PokeTeam:
 
     def regenerate_team(self) -> None:
         raise NotImplementedError
+    
+    # ! assemble_team() will be done after task 3
+    
+    # ! special() will be done after task 3
 
     def __getitem__(self, index: int):
         if index >= self.team_size:
@@ -64,7 +106,7 @@ class Trainer:
     def pick_team(self, method: str) -> None:
         if method.lower() == 'random':
             self.team.choose_randomly()
-        if method.lower() == 'manual':
+        elif method.lower() == 'manual':
             self.team.choose_manually()
         else:
             raise ValueError('Method does not exist, choose "random" or "manual"')
@@ -91,6 +133,6 @@ class Trainer:
 if __name__ == '__main__':
     t = Trainer('Ash')
     print(t)
-    t.pick_team("Random")
+    t.pick_team("Manual")
     print(t)
-    print(t.get_team())
+    #print(t.get_team())

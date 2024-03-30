@@ -1013,4 +1013,18 @@ def get_all_pokemon_types():
 
 
 if __name__ == '__main__':
-    pass
+    pokemon_list = get_all_pokemon_types()
+    
+    while True:
+        user_input = input('Enter Pokemon name or "done" to finish: ')
+        if user_input.lower() == 'done':
+            break
+        try:
+            for pokemon in pokemon_list:
+                if user_input.capitalize() == pokemon().get_name():
+                    print(f'{pokemon().get_name()} added to the team.')
+                    break
+                else:
+                    print(f'Invalid Pokemon name {pokemon().get_name()}, try again')
+        except Exception as e:
+            print(f'Error adding Pokemon to team, {e}')

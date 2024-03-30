@@ -44,6 +44,8 @@ class TypeEffectiveness:
 
         Returns:
             float: The effectiveness of the attack, as a float value between 0 and 4.
+            
+        :complexity: O(k * m), where k is the number of rows and m is the number of columns.
         """
         
         # Check if the EFFECT_TABLE hasn't been initialised
@@ -77,6 +79,8 @@ class TypeEffectiveness:
     def __len__(self) -> int:
         """
         Returns the number of types of Pokemon
+        
+        :complexity: O(1)
         """
         
         return len(PokeType)
@@ -88,6 +92,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
     def __init__(self):
         """
         Initializes a new instance of the Pokemon class.
+        
+        :complexity: O(1)
         """
         self.health = None
         self.level = None
@@ -105,6 +111,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             str: The name of the Pokemon.
+            
+        :complexity: O(1)
         """
         return self.name
 
@@ -114,6 +122,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The current health of the Pokemon.
+            
+        :complexity: O(1)
         """
         return self.health
 
@@ -123,6 +133,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The current level of the Pokemon.
+            
+        :complexity: O(1)
         """
         return self.level
 
@@ -132,6 +144,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The current speed of the Pokemon.
+            
+        :complexity: O(1)
         """
         return self.speed
 
@@ -141,6 +155,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The current experience of the Pokemon.
+            
+        :complexity: O(1)
         """
         return self.experience
 
@@ -150,6 +166,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             PokeType: The type of the Pokemon.
+            
+        :complexity: O(1)
         """
         return self.poketype
 
@@ -159,6 +177,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The defence of the Pokemon.
+            
+        :complexity: O(1)
         """
         return self.defence
 
@@ -168,6 +188,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             list: The evolution of the Pokemon.
+            
+        :complexity: O(1)
         """
         return self.evolution_line
 
@@ -177,6 +199,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The battle power of the Pokemon.
+            
+        :complexity: O(1)
         """
         return self.battle_power
 
@@ -190,6 +214,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The damage that this Pokemon inflicts on the other Pokemon during an attack.
+            
+        :complexity: O()
         """
         
         # Get the effectiveness
@@ -211,6 +237,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Args:
             damage (int): The amount of damage to be inflicted on the Pokemon.
+            
+        :complexity: O(1)
         """
         effective_damage = damage/2 if damage < self.get_defence() else damage
         self.health = self.health - effective_damage
@@ -219,6 +247,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         """
         Increases the level of the Pokemon by 1, and evolves the Pokemon if it has
           reached the level required for evolution.
+          
+        :complexity: O(1)
         """
         self.level += 1
         if len(self.evolution_line) > 0 and self.evolution_line.index\
@@ -229,6 +259,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         """
         Evolves the Pokemon to the next stage in its evolution line, and updates
           its attributes accordingly.
+          
+        :complexity: O(1)
         """
         new_name = self.get_evolution()
         new_level = self.get_level()
@@ -249,6 +281,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             bool: True if the Pokemon is still alive, False otherwise.
+            
+        :compelxity: O(1)
         """
         return self.get_health() > 0
 
@@ -256,6 +290,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         """
         Return a string representation of the Pokemon instance in the format:
         <name> (Level <level>) with <health> health and <experience> experience
+        
+        :complexity: O(1)
         """
         return f"{self.name} (Level {self.level}) with {self.get_health()} health \
                 and {self.get_experience()} experience"
