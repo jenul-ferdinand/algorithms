@@ -19,9 +19,6 @@ class PokeTeam:
     # The list of all pokemon
     POKE_LIST       = get_all_pokemon_types()
     
-    # Names mapped to every pokemon class in POKE_LIST
-    POKE_DICT       = {pokemon_cls().get_name().lower(): pokemon_cls for pokemon_cls in POKE_LIST}
-    
     # The list of criterions to sort by
     CRITERION_LIST  = ["health", "defence", "battle_power", "speed", "level"]
 
@@ -42,28 +39,35 @@ class PokeTeam:
 
     
 
-    #? ===================== INTERNAL: TOGGLE SORT ORDER ===================== 
+    #? ===================== INTERNAL: TOGGLE SORT ORDER ===================== DONE
     def _toggle_sort_order(self) -> None:
         """
         Toggles the sorting order multipler between ascending and descending
         
         :post: The sort_order_multiplier is negated, toggling the sorting order.
-        :comp best: O(1), as the operation is a simple multiplication and assignment.
-        :comp worst: O(1), identical to the best case because the complexity 
-                     does not depend on any variable factors.
+        
+        :comp best: O(1)
+            As the operation is a simple multiplication and assignment.
+            
+        :comp worst: O(1)
+            Identical to the best case because the complexity does not depend on any variable factors.
         """
         self.sort_order_multiplier *= -1
     
-    #? ===================== INTERNAL: BACKUP CURRENT TEAM ===================== 
+    #? ===================== INTERNAL: BACKUP CURRENT TEAM ===================== DONE
     def _backup_current_team(self) -> None:
         """ Copies elements from team to team_copy
         
         :post: The current state of the team is copied to team_copy, allowing
                for future restoration if necessary.
 
-        :comp best: O(1) if self.team_count happens to be 1
-        :comp worst: O(N) where N is the number of items in the team. Each item 
-                    is copied individually.
+        :comp best: O(t) 
+
+        :comp worst: O(t) 
+        
+        Both the best and worst case occur when the we have to iterate over the team_count, assuming that we can make a larger team than 6.
+        
+        - Where t is the number of items in the team (self.team_count).
 
         Considering that isinstance is assumed to be O(1) for all future methods
         """
@@ -73,24 +77,22 @@ class PokeTeam:
 
 
 
-    #* ===================== CHOOSE MANUALLY ===================== 
+    #* ===================== CHOOSE MANUALLY ===================== DONE
     def choose_manually(self) -> None:
         """
         Allows the user to choose their team
         
         :return: None
         :post: The team will contain the Pokemon chosen by the user, up to the team limit or until the user stops the selection.
-        :comp best: O(1), If the user decides to only choose one pokemon.
-                    Each lookup in POKE_DICT is O(1), making the complexity 
-                    linear with respect to the number of user inputs.
-        :comp worst: O(P) where P is the number of pokemon the user intends to
-                     choose (assuming TEAM_LIMIT could be a large number). 
-                     Dictionary lookups are performed in constant time, and the
-                     loop execution depends soley on the number of times the
-                     user decides to input a Pokemon name, up to the TEAM_LIMIT.
-                     
-                     Could be O(K * randint) if the user decides to choose no
-                     Pokemon. In that case, choose_randomly() will be called.
+        
+        :comp best: O(1) 
+            This best case occurs when/if the user decides to type 'done' immediately
+        
+        :comp worst: O(N * P) 
+            This worst case occurs when the user decides to choose a full team of Pokemon
+            
+        - N is the number of Pokemon the user decides to choose (up to TEAM_LIMIT)
+        - P is the total number of available Pokemon in POKE_LIST.
         """
         print('\n❓ Select up to 6 Pokemon by entering their name. Type "done" to finish:')
         
@@ -120,32 +122,42 @@ class PokeTeam:
         while self.team_count < self.TEAM_LIMIT: 
             user_input = input('💡 Enter Pokemon name or "done" to finish: ').strip().lower()
             
-            if user_input == 'done':
-                if self.team_count == 0:
-                    self.choose_randomly()
-                    break
-                else: 
-                    break 
+            if user_input == 'done': 
+                # if self.team_count == 0: 
+                #     raise ValueError('No pokemon chosen, shouldve called choose_randomly() here')
+                # else: 
+                break 
             
-            pokemon_cls = self.POKE_DICT.get(user_input)
-            if pokemon_cls is not None:
-                self.team[self.team_count] = pokemon_cls()
-                self.team_count += 1
-                print(f'{pokemon_cls().get_name()} added to the team')
-            else:
+            found = False
+            for pokemon_cls in self.POKE_LIST:
+                if user_input.capitalize() == pokemon_cls().get_name():
+                    self.team[self.team_count] = pokemon_cls()
+                    self.team_count += 1
+                    print(f'{pokemon_cls().get_name()} added to the team')
+                    found = True 
+                    break
+            if not found:
                 print('Invalid Pokemon name, try again.')
             
         print(f'Team selection complete, team: {self.team}') 
 
-    #* ===================== CHOOSE RANDOMLY ===================== 
+    #* ===================== CHOOSE RANDOMLY ===================== DONE
     def choose_randomly(self) -> None:
         """
         Chooses a random team of 6
         
         :return: None
         :post: The team will be filled with random Pokemon up to the team limit.
-        :comp best: O(K * randint) where K is the length of TEAM_LIMIT
-        :comp worst: O(K * randint) identical to the best case, as the operation does not depend on the length of POKE_LIST but rather the TEAM_LIMIT.
+        
+        :comp best: O(T)
+        
+        :comp worst: O(T)
+        
+        Both the best and worst case occur no matter what because we must iterate and create a random team of 6.
+        
+        - Where T is the length of TEAM_LIMIT
+        
+        Assuming that randint is O(1) for all future functions
         """
         # Print guide message
         print('\n🎲 Creating a random team of 6 pokemon')
@@ -178,14 +190,17 @@ class PokeTeam:
         
         # Start the team_count at zero
         self.team_count = 0
+        
+        # All pokemon
+        all_pokemon = get_all_pokemon_types()
 
         # Loop 6 times
         for i in range(self.TEAM_LIMIT):
             # Choose a random number from the amount of all the pokemon (77)
-            rand_int = random.randint(0, len(self.POKE_LIST)-1)
+            rand_int = random.randint(0, len(all_pokemon)-1)
             
             # Initalise and add the random pokemon class to the team
-            self.team[i] = self.POKE_LIST[rand_int]()
+            self.team[i] = all_pokemon[rand_int]()
             
             # Increment the team count
             self.team_count += 1
@@ -196,7 +211,7 @@ class PokeTeam:
         # Print that we're done creating the team
         print('\n✅ Random team created!')
 
-    #* ===================== REGENERATE TEAM ===================== 
+    #* ===================== REGENERATE TEAM ===================== DONE
     def regenerate_team(self, battle_mode: BattleMode, criterion: str = None) -> None:
         """
         Regens the HP of the PokeTeam, to their original HP
@@ -205,8 +220,15 @@ class PokeTeam:
         :param criterion: Optional sorting criterion used in the OPTIMISE battle mode.
         :return: None
         :post: The team's health is restored, and its order may be updated based on battle_mode and criterion.
-        :comp best: O(T) where T is the length of self.team_copy, as each Pokemon's health is reset individually and the team is potentially reorganised.
-        :comp worst: O(T * log(N)) if sorting is required (in OPTIMISE mode), due to the sorting operation. And N is the length of self.team
+        
+        :comp best: O(C)
+            This best case occurs when the battle_mode is either SET or ROTATE
+            
+        :comp worst: O(C * log(T))
+            This worst case occurs when the battle_mode is OPTIMISE
+        
+        - Where C is the length of self.team_copy
+        - Where T is the number of elements in self.team
         """
         match battle_mode:
             # SET BATTLE MODE
@@ -246,15 +268,22 @@ class PokeTeam:
                     # Add the pokemon to the sorted list as a ListItem and attribute as the key
                     self.team.add(ListItem(pokemon, (getattr(pokemon, criterion) * self.sort_order_multiplier)))
 
-    #* ===================== ASSIGN TEAM ===================== 
+    #* ===================== ASSIGN TEAM ===================== DONE
     def assign_team(self, criterion: str = None) -> None:
         """
         Assigns the team to a ArraySortedList
         
         :param criterion: The attribute (e.g., 'health', 'speed') to sort the Pokemon by.
         :post: The team is sorted based on the specified criterion.
-        :comp best: O(B * T * log(T)) due to the sorting operations. Where T is the TEAM_LIMIT and B is the _backup_current_team() call.
-        :comp worst: O(T * log(T)), identical to the best case, as sorting complexity does not change.
+        
+        :comp best: (T + log(U))
+            This best case occurs when updated_team does not require resizing
+            
+        :comp worst: O(T * U)
+            This worst case occurs when updated_team required resizing
+        
+        - Where T is the length of self.team
+        - Where U is the length of updated_team
         """
         self._backup_current_team()
         self.criterion = criterion 
@@ -273,15 +302,19 @@ class PokeTeam:
                 
         self.team = updated_team
 
-    #* ===================== ASSEMBLE TEAM ===================== 
+    #* ===================== ASSEMBLE TEAM ===================== DONE
     def assemble_team(self, battle_mode: BattleMode) -> None:
         """ 
         Assembles the team to a CiruclarQueue
         
         :param battle_mode: The battle mode determining the structure to organize the team in.
         :post: The team is organized into a data structure (stack, queue, or sorted list) suitable for the battle mode.
-        :comp best: O(B * T) where T is self.team_count, as it involves moving Pokemon into the appropriate structure. Where B is the complexity of _backup_current_team()
-        :comp worst: O(B * T), identical to the best case, since the complexity is linear with respect to the team size.
+        
+        :comp best: O(T)
+        :comp worst: O(T)
+            Both the best and worst case occur when iterating through self.team_count and pushing or appending the Pokemon in to the temp_team.
+        
+        - Where T is the length of self.team_count
         """
         self._backup_current_team()
         
@@ -299,7 +332,7 @@ class PokeTeam:
                 
         self.team = temp_team
 
-    #* ===================== SPECIAL ===================== 
+    #* ===================== SPECIAL ===================== DONE
     def special(self, battle_mode: BattleMode) -> None:
         """
         Applies a special arrangement or action to the team based on the battle mode.
@@ -307,8 +340,15 @@ class PokeTeam:
         :param battle_mode: The mode of battle which determines the specific action to be taken.
         :return: None
         :post: The team is modified in a special way suitable for the given battle mode.
-        :comp best: O(K) for SET and ROTATE modes, where K is the TEAM_LIMIT, as it involves reordering the team.
-        :comp worst: O(K * log(K)) for OPTIMISE mode due to sorting, otherwise O(K) for reordering.
+        
+        :comp best: O(T) 
+            This best case occurs when the battle_mode is either SET or ROTATE
+            
+        :comp worst: O(T * U)
+            This worst case occurs when the battle_mode is OPTIMISE because assign_team is called (also taking the worst case of assign_team)
+        
+        - Where T is the length of self.TEAM_LIMIT
+        - Where U is the length of the updated_team in assign_team()
         """
         match battle_mode:
             case BattleMode.SET:
@@ -374,7 +414,7 @@ class PokeTeam:
                     print(f'❌ Error: {e}')
 
 
-    #! ===================== DUNDER: GET ITEM ===================== 
+    #! ===================== DUNDER: GET ITEM ===================== DONE
     def __getitem__(self, index: int):
         """
         Retrieves an item from the team at the specified index. This method 
@@ -384,8 +424,14 @@ class PokeTeam:
         :param index: The index of the item to retrieve.
         :return: The item at the specified index.
         :raises IndexError: If the index is out of bounds for the team's current size.
-        :comp best: O(1) for ArrayR and ArraySortedList when accessing directly.
-        :comp worst: O(N) for ArrayStack and CircularQueue, where N is the distance to the index, due to the need to temporarily move items to access the target index.
+        
+        :comp best: O(1)
+            This best case occurs when self.team is an instance of ArrayR or ArraySortedList, this is constant time when accessing directly. 
+            
+        :comp worst: O(N) 
+            This worst case occurs when self.team is an instance of ArrayStack or CircularQueue, this is linear time to find the target index element in self.team
+        
+        - Where N is the distance to the index for the length of self.team
         """
         try:
             # ArrayR And ArraySortedList
@@ -479,11 +525,14 @@ class PokeTeam:
         attributes.
 
         :return: A string representation of the team.
-        :comp best: O(n), where n is the number of items in the team, as it iterates over each team member to construct the string.
-        :comp worst: O(n), identical to the best case, since constructing the string requires iterating over each team member.
+        :comp best: O(N), where N is self.team_count, as it iterates over each team member to construct the string.
+        :comp worst: O(N * +=str), identical to the best case, since constructing the string requires iterating over each team member.
         """
-        team_str = '\n'.join(str(self.team[i]) for i in range(self.team_count))
-        return f'\nCurrent Team ({self.team_count}):\n{team_str}'
+        team_string = ""
+        for i in range(self.team_count):
+            team_string += str(self.team[i]) + '\n'
+    
+        return f'\nCurrent Team ({self.team_count}):\n{team_string}'
 
 
 
@@ -505,7 +554,7 @@ class Trainer:
 
 
 
-    #* ===================== PICK TEAM ===================== 
+    #* ===================== PICK TEAM ===================== DONE
     def pick_team(self, method: str) -> None:
         """
         Allows the trainer to pick a team of Pokemon either randomly or manually
@@ -514,8 +563,19 @@ class Trainer:
         :param method: A string indicating the method of team selection 
             ('random' or 'manual').
         :raises ValueError: If an winvalid method string is provided.
-        :comp best: O(P * N) where P is for the choose_manually() call, and N is the length of self.team when registering Pokemon
-        :comp worst: O(N * (K * randint)) where N is the length of self.team and (K * randint) is the complexity of choose_randomly()
+        :comp best:
+            O(t) When the method is 'manual' and choose_manually is called
+            O(t * T) When the method is 'random' and choose_randomly is called
+        :comp worst: 
+            O(t * N * T) When the method is 'manual' and choose_manually is called 
+            O(t * T) When the method is 'random' and choose_ranomly is called
+        
+        t for when registering Pokemon
+        
+        - Where t is the length of self.team
+        - Where T is the length of self.TEAM_LIMIT
+        - N is the number of Pokemon the user decides to choose (up to TEAM_LIMIT)
+        - P is the total number of available Pokemon in POKE_LIST.
         """
         # Choosing team
         if method.lower() == 'random':
@@ -639,6 +699,6 @@ class Trainer:
 if __name__ == '__main__':
     t = Trainer('Ash')
     print(t)
-    t.pick_team("manual")
+    t.pick_team("random")
     print(t)
     print(t.get_team())

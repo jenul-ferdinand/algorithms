@@ -99,7 +99,16 @@ class ArraySortedList(SortedList[T]):
         return len(self) >= len(self.array)
 
     def add(self, item: ListItem) -> None:
-        """ Add new element to the list. """
+        """ 
+        Add new element to the list. 
+        
+        :comp best: O(log(N)) 
+            This best case occurs when the new element is added with minimal shifting required, dominated by the binary search for the insertion point.
+        :comp worst: O(N)
+            This worst case occurs when the list is full (necessitating a resize operation) and when the new element's insertion requires maximal shifting of subsequent elements.
+        
+        - Where N is the number of elements in the list
+        """
         if self.is_full():
             self._resize()
 
