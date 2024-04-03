@@ -4,6 +4,7 @@ This module contains PokeType, TypeEffectiveness and an abstract version of the 
 from abc import ABC
 from enum import Enum
 from data_structures.referential_array import ArrayR
+from math import ceil
 
 class PokeType(Enum):
     """
@@ -29,61 +30,63 @@ class TypeEffectiveness:
     """
     Represents the type effectiveness of one Pokemon type against another.
     """
-    
-    # Class variable to store the effectiveness table.
     EFFECT_TABLE = None
 
+    #* ===================== GET EFFECTIVENESS =====================
     @classmethod
     def get_effectiveness(cls, attack_type: PokeType, defend_type: PokeType) -> float:
         """
         Returns the effectiveness of one Pokemon type against another, as a float.
 
-        Parameters:
-            attack_type (PokeType): The type of the attacking Pokemon.
-            defend_type (PokeType): The type of the defending Pokemon.
-
-        Returns:
-            float: The effectiveness of the attack, as a float value between 0 and 4.
-            
-        :complexity: O(k * m), where k is the number of rows and m is the number of columns.
+        :param attack_type: The type of attacking pokemon
+        :param defend_type: The type of defending pokemon
+        :return float: The effectiveness of the attack, as a float falue between
+                       0 and 4.
+        :comp best: O(1) constant after EFFECT_TABLE has been initialised,
+                    since we only access and return the effectiveness from 
+                    EFFECT_TABLE.
+        :comp worst: O(E^2) when initialising, due to the unpopulated 
+                     EFFECT_TABLE where E is the number of types.
         """
-        
-        # Check if the EFFECT_TABLE hasn't been initialised
+        # Only populate EFFECT_TABLE if it has not been initialised
         if cls.EFFECT_TABLE is None:
-            # Create the main ArrayR to store rows for each type
             cls.EFFECT_TABLE = ArrayR(len(PokeType))
             
-            # Initialise every row in EFFECT_TABLE to store the values
             for i in range(len(cls.EFFECT_TABLE)):
                 cls.EFFECT_TABLE[i] = ArrayR(len(PokeType))
-            
-        with open('type_effectiveness.csv', 'r') as csv:
-            # Skip the header (don't need it for data processing)
-            next(csv)                                                 
-
-            # Loop through each line in the CSV
-            for row_index, line in enumerate(csv):
-                # Split each line by a comma (to get values as strings)
-                eff_values = line.strip().split(',')
-                
-                # Loop through effectiveness values
-                for col_index, value in enumerate(eff_values, start=0):
-                    
-                    # Convert each value to a float
-                    cls.EFFECT_TABLE[row_index][col_index] = float(value)
         
-        # Get and return the effectiveness
+            # Open the type effectiveness csv file 
+            try:
+                with open('type_effectiveness.csv', 'r') as csv:
+                    # Skip the header
+                    next(csv)
+                    
+                    # Go through the rows 
+                    for row_index, line in enumerate(csv): 
+                        eff_values = line.strip().split(',')
+                        
+                        # Go through the columns
+                        for col_index, value in enumerate(eff_values, start=0):
+                            
+                            # Populate the effect table with values from the csv
+                            cls.EFFECT_TABLE[row_index][col_index] = float(value)
+            except FileNotFoundError:
+                print("❌ Error: The file 'type_effectiveness.csv' was not found.")
+        
+        # * Return the effectiveness based on the attack and defend type
         return cls.EFFECT_TABLE[attack_type.value][defend_type.value]
-            
 
+    #! ===================== DUNDER: LEN =====================
     def __len__(self) -> int:
         """
         Returns the number of types of Pokemon
         
-        :complexity: O(1)
+        :comp best: O(1)
+        :comp worst: O(1)
         """
-        
+        # * Return the number of pokemon types
         return len(PokeType)
+
 
 class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-attributes
     """
@@ -92,8 +95,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
     def __init__(self):
         """
         Initializes a new instance of the Pokemon class.
-        
-        :complexity: O(1)
         """
         self.health = None
         self.level = None
@@ -111,8 +112,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             str: The name of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.name
 
@@ -122,8 +121,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The current health of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.health
 
@@ -133,8 +130,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The current level of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.level
 
@@ -144,8 +139,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The current speed of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.speed
 
@@ -155,8 +148,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The current experience of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.experience
 
@@ -166,8 +157,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             PokeType: The type of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.poketype
 
@@ -177,8 +166,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The defence of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.defence
 
@@ -188,8 +175,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             list: The evolution of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.evolution_line
 
@@ -199,36 +184,65 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             int: The battle power of the Pokemon.
-            
-        :complexity: O(1)
         """
         return self.battle_power
 
-    def attack(self, other_pokemon) -> int:
+    def attack(self, other_pokemon) -> float:
         """
         Calculates and returns the damage that this Pokemon inflicts on the
         other Pokemon during an attack.
 
-        Args:
-            other_pokemon (Pokemon): The Pokemon that this Pokemon is attacking.
-
-        Returns:
-            int: The damage that this Pokemon inflicts on the other Pokemon during an attack.
-            
-        :complexity: O()
+        :param other_pokemon: The Pokemon that this Pokemon is attacking.
+        :return int: The damage that this Pokemon inflicts on the other Pokemon
+                     during an attack.
+        :comp best: O(1) When get_effectiveness' EFFECT_TABLE HAS been populated.
+        :comp worst: O(E^2) When get_effectiveness' EFFECT_TABLE has NOT been
+                     populated.
         """
+        # Save my battle power
+        my_battle_power = self.get_battle_power()
         
-        # Get the effectiveness
+        # Save the other pokemons battle power
+        other_defence = other_pokemon.get_defence()
+        
+        # Initalise my damage as zero
+        damage = 0
+        
+        # If the other pokemons defense is less than half my pokemons battle power 
+        if other_defence < (my_battle_power / 2): 
+            
+            # My damage will be my battle power subtracted by the other pokemons defence
+            damage = my_battle_power - other_defence
+        
+        # Otherwise, if the other pokemons defence is less than my battle power
+        elif other_defence < my_battle_power:
+            
+            # My damage will be the upper value of my battle power multiplied by 5/8
+            # and subtracted by the other pokemons defence divided by 4
+            damage = ceil((my_battle_power * 5/8) - (other_defence / 4))
+            
+        # Otherwise,
+        else:
+            
+            # My damage will be the upper value of my battle power divided by 4
+            damage = ceil(my_battle_power / 4)
+        
+        # Save my pokemon type
         my_type = self.get_poketype()
+        
+        # Save the other pokemons type
         other_type = other_pokemon.get_poketype()
+        
+        # Get the type effectiveness
         effectiveness = TypeEffectiveness.get_effectiveness(my_type, other_type)
         
-        # Calculate the damage
-        my_battle_power = self.get_battle_power()
-        attack = my_battle_power * effectiveness
+        # Get the effective damage by multiplying my damage by the effectiveness
+        effective_damage = damage * effectiveness
         
-        # Return the damage 
-        return attack
+        print(f'⚔  {self.get_name()} attacks {other_pokemon.get_name()}')
+        
+        # * Return the effective damage
+        return effective_damage
 
     def defend(self, damage: int) -> None:
         """
@@ -237,42 +251,50 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Args:
             damage (int): The amount of damage to be inflicted on the Pokemon.
-            
-        :complexity: O(1)
         """
         effective_damage = damage/2 if damage < self.get_defence() else damage
         self.health = self.health - effective_damage
+        
+        print(f'💔 {self.get_name()} takes {effective_damage} damage (HP: {self.get_health()}/{self.__class__().health})')
 
     def level_up(self) -> None:
         """
         Increases the level of the Pokemon by 1, and evolves the Pokemon if it has
           reached the level required for evolution.
-          
-        :complexity: O(1)
         """
         self.level += 1
-        if len(self.evolution_line) > 0 and self.evolution_line.index\
-            (self.name) != len(self.evolution_line)-1:
+        
+        print(f'✨ {self.get_name()} is now level {self.get_level()+1}\n')
+        
+        if len(self.evolution_line) > 0 and self.evolution_line.index(self.name) != len(self.evolution_line)-1:
             self._evolve()
 
     def _evolve(self) -> None:
         """
         Evolves the Pokemon to the next stage in its evolution line, and updates
-          its attributes accordingly.
-          
-        :complexity: O(1)
+        its attributes accordingly.
+        
+        :post: Pokemon will evolve to the next stage in its evolution line
+        :comp best: O(1) 
+        :comp worst: O(n) Assuming there could be a pokemon with a very long
+                     evolution line (when indexing). Where n is the length of
+                     the evolution line.
         """
-        new_name = self.get_evolution()
-        new_level = self.get_level()
-        self.name = new_name[new_level]
+        evolution_line = self.get_evolution()
+        next_evolution = evolution_line[evolution_line.index(self.name) + 1]
+        
+        print(f'🐾 {self.name} evolved to {next_evolution}\n')
+        
+        self.name = next_evolution
         
         old_battle_power = self.get_battle_power()
         old_health = self.get_health()
+        old_speed = self.get_speed()
         old_defence = self.get_defence()
         
-        # ? Do we need to round these values
         self.battle_power = old_battle_power * 1.5
         self.health = old_health * 1.5
+        self.speed = old_speed * 1.5
         self.defence = old_defence * 1.5
 
     def is_alive(self) -> bool:
@@ -281,8 +303,6 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
 
         Returns:
             bool: True if the Pokemon is still alive, False otherwise.
-            
-        :compelxity: O(1)
         """
         return self.get_health() > 0
 
@@ -290,8 +310,5 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         """
         Return a string representation of the Pokemon instance in the format:
         <name> (Level <level>) with <health> health and <experience> experience
-        
-        :complexity: O(1)
         """
-        return f"{self.name} (Level {self.level}) with {self.get_health()} health \
-                and {self.get_experience()} experience"
+        return f"{self.name} (Level {self.level}) with {self.get_health()} health and {self.get_experience()} experience"

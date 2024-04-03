@@ -95,6 +95,8 @@ class BSet(Set[int]):
         """
         Size computation. The most expensive operation.
         Use int.bit_length(your_integer) to calculate the bit length.
+        
+        :complexity: O(N) where N is the number of bits set to '1' in the binary representation of `self.elems`. This is also related to the bit length of `self.elems`, making it effectively O(log N) where N is the value of `self.elems`.
         """
         return bin(self.elems).count('1')
 
