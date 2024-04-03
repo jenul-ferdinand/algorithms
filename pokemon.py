@@ -1003,6 +1003,12 @@ class Dratini(Pokemon):
         self.speed = 86
 
 def get_all_pokemon_types() -> ArrayR[Pokemon]:
+    """ Retrieves all subclasses of Pokemon within the current module
+    
+    :return: An ArrayR of Pokemon subclasses found in the module, up to max 77 entries
+    :raises TypeError: If any class is not a subclass of Pokemon
+    :complexity: O(n) best & worst case, where n is the number of classes in the module
+    """
     all_pokemon = ArrayR(77)
     i = 0
     for name, cls in inspect.getmembers(inspect.getmodule(inspect.currentframe()), inspect.isclass):

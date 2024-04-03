@@ -4,6 +4,7 @@ This module contains PokeType, TypeEffectiveness and an abstract version of the 
 from abc import ABC
 from enum import Enum
 from data_structures.referential_array import ArrayR
+from math import ceil
 
 class PokeType(Enum):
     """
@@ -29,26 +30,62 @@ class TypeEffectiveness:
     """
     Represents the type effectiveness of one Pokemon type against another.
     """
+    EFFECT_TABLE = None
 
+    #* ===================== GET EFFECTIVENESS =====================
     @classmethod
     def get_effectiveness(cls, attack_type: PokeType, defend_type: PokeType) -> float:
         """
         Returns the effectiveness of one Pokemon type against another, as a float.
 
-        Parameters:
-            attack_type (PokeType): The type of the attacking Pokemon.
-            defend_type (PokeType): The type of the defending Pokemon.
-
-        Returns:
-            float: The effectiveness of the attack, as a float value between 0 and 4.
+        :param attack_type: The type of attacking pokemon
+        :param defend_type: The type of defending pokemon
+        :return float: The effectiveness of the attack, as a float falue between
+                       0 and 4.
+        :comp best: O(1) constant after EFFECT_TABLE has been initialised,
+                    since we only access and return the effectiveness from 
+                    EFFECT_TABLE.
+        :comp worst: O(E^2) when initialising, due to the unpopulated 
+                     EFFECT_TABLE where E is the number of types.
         """
-        raise NotImplementedError
+        # Only populate EFFECT_TABLE if it has not been initialised
+        if cls.EFFECT_TABLE is None:
+            cls.EFFECT_TABLE = ArrayR(len(PokeType))
+            
+            for i in range(len(cls.EFFECT_TABLE)):
+                cls.EFFECT_TABLE[i] = ArrayR(len(PokeType))
+        
+            # Open the type effectiveness csv file 
+            try:
+                with open('type_effectiveness.csv', 'r') as csv:
+                    # Skip the header
+                    next(csv)
+                    
+                    # Go through the rows 
+                    for row_index, line in enumerate(csv): 
+                        eff_values = line.strip().split(',')
+                        
+                        # Go through the columns
+                        for col_index, value in enumerate(eff_values, start=0):
+                            
+                            # Populate the effect table with values from the csv
+                            cls.EFFECT_TABLE[row_index][col_index] = float(value)
+            except FileNotFoundError:
+                print("❌ Error: The file 'type_effectiveness.csv' was not found.")
+        
+        # * Return the effectiveness based on the attack and defend type
+        return cls.EFFECT_TABLE[attack_type.value][defend_type.value]
 
+    #! ===================== DUNDER: LEN =====================
     def __len__(self) -> int:
         """
         Returns the number of types of Pokemon
+        
+        :comp best: O(1)
+        :comp worst: O(1)
         """
-        raise NotImplementedError
+        # * Return the number of pokemon types
+        return len(PokeType)
 
 
 class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-attributes
@@ -155,13 +192,57 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         Calculates and returns the damage that this Pokemon inflicts on the
         other Pokemon during an attack.
 
-        Args:
-            other_pokemon (Pokemon): The Pokemon that this Pokemon is attacking.
-
-        Returns:
-            int: The damage that this Pokemon inflicts on the other Pokemon during an attack.
+        :param other_pokemon: The Pokemon that this Pokemon is attacking.
+        :return int: The damage that this Pokemon inflicts on the other Pokemon
+                     during an attack.
+        :comp best: O(1) When get_effectiveness' EFFECT_TABLE HAS been populated.
+        :comp worst: O(E^2) When get_effectiveness' EFFECT_TABLE has NOT been
+                     populated.
         """
-        raise NotImplementedError
+        # Save my battle power
+        my_battle_power = self.get_battle_power()
+        
+        # Save the other pokemons battle power
+        other_defence = other_pokemon.get_defence()
+        
+        # Initalise my damage as zero
+        damage = 0
+        
+        # If the other pokemons defense is less than half my pokemons battle power 
+        if other_defence < (my_battle_power / 2): 
+            
+            # My damage will be my battle power subtracted by the other pokemons defence
+            damage = my_battle_power - other_defence
+        
+        # Otherwise, if the other pokemons defence is less than my battle power
+        elif other_defence < my_battle_power:
+            
+            # My damage will be the upper value of my battle power multiplied by 5/8
+            # and subtracted by the other pokemons defence divided by 4
+            damage = ceil((my_battle_power * 5/8) - (other_defence / 4))
+            
+        # Otherwise,
+        else:
+            
+            # My damage will be the upper value of my battle power divided by 4
+            damage = ceil(my_battle_power / 4)
+        
+        # Save my pokemon type
+        my_type = self.get_poketype()
+        
+        # Save the other pokemons type
+        other_type = other_pokemon.get_poketype()
+        
+        # Get the type effectiveness
+        effectiveness = TypeEffectiveness.get_effectiveness(my_type, other_type)
+        
+        # Get the effective damage by multiplying my damage by the effectiveness
+        effective_damage = damage * effectiveness
+        
+        print(f'⚔  {self.get_name()} attacks {other_pokemon.get_name()}')
+        
+        # * Return the effective damage
+        return effective_damage
 
     def defend(self, damage: int) -> None:
         """
@@ -173,6 +254,8 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
         """
         effective_damage = damage/2 if damage < self.get_defence() else damage
         self.health = self.health - effective_damage
+        
+        print(f'💔 {self.get_name()} takes {effective_damage} damage (HP: {self.get_health()}/{self.__class__().health})')
 
     def level_up(self) -> None:
         """
@@ -180,16 +263,39 @@ class Pokemon(ABC): # pylint: disable=too-few-public-methods, too-many-instance-
           reached the level required for evolution.
         """
         self.level += 1
-        if len(self.evolution_line) > 0 and self.evolution_line.index\
-            (self.name) != len(self.evolution_line)-1:
+        
+        print(f'✨ {self.get_name()} is now level {self.get_level()+1}\n')
+        
+        if len(self.evolution_line) > 0 and self.evolution_line.index(self.name) != len(self.evolution_line)-1:
             self._evolve()
 
     def _evolve(self) -> None:
         """
         Evolves the Pokemon to the next stage in its evolution line, and updates
-          its attributes accordingly.
+        its attributes accordingly.
+        
+        :post: Pokemon will evolve to the next stage in its evolution line
+        :comp best: O(1) 
+        :comp worst: O(n) Assuming there could be a pokemon with a very long
+                     evolution line (when indexing). Where n is the length of
+                     the evolution line.
         """
-        raise NotImplementedError
+        evolution_line = self.get_evolution()
+        next_evolution = evolution_line[evolution_line.index(self.name) + 1]
+        
+        print(f'🐾 {self.name} evolved to {next_evolution}\n')
+        
+        self.name = next_evolution
+        
+        old_battle_power = self.get_battle_power()
+        old_health = self.get_health()
+        old_speed = self.get_speed()
+        old_defence = self.get_defence()
+        
+        self.battle_power = old_battle_power * 1.5
+        self.health = old_health * 1.5
+        self.speed = old_speed * 1.5
+        self.defence = old_defence * 1.5
 
     def is_alive(self) -> bool:
         """
