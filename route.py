@@ -2,6 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from computer import Computer
 from typing import TYPE_CHECKING, Union
+from branch_decision import BranchDecision
 
 # Avoid circular imports for typing.
 if TYPE_CHECKING:
@@ -62,7 +63,7 @@ class RouteSeries:
 
     def add_empty_branch_before(self) -> RouteStore:
         """Returns a route store which would be the result of:
-        Adding an empty branch, where the current routestore is now the following path.
+        Adding an empty branch, where the current RouteStore is now the following path.
         """
         return RouteSplit(Route(None), Route(None), Route(self))
 
@@ -98,18 +99,36 @@ class Route:
 
     def follow_path(self, virus_type: VirusType) -> None:
         """Follow a path and add computers according to a virus_type."""
-        raise NotImplementedError()
+        current_route = self
+        while current_route.store is not None:
+            if isinstance(current_route.store, RouteSeries):
+                # Add the computer in the series and move to the following route.
+                virus_type.add_computer(current_route.store.computer)
+                current_route = current_route.store.following
+            elif isinstance(current_route.store, RouteSplit):
+                # Decide which branch to take at the split.
+                decision = virus_type.select_branch(current_route.store.top, current_route.store.bottom)
+                if decision == BranchDecision.TOP:
+                    current_route = current_route.store.top
+                elif decision == BranchDecision.BOTTOM:
+                    current_route = current_route.store.bottom
+                else:  # BranchDecision.STOP
+                    break  # If the decision is to stop, exit the loop.
+                if isinstance(current_route.store, RouteSplit):
+                    current_route = current_route.store.following
 
-    def add_all_computers(self) -> list[Computer]:
-        """Returns a list of all computers on the route."""
-        def traverse(route_store):
-            if route_store is None:
-                return []
-            elif isinstance(route_store, RouteSplit):
-                return traverse(route_store.top.store) + traverse(route_store.bottom.store) + traverse(
-                    route_store.following.store)
-            elif isinstance(route_store, RouteSeries):
-                return [route_store.computer] + traverse(route_store.following.store)
+
+def add_all_computers(self) -> list[Computer]:
+    """Returns a list of all computers on the route."""
+
+    def traverse(route_store):
+        if route_store is None:
             return []
+        elif isinstance(route_store, RouteSplit):
+            return traverse(route_store.top.store) + traverse(route_store.bottom.store) + traverse(
+                route_store.following.store)
+        elif isinstance(route_store, RouteSeries):
+            return [route_store.computer] + traverse(route_store.following.store)
+        return []
 
-        return traverse(self.store)
+    return traverse(self.store)
