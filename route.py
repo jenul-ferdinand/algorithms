@@ -7,7 +7,7 @@ from branch_decision import BranchDecision
 # Avoid circular imports for typing.
 if TYPE_CHECKING:
     from virus import VirusType
-
+    
 
 @dataclass
 class RouteSplit:
@@ -17,7 +17,7 @@ class RouteSplit:
       /              \
     -<                >-following-
       \____bottom____/
-    """
+    test"""
 
     top: Route
     bottom: Route
