@@ -187,7 +187,7 @@ class DoubleKeyTable(Generic[K1, K2, V]):
         _list = []
         
         if key is None: 
-            for value in self.iter_values: _list.append(value)
+            for value in self.iter_values(): _list.append(value)
         else: 
             for value in self.iter_values(key): _list.append(value)
             
