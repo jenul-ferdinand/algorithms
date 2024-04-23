@@ -1,5 +1,5 @@
 from __future__ import annotations
-from algorithms.binary_search import new_binary_search
+from algorithms.binary_search import new_binary_search, binary_search
 from algorithms.mergesort import new_merge, new_mergesort
 from computer import Computer
 from data_structures.hash_table import LinearProbeTable

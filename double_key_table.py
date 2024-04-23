@@ -329,7 +329,7 @@ if __name__ == "__main__":
     dkt['John', 'Foo'] = 432432
     dkt['John', 'Doo'] = 31312312312
     
-    print(dkt['Tim', 'Jen'])
+    print(dkt.values()) # Should return [1, 4, 2, 31312312312, 432432]
     
     # Testing iter_keys()
     print('=== TESTING iter_keys() ===')

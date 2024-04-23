@@ -74,4 +74,3 @@ def _new_binary_search_aux(l: list[Computer], item: Computer, lo: int, hi: int) 
         return mid
     
     raise ValueError(f'Comparison operator poorly implemented {item} and {l[mid]} cannot be compared.')
-    
