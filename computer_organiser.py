@@ -26,8 +26,8 @@ class ComputerOrganiser:
         """
         if computer not in self.computers:
             raise KeyError(computer)
-        position = new_binary_search(self.computers, computer)
-        return position
+        pos = new_binary_search(self.computers, computer)
+        return pos
 
     def add_computers(self, computers: list[Computer]) -> None:
         """Adds a computer to the computer list sorted based on the computers hacking_difficulty -> risk_factor -> name in ascending order.
@@ -39,8 +39,7 @@ class ComputerOrganiser:
         
         I have altered the merge and mergesort functions to be able to sort for hacking_difficulty -> risk_factor -> name. 
         """
-        sorted_list = new_merge(new_mergesort(computers), self.computers)
-        self.computers = sorted_list
+        self.computers = new_merge(new_mergesort(computers), self.computers)
     
 if __name__ == '__main__':
     c1 = Computer("c1", 2, 2, 0.1)
