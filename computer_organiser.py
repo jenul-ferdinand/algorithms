@@ -13,12 +13,32 @@ class ComputerOrganiser:
         self.computers = []
 
     def cur_position(self, computer: Computer) -> int:
+        """Gets the current position of the computer
+
+        :param computer: The computer to search
+        :type computer: Computer
+        :raises KeyError: When the the computer is not found in the list
+        :return: The position of the target computer
+        :rtype: int
+        
+        :complexity best: O(N) occurs when the target element is the central element in the list, but we still have to iterate and check if the computer is not in the list, N is the length of self.computers.
+        :complexity worst: O(N * logN) occurs when the target element is positioned in the extremities (first or last) of the the sorted list. 
+        """
         if computer not in self.computers:
             raise KeyError(computer)
         position = new_binary_search(self.computers, computer)
         return position
 
     def add_computers(self, computers: list[Computer]) -> None:
+        """Adds a computer to the computer list sorted based on the computers hacking_difficulty -> risk_factor -> name in ascending order.
+
+        :param computers: The list of computers to add to
+        :type computers: list[Computer]
+        
+        :complexity best and worst: O(new_merge * new_merge_sort)
+        
+        I have altered the merge and mergesort functions to be able to sort for hacking_difficulty -> risk_factor -> name. 
+        """
         sorted_list = new_merge(new_mergesort(computers), self.computers)
         self.computers = sorted_list
     

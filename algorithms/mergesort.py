@@ -41,6 +41,16 @@ def mergesort(l: list[T], key=lambda x:x) -> list[T]:
     return merge(l1, l2, key=key)
 
 def new_merge(l1: list[T], l2: list[T], hacking_diff = lambda x : x.hacking_difficulty, risk_factor = lambda x : x.risk_factor, name = lambda x : x.name) -> list[T]:
+    """
+    Merges two sorted lists into one larger sorted list,
+    containing all elements from the smaller lists.
+
+    The `key` kwarg allows you to define a custom sorting order.
+
+    :pre: Both l1 and l2 are sorted, and contain comparable elements.
+    :complexity: Best/Worst Case O(n * comp(T)), n = len(l1)+len(l2)
+    :returns: The sorted list.
+    """
     new_list = []
     cur_left = 0
     cur_right = 0
@@ -58,6 +68,10 @@ def new_merge(l1: list[T], l2: list[T], hacking_diff = lambda x : x.hacking_diff
     return new_list
 
 def new_mergesort(l: list[T], hd = lambda x : x.hacking_difficulty, rf=lambda x: x.risk_factor, n=lambda x: x.name) -> list[T]:
+    """
+    Sort a list using the mergesort operation.
+    :complexity: Best/Worst Case O(NlogN * comp(T))
+    """
     if len(l) <= 1:
         return l
     break_index = (len(l)+1) // 2

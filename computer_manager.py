@@ -13,6 +13,7 @@ class ComputerManager:
         raise NotImplementedError()
 
     def edit_computer(self, old: Computer, new: Computer) -> None:
+        
         raise NotImplementedError()
 
     def computers_with_difficulty(self, diff: int) -> list[Computer]:
