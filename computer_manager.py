@@ -1,7 +1,6 @@
 from __future__ import annotations
 from computer import Computer
 
-
 class ComputerManager:
 
     def __init__(self) -> None:

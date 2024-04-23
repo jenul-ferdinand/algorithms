@@ -1,6 +1,7 @@
 from __future__ import annotations
-
+from algorithms.mergesort import merge, mergesort
 from computer import Computer
+from data_structures.hash_table import LinearProbeTable
 
 
 class ComputerOrganiser:
