@@ -9,7 +9,6 @@ from infinite_hash_table import InfiniteHashTable
 class ComputerOrganiser:
 
     def __init__(self) -> None:
-        self.hash_table = LinearProbeTable()
         self.computers = []
 
     def cur_position(self, computer: Computer) -> int:
