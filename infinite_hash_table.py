@@ -36,29 +36,36 @@ class InfiniteHashTable(Generic[K, V]):
         Get the value at a certain key
 
         :raises KeyError: when the key doesn't exist.
+        
+        :complexity best & worst: O(N) where N is the no. of locations in the tables.
         """
-        # Get the position in the hash table for the key
-        pos = self.hash(key)
-        
-        if self.array[pos] is None:
-            raise KeyError("Key doesn't exist in hash table")
-        
-        return self.array[pos][1] # Return the value
+        locs = self.get_location(key)
+        curr = self
+        for pos in locs: 
+            curr = curr.array[pos][1]
+        return curr
 
     def __setitem__(self, key: K, value: V) -> None:
         """
         Set an (key, value) pair in our hash table.
         """
-        # If the length of 
-        if len(self) == len(self.array) and key not in self:
-            raise ValueError("Cannot insert into a full table")
+        curr = self
+        pos = curr.hash(key)
         
-        pos = self.hash(key)
-        
-        if self.array[pos] is None:
-            self.count += 1
-            
-        self.array[pos] = (key, value)
+        while curr.array[pos] is not None:
+            if not isinstance(curr.array[pos][1], InfiniteHashTable):
+                pkey, pvalue = curr.array[pos]
+                table = InfiniteHashTable(level=curr.level+1)
+                table[pkey] = pvalue
+                table[key] = value
+                curr.array[pos] = (f'{key[: curr.level + 1]}*', table)
+                self.count += 1
+                return
+            curr = curr.array[pos][1]
+            pos = curr.hash(key)
+        curr.array[pos] = (key, value)
+        self.count += 1
+
 
     def __delitem__(self, key: K) -> None:
         """
@@ -66,7 +73,38 @@ class InfiniteHashTable(Generic[K, V]):
 
         :raises KeyError: when the key doesn't exist.
         """
-        raise NotImplementedError()
+        locs = self.get_location(key)
+        curr = self
+
+        loci = 0
+        for loci in range(len(locs)-1):
+            curr = curr.array[locs[loci]][1]
+        curr.array[locs[len(locs) - 1]] = None
+        self.count -= 1
+        
+        remove = True
+        while remove:
+            if curr == self:
+                break
+            
+            target = None; num = 0
+            for kv in curr.array:
+                if kv is not None:
+                    if kv[0][len(kv[0]) - 1] != '*':
+                        target = kv
+                        num = num + 1
+            
+            if num <= 1 and target:
+                target_key, target_value = target
+                ptable = self
+                for pos in locs[:loci]: ptable = ptable.array[pos][1]
+                ptable.array[locs[loci]] = None
+                self.count -= 1
+                curr = ptable
+                loci -= 1
+                self[target_key] = target_value
+            else:
+                remove = False      
 
     def __len__(self) -> int:
         return self.count
@@ -92,8 +130,18 @@ class InfiniteHashTable(Generic[K, V]):
         Get the sequence of positions required to access this key.
 
         :raises KeyError: when the key doesn't exist.
+        :complexity best & worst: O(N), N is the number of tables we need to traverse until we find a key.
         """
-        raise NotImplementedError()
+        path = [] ; curr = self
+        while isinstance(curr, InfiniteHashTable):
+            pos = curr.hash(key)
+            kv = curr.array[pos]
+            if kv is None: raise KeyError(f'Key {key} not found - empty slot encountered.')
+            path.append(pos) 
+            curr = kv[1] 
+        resolved_key, _ = kv
+        if resolved_key != key: raise KeyError(f'Key {key}, final resolved key does not match.')
+        return path
 
     def __contains__(self, key: K) -> bool:
         """
@@ -108,11 +156,32 @@ class InfiniteHashTable(Generic[K, V]):
         else:
             return True
 
-    def sort_keys(self, current=None) -> list[str]:
+    def sort_keys(self, current : InfiniteHashTable | None = None) -> list[str]:
         """
         Returns all keys currently in the table in lexicographically sorted order.
+        
+        :param current: The hash table to start sorting from.
+        :type curr: InfiniteHashTable or None
         """
-        raise NotImplementedError()
+        keys = []
+        if current is None: curr = self
+        else: curr = current
+        
+        if curr.array[curr.TABLE_SIZE-1] is not None:
+            if '*' not in curr.array[curr.TABLE_SIZE-1][0]:
+                keys += [curr.array[curr.TABLE_SIZE - 1][0]]
+            
+        pos = ord('a') % (self.TABLE_SIZE - 1); tpos = pos
+        for _ in range(curr.TABLE_SIZE):
+            kv = curr.array[tpos]
+            if kv is not None:
+                if tpos != curr.TABLE_SIZE-1:
+                    key, value = kv
+                    if '*' in key: keys += self.sort_keys(value)
+                    else: keys += [key]
+            tpos = (tpos + 1) % self.TABLE_SIZE
+        return keys
+                
 
 if __name__ == "__main__":
     ht = InfiniteHashTable()
