@@ -37,13 +37,28 @@ class InfiniteHashTable(Generic[K, V]):
 
         :raises KeyError: when the key doesn't exist.
         """
-        raise NotImplementedError()
+        # Get the position in the hash table for the key
+        pos = self.hash(key)
+        
+        if self.array[pos] is None:
+            raise KeyError("Key doesn't exist in hash table")
+        
+        return self.array[pos][1] # Return the value
 
     def __setitem__(self, key: K, value: V) -> None:
         """
         Set an (key, value) pair in our hash table.
         """
-        raise NotImplementedError()
+        # If the length of 
+        if len(self) == len(self.array) and key not in self:
+            raise ValueError("Cannot insert into a full table")
+        
+        pos = self.hash(key)
+        
+        if self.array[pos] is None:
+            self.count += 1
+            
+        self.array[pos] = (key, value)
 
     def __delitem__(self, key: K) -> None:
         """
@@ -54,7 +69,7 @@ class InfiniteHashTable(Generic[K, V]):
         raise NotImplementedError()
 
     def __len__(self) -> int:
-        raise NotImplementedError()
+        return self.count
 
     def __str__(self) -> str:
         """
@@ -62,7 +77,15 @@ class InfiniteHashTable(Generic[K, V]):
 
         Not required but may be a good testing tool.
         """
-        raise NotImplementedError()
+        result = ''
+        for item in self.array:
+            if item is not None:
+                pos = self.hash(item[0])
+                
+                (key, value) = item
+                result += str(pos) + ' (' + str(key) + ', ' + str(value) + ')\n'
+        return result
+            
 
     def get_location(self, key) -> list[int]:
         """
@@ -90,3 +113,10 @@ class InfiniteHashTable(Generic[K, V]):
         Returns all keys currently in the table in lexicographically sorted order.
         """
         raise NotImplementedError()
+
+if __name__ == "__main__":
+    ht = InfiniteHashTable()
+    ht['testing'] = 0
+    ht['poo'] = 69
+    
+    print(ht)
