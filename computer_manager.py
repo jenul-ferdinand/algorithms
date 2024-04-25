@@ -1,5 +1,5 @@
 from __future__ import annotations
-from algorithms.mergesort import new_mergesort
+from algorithms.mergesort import mergesort
 from computer import Computer
 from data_structures.hash_table import LinearProbeTable
 
@@ -85,7 +85,7 @@ class ComputerManager:
         
         # Sort each sub list of the within the grouped computers.
         for i in range(len(groups)):
-            groups[i] = new_mergesort(groups[i])
+            groups[i] = mergesort(groups[i])
         
         # Return the grouped computers
         return groups

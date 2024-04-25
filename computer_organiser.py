@@ -1,6 +1,6 @@
 from __future__ import annotations
-from algorithms.binary_search import new_binary_search, binary_search
-from algorithms.mergesort import new_merge, new_mergesort
+from algorithms.binary_search import binary_search
+from algorithms.mergesort import merge, mergesort
 from computer import Computer
 from data_structures.hash_table import LinearProbeTable
 from infinite_hash_table import InfiniteHashTable
@@ -25,8 +25,7 @@ class ComputerOrganiser:
         """
         if computer not in self.computers:
             raise KeyError(computer)
-        pos = new_binary_search(self.computers, computer)
-        return pos
+        return binary_search(self.computers, computer)
 
     def add_computers(self, computers: list[Computer]) -> None:
         """Adds a computer to the computer list sorted based on the computers hacking_difficulty -> risk_factor -> name in ascending order.
@@ -34,11 +33,9 @@ class ComputerOrganiser:
         :param computers: The list of computers to add to
         :type computers: list[Computer]
         
-        :complexity best and worst: O(new_merge * new_merge_sort)
-        
-        I have altered the merge and mergesort functions to be able to sort for hacking_difficulty -> risk_factor -> name. 
+        :complexity best and worst: O(merge * merge_sort)
         """
-        self.computers = new_merge(new_mergesort(computers), self.computers)
+        self.computers = merge(mergesort(computers), self.computers)
     
 if __name__ == '__main__':
     c1 = Computer("c1", 2, 2, 0.1)
