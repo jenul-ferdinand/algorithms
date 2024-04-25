@@ -1,6 +1,6 @@
 from __future__ import annotations
-from algorithms.binary_search import new_binary_search, binary_search
-from algorithms.mergesort import new_merge, new_mergesort
+from algorithms.binary_search import binary_search
+from algorithms.mergesort import merge, mergesort
 from computer import Computer
 from data_structures.hash_table import LinearProbeTable
 from infinite_hash_table import InfiniteHashTable
@@ -23,9 +23,9 @@ class ComputerOrganiser:
         :complexity best: O(N) occurs when the target element is the central element in the list, but we still have to iterate and check if the computer is not in the list, N is the length of self.computers.
         :complexity worst: O(N * logN) occurs when the target element is positioned in the extremities (first or last) of the the sorted list. 
         """
-        if computer not in self.computers:
-            raise KeyError(computer)
-        pos = new_binary_search(self.computers, computer)
+        pos = binary_search(self.computers, computer)
+        if pos < 0 or pos > len(self.computers)-1: raise KeyError('Computer is out of bounds')
+        if self.computers[pos] is not computer: raise KeyError('Computer does not exist')
         return pos
 
     def add_computers(self, computers: list[Computer]) -> None:
@@ -34,11 +34,9 @@ class ComputerOrganiser:
         :param computers: The list of computers to add to
         :type computers: list[Computer]
         
-        :complexity best and worst: O(new_merge * new_merge_sort)
-        
-        I have altered the merge and mergesort functions to be able to sort for hacking_difficulty -> risk_factor -> name. 
+        :complexity best and worst: O(merge * merge_sort)
         """
-        self.computers = new_merge(new_mergesort(computers), self.computers)
+        self.computers = merge(mergesort(computers), self.computers)
     
 if __name__ == '__main__':
     c1 = Computer("c1", 2, 2, 0.1)
