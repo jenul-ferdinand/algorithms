@@ -23,9 +23,10 @@ class ComputerOrganiser:
         :complexity best: O(N) occurs when the target element is the central element in the list, but we still have to iterate and check if the computer is not in the list, N is the length of self.computers.
         :complexity worst: O(N * logN) occurs when the target element is positioned in the extremities (first or last) of the the sorted list. 
         """
-        if computer not in self.computers:
-            raise KeyError(computer)
-        return binary_search(self.computers, computer)
+        pos = binary_search(self.computers, computer)
+        if pos < 0 or pos > len(self.computers)-1: raise KeyError('Computer is out of bounds')
+        if self.computers[pos] is not computer: raise KeyError('Computer does not exist')
+        return pos
 
     def add_computers(self, computers: list[Computer]) -> None:
         """Adds a computer to the computer list sorted based on the computers hacking_difficulty -> risk_factor -> name in ascending order.
