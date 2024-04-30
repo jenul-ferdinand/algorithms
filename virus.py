@@ -1,8 +1,9 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from computer import Computer
-from route import Route, RouteSeries
+from route import Route, RouteSeries, RouteSplit
 from branch_decision import BranchDecision
+from data_structures.linked_stack import LinkedStack
 
 
 class VirusType(ABC):
@@ -73,57 +74,52 @@ class RiskAverseVirus(VirusType):
         This virus is risk averse and likes to choose the path with the lowest risk factor.
         """
 
-        def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
-            # Check if both branches have computers (are RouteSeries)
-            top_series = isinstance(top_branch.store, RouteSeries)
-            bottom_series = isinstance(bottom_branch.store, RouteSeries)
+        top_route = type(top_branch.store) == RouteSeries
+        bot_route = type(bottom_branch.store) == RouteSeries
 
-            # Function to calculate the score for comparison
-            def calculate_score(computer):
-                # Avoid division by zero in case risk factor is 0
-                value = max(computer.hacking_difficulty, computer.hacked_value / 2)
-                return value / computer.risk_factor if computer.risk_factor else float('inf')
+        if top_route and bot_route:
 
-            if top_series and bottom_series:
-                top_computer = top_branch.store.computer
-                bottom_computer = bottom_branch.store.computer
+            top_comp = top_branch.store.computer
+            bot_comp = bottom_branch.store.computer
 
-                # Check for computers with zero risk factor
-                if top_computer.risk_factor == 0.0 and bottom_computer.risk_factor == 0.0:
-                    # Choose the path with the lower hacking difficulty
-                    return BranchDecision.TOP if top_computer.hacking_difficulty <= bottom_computer.hacking_difficulty \
-                        else BranchDecision.BOTTOM
-                elif top_computer.risk_factor == 0.0:
-                    return BranchDecision.TOP
-                elif bottom_computer.risk_factor == 0.0:
-                    return BranchDecision.BOTTOM
-
-                # Compute scores for each path
-                top_score = calculate_score(top_computer)
-                bottom_score = calculate_score(bottom_computer)
-
-                # Compare the scores
-                if top_score > bottom_score:
-                    return BranchDecision.TOP
-                elif top_score < bottom_score:
-                    return BranchDecision.BOTTOM
-                else:
-                    # Tiebreaker with the lower risk factor
-                    if top_computer.risk_factor < bottom_computer.risk_factor:
-                        return BranchDecision.TOP
-                    elif top_computer.risk_factor > bottom_computer.risk_factor:
-                        return BranchDecision.BOTTOM
-                    else:
-                        return BranchDecision.STOP
-
-            # If one branch is a RouteSeries and the other a RouteSplit, pick RouteSplit
-            if top_series and not bottom_series:
-                return BranchDecision.BOTTOM
-            elif not top_series and bottom_series:
+            if top_comp.risk_factor == 0 and bot_comp.risk_factor != 0:
                 return BranchDecision.TOP
+            elif top_comp.risk_factor != 0 and bot_comp.risk_factor == 0:
+                return BranchDecision.BOTTOM
+            elif top_comp.risk_factor == 0 and bot_comp.risk_factor == 0:
+                if top_comp.hacking_difficulty < bot_comp.hacking_difficulty:
+                    return BranchDecision.TOP
+                elif bot_comp.hacking_difficulty < top_comp.hacking_difficulty:
+                    return BranchDecision.BOTTOM
 
-            # In all other cases, default to the top path
+            top_val = max(int(top_comp.hacking_difficulty), int(top_comp.hacked_value / 2))
+            bot_val = max(int(bot_comp.hacking_difficulty), int(bot_comp.hacked_value / 2))
+
+            if top_comp.risk_factor != 0 and bot_comp.risk_factor != 0:
+                top_val /= top_comp.risk_factor
+                bot_val /= bot_comp.risk_factor
+
+            if top_val < bot_val:
+                return BranchDecision.TOP
+            elif bot_val < top_val:
+                return BranchDecision.BOTTOM
+
+            if top_comp.risk_factor < bot_comp.risk_factor:
+                return BranchDecision.TOP
+            elif top_comp.risk_factor > bot_comp.risk_factor:
+                return BranchDecision.BOTTOM
+            elif top_comp.risk_factor == bot_comp.risk_factor:
+                return BranchDecision.STOP
+
+            if not top_route and bot_route:
+                return BranchDecision.TOP
+            elif top_route and not bot_route:
+                return BranchDecision.BOTTOM
+
             return BranchDecision.TOP
+
+
+from data_structures.linked_stack import LinkedStack
 
 
 class FancyVirus(VirusType):
@@ -133,27 +129,45 @@ class FancyVirus(VirusType):
         """
         This virus has a fancy-pants and likes to overcomplicate its approach.
         """
-        # Compute the threshold by evaluating CALC_STR
-        threshold = self.evaluate_rpn(self.CALC_STR)
+        top_route = isinstance(top_branch.store, RouteSplit)
+        bot_route = isinstance(bottom_branch.store, RouteSplit)
 
-        # Check if both branches have computers
-        top_series = isinstance(top_branch.store, RouteSeries)
-        bottom_series = isinstance(bottom_branch.store, RouteSeries)
+        if top_route and not bot_route:
+            return BranchDecision.TOP
+        elif not top_route and bot_route:
+            return BranchDecision.BOTTOM
 
-        if top_series and bottom_series:
-            # Compare hacked_value with the threshold
-            if top_branch.store.computer.hacked_value < threshold:
-                return BranchDecision.TOP
-            elif bottom_branch.store.computer.hacked_value > threshold:
-                return BranchDecision.BOTTOM
+        threshold = self.solve_notation(self.CALC_STR)
+        top_comp = top_branch.store.following.store.computer
+        bot_comp = bottom_branch.store.following.store.computer
+
+        if top_comp.hacked_value < threshold:
+            return BranchDecision.TOP
+        elif bot_comp.hacked_value > threshold:
+            return BranchDecision.BOTTOM
+        else:
+            return BranchDecision.STOP
+
+    def solve_notation(self, to_solve: str) -> float:
+        """Evaluate a reverse polish notation expression"""
+        solver_stack = LinkedStack()
+
+        for item in to_solve.split():
+            if item.isdigit():
+                solver_stack.push(float(item))
             else:
-                return BranchDecision.STOP
-        elif top_series or bottom_series:
-            # If only one branch has a RouteSeries, pick RouteSplit
-            return BranchDecision.BOTTOM if top_series else BranchDecision.TOP
-
-        # In all other cases, default to the top path
-        return BranchDecision.TOP
+                op2 = solver_stack.pop()
+                op1 = solver_stack.pop()
+                if item == '+':
+                    result = op1 + op2
+                elif item == '-':
+                    result = op1 - op2
+                elif item == '*':
+                    result = op1 * op2
+                elif item == '/':
+                    result = op1 / op2
+                solver_stack.push(result)
+        return solver_stack.peek()
 
     @staticmethod
     def evaluate_rpn(expression):
@@ -173,3 +187,4 @@ class FancyVirus(VirusType):
             else:
                 stack.append(float(token))
         return stack[0] if stack else 0
+
