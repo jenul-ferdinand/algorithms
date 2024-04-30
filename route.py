@@ -114,21 +114,21 @@ class Route:
                     current_route = current_route.store.bottom
                 else:  # BranchDecision.STOP
                     break  # If the decision is to stop, exit the loop.
+                # Update current_route if it's still a RouteSplit
                 if isinstance(current_route.store, RouteSplit):
                     current_route = current_route.store.following
 
+    def add_all_computers(self) -> list[Computer]:
+        """Returns a list of all computers on the route."""
 
-def add_all_computers(self) -> list[Computer]:
-    """Returns a list of all computers on the route."""
-
-    def traverse(route_store):
-        if route_store is None:
+        def traverse(route_store):
+            if route_store is None:
+                return []
+            elif isinstance(route_store, RouteSplit):
+                return traverse(route_store.top.store) + traverse(route_store.bottom.store) + traverse(
+                    route_store.following.store)
+            elif isinstance(route_store, RouteSeries):
+                return [route_store.computer] + traverse(route_store.following.store)
             return []
-        elif isinstance(route_store, RouteSplit):
-            return traverse(route_store.top.store) + traverse(route_store.bottom.store) + traverse(
-                route_store.following.store)
-        elif isinstance(route_store, RouteSeries):
-            return [route_store.computer] + traverse(route_store.following.store)
-        return []
 
-    return traverse(self.store)
+        return traverse(self.store)
