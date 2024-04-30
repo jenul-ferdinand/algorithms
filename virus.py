@@ -98,25 +98,21 @@ class FancyVirus(VirusType):
     CALC_STR = "7 3 + 8 - 2 * 2 /"  # This should correctly calculate to a meaningful value.
 
     def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
-        # Calculate threshold from RPN to ensure it is executed and calculate correctly.
         threshold = self.evaluate_rpn(FancyVirus.CALC_STR)
-        print(f"Threshold calculated: {threshold}")
-
-        # Safely retrieve computers from both top and bottom branches
         top_comp = self.safe_get_computer(top_branch)
         bot_comp = self.safe_get_computer(bottom_branch)
-        print(f"Top computer: {top_comp}, Bottom computer: {bot_comp}")
 
         if top_comp and bot_comp:
-            # Decide based on which computer's hacked value is closer to the threshold
             top_diff = abs(top_comp.hacked_value - threshold)
             bot_diff = abs(bot_comp.hacked_value - threshold)
-
             if top_diff < bot_diff:
                 return BranchDecision.TOP
-            elif bot_diff < top_diff:
+            else:
                 return BranchDecision.BOTTOM
-
+        elif top_comp:
+            return BranchDecision.TOP
+        elif bot_comp:
+            return BranchDecision.BOTTOM
         return BranchDecision.STOP
 
     def safe_get_computer(self, branch: Route):
@@ -146,43 +142,65 @@ class FancyVirus(VirusType):
 
 
 if __name__ == "__main__":
-    # Create some sample computers and routes for testing
-    comp1 = Computer("Comp1", hacking_difficulty=5, hacked_value=10, risk_factor=0.1)
-    comp2 = Computer("Comp2", hacking_difficulty=3, hacked_value=15, risk_factor=0.2)
-    comp3 = Computer("Comp3", hacking_difficulty=4, hacked_value=5, risk_factor=0.05)
-    comp4 = Computer("Comp4", hacking_difficulty=2, hacked_value=20, risk_factor=0.3)
+    # Assuming Computer, Route, RouteSeries, RouteSplit, and all Virus types are correctly implemented and imported
 
-    # Setup routes
-    route_top = Route(RouteSeries(comp1, Route(None)))
-    route_bottom = Route(RouteSeries(comp2, Route(None)))
-    route_following = Route(RouteSeries(comp3, Route(RouteSeries(comp4, Route(None)))))
+    # Set up a similar environment to the 'load_example' method in tests
+    top_top = Computer("top-top", 5, 3, 0.1)
+    top_bot = Computer("top-bot", 3, 5, 0.2)
+    top_mid = Computer("top-mid", 4, 7, 0.3)
+    bot_one = Computer("bot-one", 2, 5, 0.4)
+    bot_two = Computer("bot-two", 0, 0, 0.5)
+    final = Computer("final", 4, 4, 0.6)
 
-    # Create a split route
-    split_route = Route(RouteSplit(route_top, route_bottom, route_following))
+    route = Route(RouteSplit(
+        Route(RouteSplit(
+            Route(RouteSeries(top_top, Route(None))),
+            Route(RouteSeries(top_bot, Route(None))),
+            Route(RouteSeries(top_mid, Route(None))),
+        )),
+        Route(RouteSeries(bot_one, Route(RouteSplit(
+            Route(RouteSeries(bot_two, Route(None))),
+            Route(None),
+            Route(None),
+        )))),
+        Route(RouteSeries(final, Route(None)))
+    ))
 
-    # Initialize viruses
-    top_virus = TopVirus()
-    bottom_virus = BottomVirus()
-    lazy_virus = LazyVirus()
-    risk_averse_virus = RiskAverseVirus()
-    fancy_virus = FancyVirus()
+    # Instantiate viruses
+    tw = TopVirus()
+    bw = BottomVirus()
+    lw = LazyVirus()
+    rav = RiskAverseVirus()
+    fv = FancyVirus()
+    FancyVirus.CALC_STR = "7 3 + 8 - 2 *"
 
-    # Define a helper function to format computer details
+    # Define a function to format computer details for output
     def format_computer_details(computers):
         return "[\n" + ",\n".join(f"  Computer(name='{comp.name}', "
-                                  f"hacking_difficulty={comp.hacking_difficulty}, "
-                                  f"hacked_value={comp.hacked_value}, "
-                                  f"risk_factor={comp.risk_factor})" for comp in computers) + "\n]"
+                                   f"hacking_difficulty={comp.hacking_difficulty}, "
+                                   f"hacked_value={comp.hacked_value}, "
+                                   f"risk_factor={comp.risk_factor})" for comp in computers) + "\n]"
 
+    # Run viruses through the route
+    route.follow_path(tw)
+    route.follow_path(bw)
+    route.follow_path(lw)
+    route.follow_path(rav)
+    route.follow_path(fv)
 
-    # Testing each virus and printing formatted output
-    viruses = [("TopVirus", top_virus), ("BottomVirus", bottom_virus),
-               ("LazyVirus", lazy_virus), ("RiskAverseVirus", risk_averse_virus),
-               ("FancyVirus", fancy_virus)]
+    # Print results
+    print("Testing TopVirus:")
+    print("Computers visited by TopVirus:", format_computer_details(tw.computers))
 
-    for virus_name, virus in viruses:
-        split_route.follow_path(virus)
-        print(f"\nTesting {virus_name}:")
-        formatted_output = format_computer_details(virus.computers)
-        print(f"Computers visited by {virus_name}: {formatted_output}")
+    print("\nTesting BottomVirus:")
+    print("Computers visited by BottomVirus:", format_computer_details(bw.computers))
+
+    print("\nTesting LazyVirus:")
+    print("Computers visited by LazyVirus:", format_computer_details(lw.computers))
+
+    print("\nTesting RiskAverseVirus:")
+    print("Computers visited by RiskAverseVirus:", format_computer_details(rav.computers))
+
+    print("\nTesting FancyVirus:")
+    print("Computers visited by FancyVirus:", format_computer_details(fv.computers))
 
