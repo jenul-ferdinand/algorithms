@@ -71,103 +71,59 @@ class LazyVirus(VirusType):
 class RiskAverseVirus(VirusType):
     def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
         """
-        This virus is risk averse and likes to choose the path with the lowest risk factor.
+        This virus is risk averse and prefers the path with the lowest risk factor.
         """
+        # Get the first computer on each route if exists
+        top_comp = getattr(top_branch.store, 'computer', None) if isinstance(top_branch.store, RouteSeries) else None
+        bot_comp = getattr(bottom_branch.store, 'computer', None) if isinstance(bottom_branch.store,
+                                                                                RouteSeries) else None
 
-        top_route = type(top_branch.store) == RouteSeries
-        bot_route = type(bottom_branch.store) == RouteSeries
-
-        if top_route and bot_route:
-
-            top_comp = top_branch.store.computer
-            bot_comp = bottom_branch.store.computer
-
-            if top_comp.risk_factor == 0 and bot_comp.risk_factor != 0:
-                return BranchDecision.TOP
-            elif top_comp.risk_factor != 0 and bot_comp.risk_factor == 0:
-                return BranchDecision.BOTTOM
-            elif top_comp.risk_factor == 0 and bot_comp.risk_factor == 0:
-                if top_comp.hacking_difficulty < bot_comp.hacking_difficulty:
-                    return BranchDecision.TOP
-                elif bot_comp.hacking_difficulty < top_comp.hacking_difficulty:
-                    return BranchDecision.BOTTOM
-
-            top_val = max(int(top_comp.hacking_difficulty), int(top_comp.hacked_value / 2))
-            bot_val = max(int(bot_comp.hacking_difficulty), int(bot_comp.hacked_value / 2))
-
-            if top_comp.risk_factor != 0 and bot_comp.risk_factor != 0:
-                top_val /= top_comp.risk_factor
-                bot_val /= bot_comp.risk_factor
-
-            if top_val < bot_val:
-                return BranchDecision.TOP
-            elif bot_val < top_val:
-                return BranchDecision.BOTTOM
-
+        # Decision logic based on computer risk factors
+        if top_comp and bot_comp:
+            # Compare risk factors directly
             if top_comp.risk_factor < bot_comp.risk_factor:
                 return BranchDecision.TOP
             elif top_comp.risk_factor > bot_comp.risk_factor:
                 return BranchDecision.BOTTOM
-            elif top_comp.risk_factor == bot_comp.risk_factor:
-                return BranchDecision.STOP
-
-            if not top_route and bot_route:
-                return BranchDecision.TOP
-            elif top_route and not bot_route:
-                return BranchDecision.BOTTOM
-
+        elif top_comp:  # Only top route has a computer
             return BranchDecision.TOP
+        elif bot_comp:  # Only bottom route has a computer
+            return BranchDecision.BOTTOM
 
-
-from data_structures.linked_stack import LinkedStack
+        # Default to stopping if both routes are equivalent or both are None
+        return BranchDecision.STOP
 
 
 class FancyVirus(VirusType):
-    CALC_STR = "7 3 + 8 - 2 * 2 /"
+    CALC_STR = "7 3 + 8 - 2 * 2 /"  # This should correctly calculate to a meaningful value.
 
     def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
-        """
-        This virus has a fancy-pants and likes to overcomplicate its approach.
-        """
-        top_route = isinstance(top_branch.store, RouteSplit)
-        bot_route = isinstance(bottom_branch.store, RouteSplit)
+        # Calculate threshold from RPN to ensure it is executed and calculate correctly.
+        threshold = self.evaluate_rpn(FancyVirus.CALC_STR)
+        print(f"Threshold calculated: {threshold}")
 
-        if top_route and not bot_route:
-            return BranchDecision.TOP
-        elif not top_route and bot_route:
-            return BranchDecision.BOTTOM
+        # Safely retrieve computers from both top and bottom branches
+        top_comp = self.safe_get_computer(top_branch)
+        bot_comp = self.safe_get_computer(bottom_branch)
+        print(f"Top computer: {top_comp}, Bottom computer: {bot_comp}")
 
-        threshold = self.solve_notation(self.CALC_STR)
-        top_comp = top_branch.store.following.store.computer
-        bot_comp = bottom_branch.store.following.store.computer
+        if top_comp and bot_comp:
+            # Decide based on which computer's hacked value is closer to the threshold
+            top_diff = abs(top_comp.hacked_value - threshold)
+            bot_diff = abs(bot_comp.hacked_value - threshold)
 
-        if top_comp.hacked_value < threshold:
-            return BranchDecision.TOP
-        elif bot_comp.hacked_value > threshold:
-            return BranchDecision.BOTTOM
-        else:
-            return BranchDecision.STOP
+            if top_diff < bot_diff:
+                return BranchDecision.TOP
+            elif bot_diff < top_diff:
+                return BranchDecision.BOTTOM
 
-    def solve_notation(self, to_solve: str) -> float:
-        """Evaluate a reverse polish notation expression"""
-        solver_stack = LinkedStack()
+        return BranchDecision.STOP
 
-        for item in to_solve.split():
-            if item.isdigit():
-                solver_stack.push(float(item))
-            else:
-                op2 = solver_stack.pop()
-                op1 = solver_stack.pop()
-                if item == '+':
-                    result = op1 + op2
-                elif item == '-':
-                    result = op1 - op2
-                elif item == '*':
-                    result = op1 * op2
-                elif item == '/':
-                    result = op1 / op2
-                solver_stack.push(result)
-        return solver_stack.peek()
+    def safe_get_computer(self, branch: Route):
+        """ Safely retrieve the computer from a branch if it exists. """
+        if branch and branch.store and isinstance(branch.store, RouteSeries):
+            return branch.store.computer
+        return None
 
     @staticmethod
     def evaluate_rpn(expression):
@@ -183,8 +139,50 @@ class FancyVirus(VirusType):
                 elif token == '*':
                     stack.append(a * b)
                 elif token == '/':
-                    stack.append(a / b)
+                    stack.append(a / b if b != 0 else float('inf'))  # Handle division by zero
             else:
                 stack.append(float(token))
-        return stack[0] if stack else 0
+        return stack.pop() if stack else 0
+
+
+if __name__ == "__main__":
+    # Create some sample computers and routes for testing
+    comp1 = Computer("Comp1", hacking_difficulty=5, hacked_value=10, risk_factor=0.1)
+    comp2 = Computer("Comp2", hacking_difficulty=3, hacked_value=15, risk_factor=0.2)
+    comp3 = Computer("Comp3", hacking_difficulty=4, hacked_value=5, risk_factor=0.05)
+    comp4 = Computer("Comp4", hacking_difficulty=2, hacked_value=20, risk_factor=0.3)
+
+    # Setup routes
+    route_top = Route(RouteSeries(comp1, Route(None)))
+    route_bottom = Route(RouteSeries(comp2, Route(None)))
+    route_following = Route(RouteSeries(comp3, Route(RouteSeries(comp4, Route(None)))))
+
+    # Create a split route
+    split_route = Route(RouteSplit(route_top, route_bottom, route_following))
+
+    # Initialize viruses
+    top_virus = TopVirus()
+    bottom_virus = BottomVirus()
+    lazy_virus = LazyVirus()
+    risk_averse_virus = RiskAverseVirus()
+    fancy_virus = FancyVirus()
+
+    # Define a helper function to format computer details
+    def format_computer_details(computers):
+        return "[\n" + ",\n".join(f"  Computer(name='{comp.name}', "
+                                  f"hacking_difficulty={comp.hacking_difficulty}, "
+                                  f"hacked_value={comp.hacked_value}, "
+                                  f"risk_factor={comp.risk_factor})" for comp in computers) + "\n]"
+
+
+    # Testing each virus and printing formatted output
+    viruses = [("TopVirus", top_virus), ("BottomVirus", bottom_virus),
+               ("LazyVirus", lazy_virus), ("RiskAverseVirus", risk_averse_virus),
+               ("FancyVirus", fancy_virus)]
+
+    for virus_name, virus in viruses:
+        split_route.follow_path(virus)
+        print(f"\nTesting {virus_name}:")
+        formatted_output = format_computer_details(virus.computers)
+        print(f"Computers visited by {virus_name}: {formatted_output}")
 
