@@ -93,6 +93,7 @@ class Route:
         """
         Returns a *new* route which would be the result of:
         Adding an empty branch before everything currently in the route.
+
         """
         return Route(RouteSplit(Route(None), Route(None), self))
 

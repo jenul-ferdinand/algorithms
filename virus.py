@@ -142,9 +142,7 @@ class FancyVirus(VirusType):
 
 
 if __name__ == "__main__":
-    # Assuming Computer, Route, RouteSeries, RouteSplit, and all Virus types are correctly implemented and imported
 
-    # Set up a similar environment to the 'load_example' method in tests
     top_top = Computer("top-top", 5, 3, 0.1)
     top_bot = Computer("top-bot", 3, 5, 0.2)
     top_mid = Computer("top-mid", 4, 7, 0.3)
