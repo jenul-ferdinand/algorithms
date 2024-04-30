@@ -99,7 +99,7 @@ class Route:
     def follow_path(self, virus_type: VirusType) -> None:
         """Follow a path and add computers according to a virus_type."""
         current_route = self
-        while current_route.store is not None:
+        while current_route.store:
             if isinstance(current_route.store, RouteSeries):
                 # Add the computer in the series and move to the following route.
                 virus_type.add_computer(current_route.store.computer)
@@ -113,9 +113,10 @@ class Route:
                     current_route = current_route.store.bottom
                 else:  # BranchDecision.STOP
                     break  # If the decision is to stop, exit the loop.
-                # Update current_route if it's still a RouteSplit
-                if isinstance(current_route.store, RouteSplit):
-                    current_route = current_route.store.following
+
+            # Ensure to navigate to the following part of the route after handling a split
+            if current_route and not isinstance(current_route.store, (RouteSeries, RouteSplit)):
+                break  # Exit the loop if there's no further route to follow
 
     def add_all_computers(self) -> list[Computer]:
         """Returns a list of all computers on the route."""
