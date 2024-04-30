@@ -4,132 +4,94 @@ from computer import Computer
 from typing import TYPE_CHECKING, Union
 from branch_decision import BranchDecision
 
-# Avoid circular imports for typing.
 if TYPE_CHECKING:
     from virus import VirusType
 
-
 @dataclass
 class RouteSplit:
-
-    #    A split in the route.
-    #       _____top______
-    #      /              \
-    #    -<                >-following-test
-    #      \____bottom____/
-
     top: Route
     bottom: Route
     following: Route
 
     def remove_branch(self) -> RouteStore:
-        """Removes the branch, should just leave the remaining following route."""
+        print(f"Removing branch, leaving following route.")
         return self.following.store
-
 
 @dataclass
 class RouteSeries:
-    """
-    A computer, followed by the rest of the route
-
-    --computer--following--
-
-    """
-
     computer: Computer
     following: Route
 
     def remove_computer(self) -> RouteStore:
-        """
-        Returns a route store which would be the result of:
-        Removing the computer at the beginning of this series.
-        """
+        print(f"Removing computer: {self.computer.name}")
         return self.following.store
 
     def add_computer_before(self, computer: Computer) -> RouteStore:
-        """
-        Returns a route store which would be the result of:
-        Adding a computer in series before the current one.
-        """
+        print(f"Adding computer before current: {computer.name}")
         return RouteSeries(computer, Route(self))
 
     def add_computer_after(self, computer: Computer) -> RouteStore:
-        """
-        Returns a route store which would be the result of:
-        Adding a computer after the current computer, but before the following route.
-        """
+        print(f"Adding computer after current: {computer.name}")
         return RouteSeries(self.computer, Route(RouteSeries(computer, self.following)))
 
     def add_empty_branch_before(self) -> RouteStore:
-        """Returns a route store which would be the result of:
-        Adding an empty branch, where the current RouteStore is now the following path.
-        """
+        print("Adding an empty branch before the current route.")
         return RouteSplit(Route(None), Route(None), Route(self))
 
     def add_empty_branch_after(self) -> RouteStore:
-        """
-        Returns a route store which would be the result of:
-        Adding an empty branch after the current computer, but before the following route.
-        """
+        print("Adding an empty branch after the current computer.")
         new_following = Route(RouteSplit(Route(None), Route(None), self.following))
         return RouteSeries(self.computer, new_following)
 
-
 RouteStore = Union[RouteSplit, RouteSeries, None]
-
 
 @dataclass
 class Route:
     store: RouteStore = None
 
     def add_computer_before(self, computer: Computer) -> Route:
-        """
-        Returns a *new* route which would be the result of:
-        Adding a computer before everything currently in the route.
-        """
+        print(f"Adding computer before everything: {computer.name}")
         return Route(RouteSeries(computer, self))
 
     def add_empty_branch_before(self) -> Route:
-        """
-        Returns a *new* route which would be the result of:
-        Adding an empty branch before everything currently in the route.
-
-        """
+        print("Adding an empty branch before everything.")
         return Route(RouteSplit(Route(None), Route(None), self))
 
     def follow_path(self, virus_type: VirusType) -> None:
-        """Follow a path and add computers according to a virus_type."""
+        print(f"Starting path traversal for {virus_type.__class__.__name__}")
         current_route = self
-        while current_route.store:
+        while current_route and current_route.store:
             if isinstance(current_route.store, RouteSeries):
-                # Add the computer in the series and move to the following route.
+                print(f"{virus_type.__class__.__name__} visiting: {current_route.store.computer.name}")
                 virus_type.add_computer(current_route.store.computer)
                 current_route = current_route.store.following
             elif isinstance(current_route.store, RouteSplit):
-                # Decide which branch to take at the split.
+                print(f"{virus_type.__class__.__name__} at a split: deciding between top and bottom routes.")
                 decision = virus_type.select_branch(current_route.store.top, current_route.store.bottom)
+                print(f"{virus_type.__class__.__name__} decision: {decision}")
                 if decision == BranchDecision.TOP:
                     current_route = current_route.store.top
                 elif decision == BranchDecision.BOTTOM:
                     current_route = current_route.store.bottom
-                else:  # BranchDecision.STOP
-                    break  # If the decision is to stop, exit the loop.
-
-            # Ensure to navigate to the following part of the route after handling a split
+                else:
+                    print(f"{virus_type.__class__.__name__} stopped at the split.")
+                    break
             if current_route and not isinstance(current_route.store, (RouteSeries, RouteSplit)):
-                break  # Exit the loop if there's no further route to follow
+                print(f"{virus_type.__class__.__name__} reached end of path segment")
+                break
+        print(f"{virus_type.__class__.__name__} completed path traversal.")
 
     def add_all_computers(self) -> list[Computer]:
-        """Returns a list of all computers on the route."""
+        computers = []
 
         def traverse(route_store):
-            if route_store is None:
-                return []
+            if isinstance(route_store, RouteSeries):
+                computers.append(route_store.computer)
+                traverse(route_store.following.store)
             elif isinstance(route_store, RouteSplit):
-                return traverse(route_store.top.store) + traverse(route_store.bottom.store) + traverse(
-                    route_store.following.store)
-            elif isinstance(route_store, RouteSeries):
-                return [route_store.computer] + traverse(route_store.following.store)
-            return []
+                traverse(route_store.top.store)
+                traverse(route_store.bottom.store)
+                traverse(route_store.following.store)
 
-        return traverse(self.store)
+        traverse(self.store)
+        return computers
