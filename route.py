@@ -60,25 +60,64 @@ class Route:
     def follow_path(self, virus_type: VirusType) -> None:
         print(f"Starting path traversal for {virus_type.__class__.__name__}")
         current_route = self
+        decision_stack = []  # Stack to keep track of decisions for backtracking
+
         while current_route and current_route.store:
             if isinstance(current_route.store, RouteSeries):
                 print(f"{virus_type.__class__.__name__} visiting: {current_route.store.computer.name}")
                 virus_type.add_computer(current_route.store.computer)
                 current_route = current_route.store.following
             elif isinstance(current_route.store, RouteSplit):
-                print(f"{virus_type.__class__.__name__} at a split: deciding between top and bottom routes.")
-                decision = virus_type.select_branch(current_route.store.top, current_route.store.bottom)
-                print(f"{virus_type.__class__.__name__} decision: {decision}")
-                if decision == BranchDecision.TOP:
-                    current_route = current_route.store.top
-                elif decision == BranchDecision.BOTTOM:
-                    current_route = current_route.store.bottom
+                if decision_stack and decision_stack[-1][0] == current_route:
+                    # We are backtracking to a previously visited split
+                    _, decision_made = decision_stack.pop()
+                    if decision_made == BranchDecision.TOP:
+                        # Now try the bottom route if not tried
+                        current_route = current_route.store.bottom
+                        print(f"{virus_type.__class__.__name__} backtracking: choosing bottom route")
+                    else:
+                        # All options exhausted, continue backtracking
+                        continue
                 else:
-                    print(f"{virus_type.__class__.__name__} stopped at the split.")
-                    break
-            if current_route and not isinstance(current_route.store, (RouteSeries, RouteSplit)):
-                print(f"{virus_type.__class__.__name__} reached end of path segment")
-                break
+                    # Decide which branch to take at the split
+                    decision = virus_type.select_branch(current_route.store.top, current_route.store.bottom)
+                    decision_stack.append((current_route, decision))
+                    print(f"{virus_type.__class__.__name__} at a split: decision {decision}")
+                    if decision == BranchDecision.TOP:
+                        current_route = current_route.store.top
+                    elif decision == BranchDecision.BOTTOM:
+                        current_route = current_route.store.bottom
+                    else:
+                        print(f"{virus_type.__class__.__name__} stopping at split.")
+                        break
+
+        while decision_stack:
+            # Continue backtracking if there's more to explore
+            current_route, decision_made = decision_stack.pop()
+            if decision_made == BranchDecision.TOP:
+                current_route = current_route.store.bottom
+                print(f"{virus_type.__class__.__name__} backtracking: choosing bottom route")
+            else:
+                continue  # No more paths to backtrack
+
+            # Resume traversal from the new current route
+            while current_route and current_route.store:
+                if isinstance(current_route.store, RouteSeries):
+                    print(f"{virus_type.__class__.__name__} visiting: {current_route.store.computer.name}")
+                    virus_type.add_computer(current_route.store.computer)
+                    current_route = current_route.store.following
+                elif isinstance(current_route.store, RouteSplit):
+                    decision = virus_type.select_branch(current_route.store.top, current_route.store.bottom)
+                    decision_stack.append((current_route, decision))
+                    print(f"{virus_type.__class__.__name__} at a split: decision {decision}")
+                    if decision == BranchDecision.TOP:
+                        current_route = current_route.store.top
+                    elif decision == BranchDecision.BOTTOM:
+                        current_route = current_route.store.bottom
+                    else:
+                        print(f"{virus_type.__class__.__name__} stopping at split.")
+                        break
+
         print(f"{virus_type.__class__.__name__} completed path traversal.")
 
     def add_all_computers(self) -> list[Computer]:
