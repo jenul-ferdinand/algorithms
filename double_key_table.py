@@ -73,7 +73,7 @@ class DoubleKeyTable(Generic[K1, K2, V]):
         """
         Creates an internal hash table.
         
-        :complexity best & worst: O(N), occurs when we initialise LinearProbeTable, where N is the size of the internal_table of LinearProbeTable.
+        :complexity best & worst: O(N), occurs when we initialise LinearProbeTable with an array with size TABLE_SIZES[size_index], where N is the size of the table of LinearProbeTable.
         """
         table = LinearProbeTable(self.internal_sizes)
         table.hash = lambda k: self.hash2(k, table)
@@ -211,6 +211,8 @@ class DoubleKeyTable(Generic[K1, K2, V]):
         Get the value at a certain key
 
         :raises KeyError: when the key doesn't exist.
+        
+        :complexity best & worst: O(_linear_probe)
         """
 
         position1, position2 = self._linear_probe(key[0], key[1], False)
@@ -219,6 +221,8 @@ class DoubleKeyTable(Generic[K1, K2, V]):
     def __setitem__(self, key: tuple[K1, K2], data: V) -> None:
         """
         Set an (key, value) pair in our hash table.
+        
+        :complexity best & worst: O(_linear_probe) 
         """
 
         key1, key2 = key
