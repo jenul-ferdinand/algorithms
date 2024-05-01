@@ -66,7 +66,6 @@ class InfiniteHashTable(Generic[K, V]):
         curr.array[pos] = (key, value)
         self.count += 1
 
-
     def __delitem__(self, key: K) -> None:
         """
         Deletes a (key, value) pair in our hash table.
@@ -124,7 +123,6 @@ class InfiniteHashTable(Generic[K, V]):
                 result += str(pos) + ' (' + str(key) + ', ' + str(value) + ')\n'
         return result
             
-
     def get_location(self, key) -> list[int]:
         """
         Get the sequence of positions required to access this key.
