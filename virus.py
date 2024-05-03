@@ -7,46 +7,99 @@ from data_structures.linked_stack import LinkedStack
 
 
 class VirusType(ABC):
+    """
+    Abstract base class for different types of virus behaviors in navigating and acting on a computer network.
+    """
 
     def __init__(self) -> None:
         self.computers = []
 
     def add_computer(self, computer: Computer) -> None:
-        """Add a computer that the virus has passed through."""
+        """
+        Records a computer that the virus has passed through.
+
+        :param computer: The computer to add to the list of visited computers.
+        :type computer: Computer
+
+        complexity best & worst: O(1)
+        """
         self.computers.append(computer)
 
     @abstractmethod
     def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
         """
-        Selects between the top and bottom branch during a route traversal.
+        Abstract method to decide which branch to take when encountering a split in the route.
 
-        Parameters:
-        top_branch (Route): The route object representing the top branch.
-        bottom_branch (Route): The route object representing the bottom branch.
+        :param top_branch: The route object representing the top branch.
+        :type top_branch: Route
+        :param bottom_branch: The route object representing the bottom branch.
+        :type bottom_branch: Route
 
-        Returns:
-        BranchDecision: The decision on which branch to take.
+        :return: The decision on which branch to take.
+        :rtype: BranchDecision
         """
         pass
 
 
 class TopVirus(VirusType):
+    """
+    A type of virus that always selects the top branch when encountering a split.
+    """
     def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
-        # Always select the top branch
+        """
+        Always selects the top branch.
+
+        :param top_branch: The route object representing the top branch.
+        :type top_branch: Route
+        :param bottom_branch: The route object representing the bottom branch.
+        :type bottom_branch: Route
+
+        :return: BranchDecision.TOP
+        :rtype: BranchDecision
+
+        complexity best & worst: O(1)
+        """
         return BranchDecision.TOP
 
 
 class BottomVirus(VirusType):
+    """
+    A type of virus that always selects the bottom branch when encountering a split.
+    """
     def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
-        # Always select the bottom branch
+        """
+        Always selects the bottom branch.
+
+        :param top_branch: The route object representing the top branch.
+        :type top_branch: Route
+        :param bottom_branch: The route object representing the bottom branch.
+        :type bottom_branch: Route
+
+        :return: BranchDecision.BOTTOM
+        :rtype: BranchDecision
+
+        complexity best & worst: O(1)
+        """
         return BranchDecision.BOTTOM
 
 
 class LazyVirus(VirusType):
+    """
+    A type of virus that prefers the branch with the least hacking difficulty.
+    """
     def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
         """
-        Try looking into the first computer on each branch,
-        take the path of the least difficulty.
+        Selects the branch based on the least hacking difficulty of the first computer encountered in each branch.
+
+        :param top_branch: The route object representing the top branch.
+        :type top_branch: Route
+        :param bottom_branch: The route object representing the bottom branch.
+        :type bottom_branch: Route
+
+        :return: Decision based on the comparison of hacking difficulty.
+        :rtype: BranchDecision
+
+        complexity best & worst: O(1)
         """
         top_route = type(top_branch.store) == RouteSeries
         bot_route = type(bottom_branch.store) == RouteSeries
