@@ -16,7 +16,8 @@ class ComputerManager:
         :param computer: The Computer to add 
         :type computer: Computer
 
-        :complexity best & worst: O(1), __setitem__ is a constant time operation in LinearProbeTable
+        :complexity best & worst: O(1), when no rehashing or probing is required.
+        :complexity worst: O(N), where N is the number of items in the table, due to linear probing or when a rehash is triggered.
         """
         self.comp_table[computer.name] = computer
 
@@ -26,7 +27,8 @@ class ComputerManager:
         :param computer: The Computer to remove
         :type computer: Computer
         
-        :complexity best & worst: O(1), __delitem__ is a constant time operation in LinearProbeTable
+        :complexity best: O(1), when the computer is found at the initial hash position without probing.
+        :complexity worst: O(N), where N is the number of elements in the hash table, occurs when the computer is at the end of a long probe sequence or when rehashing is needed.
         """
         del self.comp_table[computer.name]
 
@@ -38,7 +40,8 @@ class ComputerManager:
         :param new: The new Computer to add
         :type new: Computer
 
-        :complexity best & worst: O(1), __setitem__ and __delitem__ are constant time operations in LinearProbeTable
+        :complexity best: O(1) when no rehashing or probing is required
+        :complexity worst: O(N), where N is the number of items in the table, particularly if rehashing or linear probing is triggered during the operations.
         """
         del self.comp_table[old.name]; self.comp_table[new.name] = new
 
