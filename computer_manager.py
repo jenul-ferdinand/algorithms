@@ -48,7 +48,7 @@ class ComputerManager:
         :return: A list of computers with the specified hacking_difficulty
         :rtype: list[Computer]
         
-        :complexity best & worst: O(N), each computer must be checked
+        :complexity best & worst: O(N), each computer must be checked. Where N is the length of the `comp_table`
         """
         return [computer for computer in self.comp_table.values() if computer.hacking_difficulty == diff]
 
@@ -58,8 +58,8 @@ class ComputerManager:
         :return: A 2D list which contains the computers grouped by their hacking_difficulty
         :rtype: list[list[Computer]]
         
-        :complexity best: O(1) occurs when we only have one computer in self.computer_table
-        :complexity worst: O(N * new_mergesort) 
+        :complexity best: O(NlogN), occurs when `self.comp_table` contains computers but they all have the same `hacking_difficulty`. This means that there will only be one group to sort. Where N is the length of the only sublist in `groups` 
+        :complexity worst: O(G * NlogN), occurs when all computers in `self.comp_table` have distinct `hacking_difficulty`, leading to as many groups as there are computers. Each group would contain exactly one computer. Where G is the length of the `groups` list. Where N is the length of the each sublist in `groups`
         """
         # Get the maximum difficulty out of all the computers in our table
         max_diff = None
@@ -83,7 +83,7 @@ class ComputerManager:
             if group: non_empty_groups.append(group)
         groups = non_empty_groups
         
-        # Sort each sub list of the within the grouped computers.
+        # Sort each sub list in groups.
         for i in range(len(groups)):
             groups[i] = mergesort(groups[i])
         
