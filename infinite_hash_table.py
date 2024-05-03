@@ -3,9 +3,10 @@ from typing import Generic, TypeVar
 
 from data_structures.referential_array import ArrayR
 
+__author__ = "Jenul Ferdinand 33119805"
+
 K = TypeVar("K")
 V = TypeVar("V")
-
 
 class InfiniteHashTable(Generic[K, V]):
     """

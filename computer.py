@@ -1,6 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 
+__author__ = "Jenul Ferdinand 33119805"
 
 @dataclass
 class Computer:

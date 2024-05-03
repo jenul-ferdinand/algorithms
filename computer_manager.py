@@ -3,6 +3,8 @@ from algorithms.mergesort import mergesort
 from computer import Computer
 from data_structures.hash_table import LinearProbeTable
 
+__author__ = "Jenul Ferdinand 33119805"
+
 class ComputerManager:
 
     def __init__(self) -> None:

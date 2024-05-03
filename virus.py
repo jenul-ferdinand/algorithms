@@ -5,6 +5,7 @@ from route import Route, RouteSeries, RouteSplit
 from branch_decision import BranchDecision
 from data_structures.linked_stack import LinkedStack
 
+__author__ = "Michael Ridgway 35013370"
 
 class VirusType(ABC):
     """
@@ -21,7 +22,7 @@ class VirusType(ABC):
         :param computer: The computer to add to the list of visited computers.
         :type computer: Computer
 
-        complexity best & worst: O(1)
+        :complexity best & worst: O(1)
         """
         self.computers.append(computer)
 
@@ -58,7 +59,7 @@ class TopVirus(VirusType):
         :return: BranchDecision.TOP
         :rtype: BranchDecision
 
-        complexity best & worst: O(1)
+        :complexity best & worst: O(1)
         """
         return BranchDecision.TOP
 
@@ -80,7 +81,7 @@ class BottomVirus(VirusType):
         :return: BranchDecision.BOTTOM
         :rtype: BranchDecision
 
-        complexity best & worst: O(1)
+        :complexity best & worst: O(1)
         """
         return BranchDecision.BOTTOM
 
@@ -102,7 +103,7 @@ class LazyVirus(VirusType):
         :return: Decision based on the comparison of hacking difficulty.
         :rtype: BranchDecision
 
-        complexity best & worst: O(1)
+        :complexity best & worst: O(1)
         """
         top_route = type(top_branch.store) == RouteSeries
         bot_route = type(bottom_branch.store) == RouteSeries
@@ -140,7 +141,7 @@ class RiskAverseVirus(VirusType):
         :return: The decision on which branch to take, considering risk factors and hacking difficulties.
         :rtype: BranchDecision
 
-        complexity best & worst: O(1), as the method performs a fixed number of comparisons and access operations regardless of the route configuration.
+        :complexity best & worst: O(1), as the method performs a fixed number of comparisons and access operations regardless of the route configuration.
         """
         is_top_series = isinstance(top_branch.store, RouteSeries)
         is_bottom_series = isinstance(bottom_branch.store, RouteSeries)
@@ -202,7 +203,7 @@ class FancyVirus(VirusType):
         :return: The decision on which branch to take, based on evaluated thresholds from the RPN expression.
         :rtype: BranchDecision
 
-        complexity best & worst: O(n) where n is the number of tokens in the RPN expression, though it behaves as O(1)
+        :complexity best & worst: O(n) where n is the number of tokens in the RPN expression, though it behaves as O(1)
         for a fixed expression length.
         """
         is_top_split = isinstance(top_branch.store, RouteSplit)

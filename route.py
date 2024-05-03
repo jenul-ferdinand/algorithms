@@ -5,9 +5,10 @@ from typing import TYPE_CHECKING, Union
 from branch_decision import BranchDecision
 from data_structures.linked_stack import LinkedStack
 
+__author__ = "Michael Ridgway 35013370"
+
 if TYPE_CHECKING:
     from virus import VirusType
-
 
 @dataclass
 class RouteSplit:

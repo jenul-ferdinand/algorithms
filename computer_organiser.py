@@ -5,6 +5,7 @@ from computer import Computer
 from data_structures.hash_table import LinearProbeTable
 from infinite_hash_table import InfiniteHashTable
 
+__author__ = "Jenul Ferdinand 33119805"
 
 class ComputerOrganiser:
 
