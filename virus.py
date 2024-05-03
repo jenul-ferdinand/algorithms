@@ -45,6 +45,7 @@ class TopVirus(VirusType):
     """
     A type of virus that always selects the top branch when encountering a split.
     """
+
     def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
         """
         Always selects the top branch.
@@ -66,6 +67,7 @@ class BottomVirus(VirusType):
     """
     A type of virus that always selects the bottom branch when encountering a split.
     """
+
     def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
         """
         Always selects the bottom branch.
@@ -87,6 +89,7 @@ class LazyVirus(VirusType):
     """
     A type of virus that prefers the branch with the least hacking difficulty.
     """
+
     def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
         """
         Selects the branch based on the least hacking difficulty of the first computer encountered in each branch.
@@ -246,7 +249,6 @@ if __name__ == "__main__":
     fv = FancyVirus()
     FancyVirus.CALC_STR = "7 3 + 8 - 2 *"
 
-
     # Define a function to format computer details for output
     def format_computer_details(computers):
         return "[\n" + ",\n".join(f"  Computer(name='{comp.name}', "
@@ -277,4 +279,3 @@ if __name__ == "__main__":
 
     print("\nTesting FancyVirus:")
     print("Computers visited by FancyVirus:", format_computer_details(fv.computers))
-

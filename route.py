@@ -142,7 +142,8 @@ class Route:
         :param virus_type: The type of virus to apply to the computers.
         :type virus_type: VirusType
 
-        complexity best & worst: O(n) where n is the number of route nodes in the path
+        complexity best: O(n) where n is the number of route nodes in the path
+        complexity worst: O(3^x) where x is the additional internal paths in the route
         """
         current_path = self.store
         path_stack = LinkedStack()
