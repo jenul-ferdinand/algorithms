@@ -34,7 +34,7 @@ class ComputerOrganiser:
         :param computers: The list of computers to add to
         :type computers: list[Computer]
         
-        :complexity best and worst: O(merge * merge_sort)
+        :complexity best and worst: O(NlogN + M), where N is the length of the input list 'computers' and M is the total length of the resulting merged list. Merging is linear with respect to the total number of items in the two lists being merged.
         """
         self.computers = merge(mergesort(computers), self.computers)
     
