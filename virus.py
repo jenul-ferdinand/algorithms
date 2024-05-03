@@ -125,9 +125,22 @@ class LazyVirus(VirusType):
 
 
 class RiskAverseVirus(VirusType):
+    """
+    This virus is risk averse and prefers the path with the lowest risk factor.
+    """
     def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
         """
         This virus is risk averse and prefers the path with the lowest risk factor.
+
+        :param top_branch: The route object representing the top branch.
+        :type top_branch: Route
+        :param bottom_branch: The route object representing the bottom branch.
+        :type bottom_branch: Route
+
+        :return: The decision on which branch to take, considering risk factors and hacking difficulties.
+        :rtype: BranchDecision
+
+        complexity best & worst: O(1), as the method performs a fixed number of comparisons and access operations regardless of the route configuration.
         """
         is_top_series = isinstance(top_branch.store, RouteSeries)
         is_bottom_series = isinstance(bottom_branch.store, RouteSeries)
@@ -177,7 +190,21 @@ class FancyVirus(VirusType):
     CALC_STR = "7 3 + 8 - 2 * 2 /"  # This should correctly calculate to a meaningful value.
 
     def select_branch(self, top_branch: Route, bottom_branch: Route) -> BranchDecision:
+        """
+        Evaluates branch selection using a predefined reverse Polish notation (RPN) expression to determine threshold
+        values.
 
+        :param top_branch: The route object representing the top branch.
+        :type top_branch: Route
+        :param bottom_branch: The route object representing the bottom branch.
+        :type bottom_branch: Route
+
+        :return: The decision on which branch to take, based on evaluated thresholds from the RPN expression.
+        :rtype: BranchDecision
+
+        complexity best & worst: O(n) where n is the number of tokens in the RPN expression, though it behaves as O(1)
+        for a fixed expression length.
+        """
         is_top_split = isinstance(top_branch.store, RouteSplit)
         is_bottom_split = isinstance(bottom_branch.store, RouteSplit)
 
