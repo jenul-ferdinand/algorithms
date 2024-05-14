@@ -32,12 +32,16 @@ class Mode1Navigator:
         """
         Selects the land sites to attack to maximise reward
         
-        We iterate through the sites, and for each iteration, it selects the site
-        with the best ratio (gold / guardians). The BinarySearchTree is used
-        efficiently to find the site with the best ratio, and the operation is
-        O(log(N)) in the worst case. The loop iterates at most N times, leading
-        to a worst-case complexity of O(N * log(N)) or less. The best-case
-        complexity is O(log(N)) or less.
+        This method iterates through the land sites stored in teh Binary Search
+        Tree (BST) and selects the sites to attack in order to maximise the 
+        reward. The sites are selected based on their gold-to-guardian ratio,
+        which ensures that the sites offering the highest gold for the least
+        guardians are prioritised. The method initialises a stack and an 
+        iterator to traverse the BST. All nodes are pushed onto the stack, and
+        then sites are popped from the stack until all adventurers are 
+        allocated or the stack is empty. For each site, the method determines
+        the number of advernturers to send (up to the number of guardians at
+        the site) and appends this information to the `selected_sites` list.
         
         :return list[tuple[Land, int]]: A list containing the tuple pairs with
         Land and adventurers. 
@@ -70,10 +74,15 @@ class Mode1Navigator:
         Calculates maximum amount of reward for different adventurer 
         configurations.
         
-        We calculate the reward with different adventurers configs, and for each
-        config size, it iterates through the islands using a loop. For C 
-        different adventurers sizes and N sites, it results in a complexity of
-        O(A * N).
+        This method computes the maximum reward for various configurations of
+        adventurer numbers provided in the `adventure_numbers` list. For each
+        configuration, it sets the number of adventurers and invokes the 
+        `select_sites` method to determine the optimal land sites to attack.
+        It then calculates the total reward based no the number of 
+        adventurers sent to each selected site and the gold-to-guardian ratio
+        of the site. The method accumulates these rewards for the evalutation
+        of different adveturer configurations to determine the optimal 
+        allocation strategy.
         
         :param adventure_numbers: A list indicating the number of adventurers.
         
@@ -102,8 +111,9 @@ class Mode1Navigator:
         """
         Updates the state of the given land object with new reward and guardians.
         
-        We update the gold and guardians for the specified land, and it involves
-        no searching or iteration. Therefore, it has a complexity of O(1).
+        This method updates the properties of a given `Land` object to reflect
+        new values for its gold and number of guardians. The method directly 
+        modifies the `gold` and `guardians` attributes of the land object.
         
         :param land: The land site to be updated.
         :param new_reward: The new amount of gold for the land site.
