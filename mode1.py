@@ -125,8 +125,8 @@ class Mode1Navigator:
         :complexity best & worst: O(1)
         - Just assigning new values which is constant time.
         """
-        land.gold = new_reward
-        land.guardians = new_guardians
+        land.set_gold(new_reward)
+        land.set_guardians(new_guardians)
 
 if __name__ == '__main__':
     # Initalise the sites for testing
