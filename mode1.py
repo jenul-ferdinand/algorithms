@@ -2,11 +2,14 @@ from data_structures.bst import BinarySearchTree
 from data_structures.linked_stack import LinkedStack
 from landsites import Land
 
-
 class Mode1Navigator:
     """
-    Student-TODO: short paragraph as per
-    https://edstem.org/au/courses/14293/lessons/46720/slides/318306
+    The Mode1Navigator class is made to manage how many adventurers should go
+    to various land sites in order to maximise the reward based on the 
+    gold-to-guardian ratio. The class supports initialising with a list of land
+    sites to attack and a number of adventurers, choosing the optimal sites to 
+    attack, calculating the rewards for different configs of adventurer numbers,
+    and updating the properties of land sites.
     """
 
     def __init__(self, sites: list[Land], adventurers: int) -> None:
@@ -17,92 +20,92 @@ class Mode1Navigator:
         :param sites: A list of land sites to plunder.
         :param adventurers: The number of adventurers available. 
         
-        :complexity best & worst: O(N), we must get all sites from the sites 
-        list and insert them into the sites_bst.
+        :complexity best & worst: O(N * log(N)), we must get all sites from the 
+        sites list and insert them into the sites_bst. Insertion into the BST
+        takes O(log(N)) time on average, leading to a total complexity of 
+        O(N * log(N)) for N sites.
         """
         self.sites_bst = BinarySearchTree()
-        for site in sites:
-            if site.guardians > 0:
-                ratio = site.gold / site.guardians
-                self.sites_bst[ratio] = site
-        
+        {self.sites_bst.__setitem__(site.gold / site.guardians, site) 
+            for site in sites if site.guardians > 0}
         self.adventurers = adventurers
 
     def select_sites(self) -> list[tuple[Land, int]]:
         """
         Selects the land sites to attack to maximise reward
         
-        This method iterates through the land sites stored in teh Binary Search
-        Tree (BST) and selects the sites to attack in order to maximise the 
-        reward. The sites are selected based on their gold-to-guardian ratio,
-        which ensures that the sites offering the highest gold for the least
-        guardians are prioritised. The method initialises a stack and an 
-        iterator to traverse the BST. All nodes are pushed onto the stack, and
-        then sites are popped from the stack until all adventurers are 
-        allocated or the stack is empty. For each site, the method determines
-        the number of advernturers to send (up to the number of guardians at
-        the site) and appends this information to the `selected_sites` list.
+        This method iterates through the land sites stored in the self.sites_bst.
+        Then it chooses the sites to attack for the best reward (based on the
+        gold-to-guardian ratio), this makes sure that the sites that give the
+        highest gold for the lowest amount of guardians are prioritised. This
+        method initialises a Linked Stack. Then all the sites are pushed to the
+        stack, and then the sites are popped from the stack until all the
+        adventurers are allocated or the stack is empty. For every site, this
+        method determines the no. of adventurers to send (up until the amount
+        of guardians at thee site) and appends the tuple (site, c_i) to the
+        sites list (which is returned). 
+        
+        It doesn't modify the state of the orignal 'Land' objects or the no. of 
+        adventurers. Each call to the method will get the same result as long as
+        the state of `self.sites_bst` and `adventurers` remains unchanged.
         
         :return list[tuple[Land, int]]: A list containing the tuple pairs with
         Land and adventurers. 
         
-        :complexity best: O(N * log(N)) or less, where N is the number of sites.
-        :complexity worst: O(N) or less 
+        :complexity best & worst: O(N)
+        - Where N is the number of sites.
+        - Occurs when each site is processed exactly once, regardless of the
+        structure of the BST.
         """
-        selected_sites = []
-        current_adventurers = self.adventurers
-        
-        # Initialise the stack and iterator 
-        site_stack = LinkedStack()
-        site_iter = iter(self.sites_bst)
+        sites = []
+        adventurers = self.adventurers
         
         # Push all nodes onto the stack
-        for _ in range(len(self.sites_bst)):
-            site_stack.push(next(site_iter).item)
+        site_stack = LinkedStack()
+        [site_stack.push(site.item) for site in self.sites_bst]
         
         # Pop from the stack and select sites
-        while current_adventurers > 0 and not site_stack.is_empty():
-            current_site = site_stack.pop()
-            c_i = min(current_adventurers, current_site.guardians)
-            selected_sites.append((current_site, c_i))
-            current_adventurers -= c_i
+        while not site_stack.is_empty() and adventurers > 0:
+            site = site_stack.pop()
+            c_i = min(adventurers, site.guardians)
+            sites.append((site, c_i))
+            adventurers = adventurers - c_i
 
-        return selected_sites
+        return sites
 
     def select_sites_from_adventure_numbers(self, adventure_numbers: list[int]) -> list[float]:
         """
-        Calculates maximum amount of reward for different adventurer 
+        Calculates maximum amount of reward for different adventurer number
         configurations.
         
-        This method computes the maximum reward for various configurations of
-        adventurer numbers provided in the `adventure_numbers` list. For each
-        configuration, it sets the number of adventurers and invokes the 
-        `select_sites` method to determine the optimal land sites to attack.
-        It then calculates the total reward based no the number of 
-        adventurers sent to each selected site and the gold-to-guardian ratio
-        of the site. The method accumulates these rewards for the evalutation
-        of different adveturer configurations to determine the optimal 
-        allocation strategy.
+        This method calculates the reward for each number of adventurers in 
+        the `adventure_numbers` list. For each list, it sets the number 
+        of adventurers and calls the `select_sites` method to choose the best 
+        land sites to attack. It then calculates the total reward based on the
+        number of adventurers sent using the formula given.
         
         :param adventure_numbers: A list indicating the number of adventurers.
         
         :return list[float]: A list containing the amount of reward for each
         configuration.
         
-        :complexity best: O(N), where N is the number of land sites.
-        :complexity worst: O(A * N), where A is the length of adventure_numbers
-        and N is the number of land sites.
+        :complexity best: O(A * N)
+        - where N is the number of land sites.
+        - Occurs when the number of adventurers is a lot less than the number
+        of guardians at each site.
+        
+        :complexity worst: O(A * N * log(N))
+        - Where A is the length of adventure_numbers, and N is the number 
+        of land sites.
+        - Occurs when the number of adventurers is high compared to the number
+        of guardians, requiring detailed allocating and processing. 
         """
         results = []
         
         for adventurers in adventure_numbers:
             self.adventurers = adventurers
             selected_sites = self.select_sites()
-            total_reward = 0.0
-            
-            for site, c_i in selected_sites:
-                total_reward += min((c_i * site.gold)/site.guardians, site.gold)
-            
+            total_reward = sum(min((c_i * site.gold) / site.guardians, site.gold) for site, c_i in selected_sites)
             results.append(total_reward)
         
         return results
@@ -117,14 +120,16 @@ class Mode1Navigator:
         
         :param land: The land site to be updated.
         :param new_reward: The new amount of gold for the land site.
-        :parma new_guardians: The new number of guardians for the land site.
+        :param new_guardians: The new number of guardians for the land site.
         
         :complexity best & worst: O(1)
+        - Just assigning new values which is constant time.
         """
         land.gold = new_reward
         land.guardians = new_guardians
 
 if __name__ == '__main__':
+    # Initalise the sites for testing
     sites = [
         Land('A', 40, 200),
         Land("B", 80, 300),
