@@ -1,7 +1,4 @@
-from algorithms.mergesort import mergesort
-from data_structures.bst import BSTInOrderIterator, BinarySearchTree
 from data_structures.heap import MaxHeap
-from data_structures.linked_stack import LinkedStack
 from landsites import Land
 
 
@@ -42,11 +39,28 @@ class Mode2Navigator:
         self.sites.extend(sites)
 
     def compute_reward(self, adventurers, gold, guardians):
+        """
+        Computes the reward based on the formula given (min((c_i*r)/g,r)).
+        
+        :param adventurers: The number of adventurers sent.
+        :param gold: The amount of gold at the site.
+        :param guardians: The number of guardians at the site.
+        
+        :complexity best & worst: O(1)
+        """
         reward = min((adventurers * gold) / guardians, gold)
         #print(f"Computed reward: {reward}")
         return reward
     
     def compute_score(self, remaining_adventurers, reward):
+        """
+        Computes the score based on the formula given (O=2.5*c+r). 
+        
+        :param remaining_adventurers: The remaining adventurer numbers.
+        :param reward: The gold gained on that day.
+        
+        :complexity best & worst: O(1)
+        """
         score = (2.5 * remaining_adventurers + reward)
         #print(f"Computed score: {score}")
         return score
@@ -81,52 +95,37 @@ class Mode2Navigator:
         elements into the heap after updating them.
         """
         results = []
+        
         if not self.sites:
             return [(None, 0)] * self.n_teams 
 
-        # Initialize a MaxHeap for potential scores
         max_heap = MaxHeap(len(self.sites))
         
-        # Loop through every site in self.sites
         for site in self.sites:
-            # If the current site has gold and guardians
-            if site.get_gold() > 0 and site.get_guardians() > 0:
-    
-                # Get the adventurers used
-                adventurers_used = min(site.get_guardians(), adventurer_size)
+            if site.gold > 0 and site.guardians > 0:
+                adventurers_used = min(site.guardians, adventurer_size)
                 
-                # Compute the reward and the score
-                reward = self.compute_reward(adventurers_used, site.get_gold(), site.get_guardians())
+                reward = self.compute_reward(adventurers_used, site.gold, site.guardians)
                 score = self.compute_score(adventurer_size - adventurers_used, reward)
                 
-                # Add the site and adventurers_used to the MaxHeap
                 max_heap.add((score, site, adventurers_used))
 
-        # Iterate through each team
         for team in range(self.n_teams):
-            if len(max_heap) == 0:
-                results.append((None, 0))
-                continue
+            if len(max_heap) == 0: results.append((None, 0)); continue
 
-            # Extract the site with the highest score
             _, site, adventurers_used = max_heap.get_max()
             #print(f"Team {team + 1} selects site {site.get_name()} with {adventurers_used} adventurers.")
 
-            if site.get_guardians() > 0:
-                reward = self.compute_reward(adventurers_used, site.get_gold(), site.get_guardians())
-            else:
-                reward = site.get_gold()
-                
+            if site.guardians > 0: reward = self.compute_reward(adventurers_used, site.gold, site.guardians)
+            else: reward = site.gold
             #print(f"Reward: {reward}, Remaining gold: {site.get_gold() - reward}, Remaining guardians: {site.get_guardians() - adventurers_used}")
 
-            # Update site's resources
-            site.set_gold(site.get_gold() - reward)
-            site.set_guardians(site.get_guardians() - adventurers_used)
+            site.set_gold(site.gold - reward)
+            site.set_guardians(site.guardians - adventurers_used)
 
-            # Recompute the score and reinsert the site into the heap if it's still valid
-            if site.get_guardians() > 0 and site.get_gold() > 0:
-                new_adventurers_used = min(site.get_guardians(), adventurer_size)
-                new_reward = self.compute_reward(new_adventurers_used, site.get_gold(), site.get_guardians())
+            if site.guardians > 0 and site.gold > 0:
+                new_adventurers_used = min(site.guardians, adventurer_size)
+                new_reward = self.compute_reward(new_adventurers_used, site.gold, site.guardians)
                 new_score = self.compute_score(adventurer_size - new_adventurers_used, new_reward)
                 max_heap.add((new_score, site, new_adventurers_used))
 
@@ -145,14 +144,9 @@ if __name__ == '__main__':
         a, b, c, d, e
     ]
     
-    cur_guardians = {
-        site.get_name(): site.get_guardians()
-        for site in sites
-    }
-    cur_gold = {
-        site.get_name(): site.get_gold()
-        for site in sites
-    }
+    # Storing the guardians and gold from the site in dictionary, site name as key.
+    cur_guardians = { site.get_name(): site.get_guardians() for site in sites }
+    cur_gold = { site.get_name(): site.get_gold() for site in sites }
     
     # Create a Mode2Navigator instance
     navigator = Mode2Navigator(8)
@@ -168,25 +162,35 @@ if __name__ == '__main__':
         site, adventurers_used = result
         site_name = site.get_name() if site else "None"
         print(f'Site: {site_name}, Adventurers Used: {adventurers_used}')
-        
+    
+    # Define expected scores provided by test case
     expected_scores = [400, 375, 337.5, 300, 250, 250, 250, 250]
+    
+    # Check if the length of our select_sites results list is the same length as
+    # the expected_scores list
     assert len(results) == len(expected_scores)
     
+    # Looping through (site, sent_adventurers) from results and expected scores
     for (site, sent_adventurers), expected in zip(results, expected_scores):
-            
+        # If the site doesn't exist
         if site is None:
+            # the expected value should be this
             assert expected == 2.5 * 100
             continue
+        
+        # Get gold and guardians of current site
         gold = cur_gold[site.get_name()]
         guardians = cur_guardians[site.get_name()]
-        if guardians == 0:
-            received = gold
-        else:
-            received = min(gold, gold * sent_adventurers / guardians)
+        
+        # Calculate received gold based on amount of guardians left at site
+        if guardians == 0: received = gold
+        else: received = min(gold, gold * sent_adventurers / guardians)
+            
         # Update site
         cur_gold[site.get_name()] = gold - received
         cur_guardians[site.get_name()] = max(0, guardians - sent_adventurers)
+        
         # Score
         score = 2.5 * (100 - sent_adventurers) + received
         print(f"Expected score: {expected}, Calculated score: {score}")
-        assert expected == score
+        assert expected == score # This test case is failing...
