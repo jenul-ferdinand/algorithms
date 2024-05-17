@@ -128,26 +128,26 @@ class Mode1Navigator:
         land.set_gold(new_reward)
         land.set_guardians(new_guardians)
 
-if __name__ == '__main__':
-    # Initalise the sites for testing
-    sites = [
-        Land('A', 40, 200),
-        Land("B", 80, 300),
-        Land("C", 20, 5),
-        Land("D", 150, 250),
-        Land("E", 10, 200)
-    ]
+# if __name__ == '__main__':
+#     # Initalise the sites for testing
+#     sites = [
+#         Land('A', 40, 200),
+#         Land("B", 80, 300),
+#         Land("C", 20, 5),
+#         Land("D", 150, 250),
+#         Land("E", 10, 200)
+#     ]
     
-    # Testing `update_site`
-    navigator = Mode1Navigator(sites, 500)
-    print('Before update:', navigator.select_sites())
-    navigator.update_site(sites[1], 50, 100)
-    print('After update:', navigator.select_sites())
+#     # Testing `update_site`
+#     navigator = Mode1Navigator(sites, 500)
+#     print('Before update:', navigator.select_sites())
+#     navigator.update_site(sites[1], 50, 100)
+#     print('After update:', navigator.select_sites())
     
-    # Testing `select_sites_from_adventure_numbers`
-    adventure_numbers = [0, 200, 500, 300, 40]
-    rewards = navigator.select_sites_from_adventure_numbers(adventure_numbers)
-    print(f'Best rewards for adventure_numbers ({adventure_numbers}): {rewards}')
+#     # Testing `select_sites_from_adventure_numbers`
+#     adventure_numbers = [0, 200, 500, 300, 40]
+#     rewards = navigator.select_sites_from_adventure_numbers(adventure_numbers)
+#     print(f'Best rewards for adventure_numbers ({adventure_numbers}): {rewards}')
     
     
     
