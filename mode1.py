@@ -122,11 +122,21 @@ class Mode1Navigator:
         :param new_reward: The new amount of gold for the land site.
         :param new_guardians: The new number of guardians for the land site.
         
-        :complexity best & worst: O(1)
-        - Just assigning new values which is constant time.
+        :complexity best & worst: O(log(N))
+        - Removing the old entry and inserting the updated entry, both of which
+        take O(log(N)) time.
         """
+        # Remove the old entry
+        old_ratio = land.gold / land.guardians
+        del self.sites_bst[old_ratio]
+        
+        # Update the land properties
         land.set_gold(new_reward)
         land.set_guardians(new_guardians)
+        
+        # Insert the updated entry
+        new_ratio = new_reward / new_guardians
+        self.sites_bst[new_ratio] = land
 
 # if __name__ == '__main__':
 #     # Initalise the sites for testing
