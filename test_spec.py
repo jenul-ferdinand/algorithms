@@ -13,8 +13,7 @@ class TestsFromSpec(unittest.TestCase):
         self.assertEqual(intercept(roads, stations, start, friend_start), (7, 9, [6,7,8,3]))
 
     def test_unsolvable(self):
-        roads = [(0,1,35,3), (1,2,5,2), (2,0,35,4), (0,4,10,1), (4,1,22,2),
-                    (1,5,65,1), (5,2,70,1), (2,3,10,1), (3,0,20,3)]
+        roads = [(0,1,35,3), (1,2,5,2), (2,0,35,4), (0,4,10,1), (4,1,22,2), (1,5,65,1), (5,2,70,1), (2,3,10,1), (3,0,20,3)]
         stations = [(4,3), (5,2), (3,4)]
         start = 0
         friend_start = 4
