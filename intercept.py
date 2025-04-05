@@ -53,21 +53,21 @@ def intercept(
     # Each entry will contain (destination, cost, time) tuples
     graph = [[] for _ in range(max_location + 1)]
     
-    # Build the adjacency list
+    # * Build the adjacency list
     for road_start, road_end, road_cost, road_time in roads:
         graph[road_start].append((road_end, road_cost, road_time))
     
-    # Create a list to map station locations to their indices
+    # * Create a list to map station locations to their indicesh
     station_indices = [-1] * (max_location + 1)
     for i, (station_loc, _) in enumerate(stations):
         station_indices[station_loc] = i
     
-    # Find the index of the friend's starting station
+    # * Find the index of the friend's starting station
     friend_start_idx = station_indices[friend_start]
     if friend_start_idx == -1:
         return None # friend_start is not in the stations list
     
-    # Function to calculate friend's position at a given time
+    # * Function to calculate friend's position at a given time
     def get_friend_position(elapsed_time: Time) -> Location:
         """Calculate the station where the friend is at a given elapsed time.
         
@@ -160,6 +160,14 @@ def intercept(
     return None
 
 if __name__ == '__main__':
+    # Test case 7: Edge case where you just make it
+    roads = [(0,1,10,10), (1,2,5,3), (2,3,5,3), (3,4,5,3)]
+    stations = [(4,5), (2,4)]
+    start = 0
+    friend_start = 4
+    result = intercept(roads, stations, start, friend_start)
+    assert result == (25, 19, [0, 1, 2, 3, 4]), f'Expected (25, 19, [0, 1, 2, 3, 4]), got {result}'
+    
     # Test case 1, Simple
     roads: List[Road] = [(6,0,3,1), (6,7,4,3), (6,5,6,2), (5,7,10,5), (4,8,8,5), (5,4,8,2), (8,9,1,2), (7,8,1,3), (8,3,2,3), (1,10,5,4), (0,1,10,3), (10,2,7,2), (3,2,15,2), (9,3,2,2), (2,4,10,5)]
     stations: List[Station] = [(0, 1), (5,1), (4,1), (3,1), (2,1), (1,1)]
@@ -196,3 +204,11 @@ if __name__ == '__main__':
     assert result == (160, 39, [0,1,2,0,1,2,0,4]), f'Expected (160, 39, [0,1,2,0,1,2,0,4]), got {result}'
     print("Test case 3 (repeated locations) passed.")
     
+    # Test case 0.1: Multiple equally optimal solutions
+    roads = [(0,1,10,5), (0,2,10,5), (1,3,5,2), (2,3,5,2), (3,4,7,3)]
+    stations = [(3,2), (4,3)]
+    start = 0
+    friend_start = 3
+    result = intercept(roads, stations, start, friend_start)
+    assert result == (10, 5, [0, 1, 3]) or result == (15, 7, [0,2,3]), f'Expected (10, 5, [0, 1, 3]) or (15, 7, [0, 2, 3]), got {result}'
+    print("Test case 0.1 (two equally optimal solutions) passed.")
