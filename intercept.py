@@ -75,6 +75,7 @@ def intercept(
     print(rotated)
 
     # Compute scheduled time for each station and total loop time.
+    # This will store the exact times in the cycle when the friend arrives at each station.
     train_sched = [-1] * (max_location + 1)
     current_time = 0
     for station, wait_time in rotated:
@@ -98,19 +99,29 @@ def intercept(
     # While there are states to explore in the priority queue
     while pq:
         total_cost, total_time, current, rem, path = heapq.heappop(pq)
+        
+        # Skip if a better path to this state was found
         if total_cost != best_cost[current][rem] or total_time != best_time[current][rem]:
             continue
         
         # Check interception: use the precomputed train schedule.
-        if train_sched[current] != -1 and rem == train_sched[current] % cycle_time:
-            return (total_cost, total_time, path)
+        if train_sched[current] != -1:
+            # Get the time when the train is at this station in the cycle
+            train_time = train_sched[current] % cycle_time
+            
+            # If we arrive at the same time as the train (modulo cycle time)
+            if rem == train_time:
+                return (total_cost, total_time, path)
         
         # Explore neighbors.
         for neighbor, road_cost, road_time in graph[current]:
             new_cost = total_cost + road_cost
             new_time = total_time + road_time
-            new_rem = (rem + road_time) % cycle_time
-            if (new_cost < best_cost[neighbor][new_rem] or (new_cost == best_cost[neighbor][new_rem] and new_time < best_time[neighbor][new_rem])):
+            new_rem = new_time % cycle_time
+            
+            # Only consider if this is a better path to this state
+            if (new_cost < best_cost[neighbor][new_rem] or 
+            (new_cost == best_cost[neighbor][new_rem] and new_time < best_time[neighbor][new_rem])):
                 best_cost[neighbor][new_rem] = new_cost
                 best_time[neighbor][new_rem] = new_time
                 heapq.heappush(pq, (new_cost, new_time, neighbor, new_rem, path + [neighbor]))
