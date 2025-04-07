@@ -3,9 +3,9 @@ import heapq
 import math
 
 # Type aliases
-Location = int # Location  (0 <= location <= infinity)
-Cost = int # Cost of traveling on a road (tolls, betrol, etc.)
-Time = int # Time in minutes to travel on a road or train line
+Location = int # Location ID (non-negative integer)
+Cost = int     # Cost of traveling on a road (+ve integer)
+Time = int     # Time in minutes to travel on a road or train line
 
 # A road is represented as a tuple of 
 # (starting location, end location, cost of travel, time to travel)
@@ -15,10 +15,11 @@ Road = Tuple[Location, Location, Cost, Time]
 # (location of station, time it takes to travel to next location)
 Station = Tuple[Location, Time]
 
-# List of locations to form a route (list of locations)
+# List of locations to form a route
 Route = List[Location]
 
-# A state is represented as a tuple of (cost, time, location, remainder, path)
+# A state is represented as a tuple of 
+# (cost, time, location, remainder, path)
 State = Tuple[Cost, Time, Location, Time, Route]
 
 # Infinity constant value
@@ -31,9 +32,13 @@ def intercept(
     friend_start: Location
 ) -> Tuple[Cost, Time, Route] | None:
     """
-    Finds the optimal route for a driver to intercept their friend at a train
-    station. Prioritising cost over time, meaning that if multiple routes share 
-    the same cost, the one with the least total driving time will be chosen.
+    Function description:
+        Finds the optimal route for a driver to intercept their friend at a train
+        station. Prioritising cost over time, meaning that if multiple routes share 
+        the same cost, the one with the least total driving time will be chosen.
+    
+    Approach description (main function):
+        
     
     1. First we determine the maximum number of locations in the graph. We do this
     by iterating through the roads start and end locations and finding the maximum.
@@ -149,14 +154,11 @@ def intercept(
     #&.5 Compute scheduled time for each station and total loop time.
     # This will store the exact times in the cycle when the friend arrives at each station.
     train_schedule: List[Time] = [-1] * (max_location + 1)
-    current_time: Time = 0
-    
+    # The cycle time is the total time taken to complete the loop of stations.
+    cycle_time: Time = 0
     for station, journey_time in stations:
-        train_schedule[station] = current_time
-        current_time += journey_time
-    
-    # Maximum possible cycle time: 20 stations x 5 mins/journey = 100 minutes
-    cycle_time: Time = current_time  # Total cycle duration.
+        train_schedule[station] = cycle_time
+        cycle_time += journey_time
 
     #&.6 Initialise state tracking for modified Dijkstra
     # This will store the best cost and time for each (location, time % cycle_time) pair.
@@ -173,34 +175,36 @@ def intercept(
     #&.8 Main search to find optimal intercept path and exploring neighbouring states
     while min_heap:
         #&.8.1 Pop the current state (minimum) from the MinHeap [ O(log|L|) ]
-        total_cost, total_time, current, rem, path = heapq.heappop(min_heap)
+        total_cost, total_time, current, time_remainder, path = heapq.heappop(min_heap)
         # Skip if a better path to this state was found
-        if total_cost != best_cost[current][rem] or total_time != best_time[current][rem]:
+        is_not_best_cost: bool = total_cost != best_cost[current][time_remainder]
+        is_not_best_time: bool = total_time != best_time[current][time_remainder]
+        if is_not_best_cost or is_not_best_time:
             continue
         
         #&.8.2 Check interception: using the precomputed train schedule.
-        # If the current location is considered a station
-        if train_schedule[current] != -1: 
+        is_current_location_a_station: bool = train_schedule[current] != -1
+        if is_current_location_a_station: 
             # Get the time when the train is at this station in the cycle
-            train_time: Time = train_schedule[current] % cycle_time
+            train_time: Time = train_schedule[current]
             # If we arrive at the same time as the train
-            if rem == train_time:
+            if time_remainder == train_time:
                 return (total_cost, total_time, path)
     
         #&.8.3 Explore neighbors [ O(|R|) ]
-        for neighbour_location, road_cost, road_travel_time in graph[current]:
+        for neighbour_loc, road_cost, road_travel_time in graph[current]:
             new_cost: Cost = total_cost + road_cost
             new_time: Time = total_time + road_travel_time
             new_rem: Time = new_time % cycle_time
             
             # Relax if new state has better path compared to current state
-            is_better_cost: bool = new_cost < best_cost[neighbour_location][new_rem]
-            is_same_cost: bool = new_cost == best_cost[neighbour_location][new_rem]
-            is_better_time: bool = new_time < best_time[neighbour_location][new_rem]
+            is_better_cost: bool = new_cost < best_cost[neighbour_loc][new_rem]
+            is_same_cost: bool = new_cost == best_cost[neighbour_loc][new_rem]
+            is_better_time: bool = new_time < best_time[neighbour_loc][new_rem]
             if is_better_cost or (is_same_cost and is_better_time):
-                best_cost[neighbour_location][new_rem] = new_cost
-                best_time[neighbour_location][new_rem] = new_time
-                new_state: State = (new_cost, new_time, neighbour_location, new_rem, path + [neighbour_location])
+                best_cost[neighbour_loc][new_rem] = new_cost
+                best_time[neighbour_loc][new_rem] = new_time
+                new_state: State = (new_cost, new_time, neighbour_loc, new_rem, path + [neighbour_loc])
                 heapq.heappush(min_heap, new_state) # O(log|L|) to push
 
     # No interception possibilties found
