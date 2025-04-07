@@ -38,19 +38,20 @@ def intercept(
     1. First we determine the maximum number of locations in the graph. We do this
     by iterating through the roads start and end locations and finding the maximum.
     We also check the stations to find the maximum location, this is important,
-    the stations might not be connected to the roads locations.
+    because one or more station(s) might not be connected to any roads locations.
     
     2. We create the adjacency list as a list of empty lists, where each entry
     will contain a tuple of (destination location, cost, time). The key will be 
-    the starting location of the road (passed in as index i.e. `graph[0]`).
+    the starting location of the road (i.e. `graph[0]` to check location 0's
+    neighbours).
     
-    3. We find the index of the friend's starting station in teh stations list.
+    3. We find the index of the friend's starting station in the stations list.
     We do this by checking if any stations in the list match the friend's 
     starting location.
     
     4. We rearrange the stations list such that the friend's station will be the 
     first. This is important as the train will loop back to the first station 
-    after the last. And we want to follow where the friend is going.
+    after the last. We want to follow where the friend is going.
     
     5. We compute the scheduled time for each station and the total loop time.
     This will store the exact times in the cycle when the friend arrives at each
@@ -62,8 +63,8 @@ def intercept(
     
     7. We initialise the MinHeap for modified Dijkstra. It holds:
     (total_cost, total_time, location, remainder, path). The MinHeap prioritises
-    the lowest cost first, then the lowest time, other values in the tuple are
-    tie breakers.
+    the lowest cost first, then the lowest time, other values in the tuple act
+    as tie breakers.
     
     8. We start the main search loop for finding the optimal interception path.
     While there are states to explore in the MinHeap, we pop the current state
@@ -90,19 +91,34 @@ def intercept(
         - O(|R| log |L|) time.
         - |R| is the number of roads and |L| is the number of locations.
         
+    Time Complexity Analysis:
+        The algorithm uses a modified Dijkstra's algorithm to find the optimal
+        interception path. The main loop runs while there are states in the MinHeap.
+        Popping from the MinHeap takes O(log |L|) time, and exploring the neighbours
+        takes O(|R|) time. The total time complexity is O(|R| log |L|) because we
+        are using a MinHeap to keep track of the states. The number of states is 
+        bounded by the number of roads and locations. The modified Dijkstra
+        part dominates in time overall.
+        
     Space Complexity:
         - O(|L| + |R|) auxiliary space.
         - |L| is the number of locations and |R| is the number of roads.
         
-    Notes for marker: 
+    Space Complexity Analysis:
+        The algorithm uses a graph represented as an adjacency list, which takes
+        O(|L| + |R|) space. The best_cost and best_time arrays also take 
+        O(|L| * cycle_time) space. The MinHeap takes O(|L|) space. Overall, 
+        the space complexity is O(|L| + |R|). Note that the worst case possible
+        cycle time is 20 stations x 5 mins/journey = 100 minutes. This is a 
+        constant value, so it doesn't affect the overall space complexity.
+        
+    Note for marker: 
         I have used a less pythonic style for this algorithm, hoping for better 
         readability and easier complexity analysis.
     """
     assert 2 <= len(stations) <= 20, f'No. of total stations |T| must be between 2 and 20 (inclusive), got {len(stations)}'
     
     #&.1 Determine maximum number of locations |L|
-    # O(|R|) to find the maximum location in the roads list
-    # O(|T|) = O(1) to find the maximum location in the stations list, O(1) as |T| <= 20
     max_location: Location = 0
     for road in roads: 
         max_location = max(max_location, road[0], road[1])
@@ -111,11 +127,10 @@ def intercept(
         assert 1 <= station[1] <= 5, f'Station travel time must be between 1 to 5 (inclusive), got {station[1]}'
 
     #&.2 Initialize adjacency list as a list of empty lists.
-    graph = []
+    graph: List[List[Tuple[Location, Cost, Time]]] = []
     for _ in range(max_location + 1):
         graph.append([])
     #&.2.1 Each entry will contain (destination, cost, time) tuples.
-    # O(|R|) to add each road to the adjacency list
     for road_start, road_end, road_cost, road_time in roads:
         graph[road_start].append((road_end, road_cost, road_time))
 
@@ -145,49 +160,43 @@ def intercept(
 
     #&.6 Initialise state tracking for modified Dijkstra
     # This will store the best cost and time for each (location, time % cycle_time) pair.
-    # We'll use this precomputed schedule in the main search loop.
     best_cost: List[List[Cost]] = [[INFINITY] * cycle_time for _ in range(max_location + 1)]
     best_time: List[List[Time]] = [[INFINITY] * cycle_time for _ in range(max_location + 1)]
+    
     start_rem: Time = 0  # At time 0.
     best_cost[start][start_rem] = 0
     best_time[start][start_rem] = 0
     
-    #&.7 Initialise MinHeap for modified Dijkstra
-    # It holds: (total_cost, total_time, location, remainder, path)
-    # First value is the start location, with cost and time of 0.
-    # The MinHeap priorities the lowest cost first, then the lowest time.
+    #&.7 Initialise MinHeap with starting state for modified Dijkstra
     min_heap: List[State] = [(0, 0, start, start_rem, [start])]
     
-    #&.8 Main search loop for finding optimal interception path
-    # While there are states to explore in the priority queue
+    #&.8 Main search to find optimal intercept path and exploring neighbouring states
     while min_heap:
-        # Pop the current state (minimum) from the MinHeap [ O(log|L|) ]
+        #&.8.1 Pop the current state (minimum) from the MinHeap [ O(log|L|) ]
         total_cost, total_time, current, rem, path = heapq.heappop(min_heap)
-        
         # Skip if a better path to this state was found
         if total_cost != best_cost[current][rem] or total_time != best_time[current][rem]:
             continue
         
-        # & Check interception: using the precomputed train schedule.
-        # If the current location is a considered a station
+        #&.8.2 Check interception: using the precomputed train schedule.
+        # If the current location is considered a station
         if train_schedule[current] != -1: 
             # Get the time when the train is at this station in the cycle
-            train_time = train_schedule[current] % cycle_time
-            
+            train_time: Time = train_schedule[current] % cycle_time
             # If we arrive at the same time as the train
             if rem == train_time:
                 return (total_cost, total_time, path)
-        
-        # & Explore neighbors [ O(|R|) ]
+    
+        #&.8.3 Explore neighbors [ O(|R|) ]
         for neighbour_location, road_cost, road_travel_time in graph[current]:
             new_cost: Cost = total_cost + road_cost
             new_time: Time = total_time + road_travel_time
             new_rem: Time = new_time % cycle_time
             
             # Relax if new state has better path compared to current state
-            is_better_cost = new_cost < best_cost[neighbour_location][new_rem]
-            is_same_cost = new_cost == best_cost[neighbour_location][new_rem]
-            is_better_time = new_time < best_time[neighbour_location][new_rem]
+            is_better_cost: bool = new_cost < best_cost[neighbour_location][new_rem]
+            is_same_cost: bool = new_cost == best_cost[neighbour_location][new_rem]
+            is_better_time: bool = new_time < best_time[neighbour_location][new_rem]
             if is_better_cost or (is_same_cost and is_better_time):
                 best_cost[neighbour_location][new_rem] = new_cost
                 best_time[neighbour_location][new_rem] = new_time
@@ -256,4 +265,3 @@ if __name__ == '__main__':
     assert result == None, f'Expected None, got {result}'
     print("Test (no valid path) passed.")
 
-        

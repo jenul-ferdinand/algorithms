@@ -28,7 +28,7 @@ class TestsByMe(unittest.TestCase):
 
     def test_circular_route_required(self):
         roads = [(0,1,5,1), (1,2,5,1), (2,3,5,1), (3,0,5,7)]
-        stations = [(1,3), (3,7)]
+        stations = [(1,3), (3,5)]
         start = 0
         friend_start = 1
 
