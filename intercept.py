@@ -1,130 +1,203 @@
 from typing import List, Tuple
 import heapq
+import math
 
 # Type aliases
-Location = int # Location index
-Cost = int # Cost of traveling between two locations
-Time = int # Time in minutes
+Location = int # Location  (0 <= location <= infinity)
+Cost = int # Cost of traveling on a road (tolls, betrol, etc.)
+Time = int # Time in minutes to travel on a road or train line
 
 # A road is represented as a tuple of 
-# & (starting location, end location, cost of travel, time to travel)
+# (starting location, end location, cost of travel, time to travel)
 Road = Tuple[Location, Location, Cost, Time] 
 
 # A station is represented as a tuple of 
-# & (location of station, time it takes to travel to next location)
-Station = Tuple[Location, Time] 
+# (location of station, time it takes to travel to next location)
+Station = Tuple[Location, Time]
 
 # List of locations to form a route (list of locations)
 Route = List[Location]
+
+# A state is represented as a tuple of (cost, time, location, remainder, path)
+State = Tuple[Cost, Time, Location, Time, Route]
+
+# Infinity constant value
+INFINITY = math.inf
 
 def intercept(
     roads: List[Road],       # Each road is a directed road
     stations: List[Station], # Can loop back to first station after last station
     start: Location, 
     friend_start: Location
-    ) -> Tuple[Cost, Time, Route] | None:
+) -> Tuple[Cost, Time, Route] | None:
     """
-    * Function to find the optimal route for a user to intercept their friend.
+    Finds the optimal route for a driver to intercept their friend at a train
+    station. Prioritising cost over time, meaning that if multiple routes share 
+    the same cost, the one with the least total driving time will be chosen.
     
-    ? Args:
-    ?    - roads: List of roads, each represented as a tuple (start, end, cost, time)
-    ?    - stations: List of stations, each represented as a tuple (location, time)
-    ?    - start: Starting location of the user
-    ?    - friend_start: Starting location of the friend
+    1. First we determine the maximum number of locations in the graph. We do this
+    by iterating through the roads start and end locations and finding the maximum.
+    We also check the stations to find the maximum location, this is important,
+    the stations might not be connected to the roads locations.
+    
+    2. We create the adjacency list as a list of empty lists, where each entry
+    will contain a tuple of (destination location, cost, time). The key will be 
+    the starting location of the road (passed in as index i.e. `graph[0]`).
+    
+    3. We find the index of the friend's starting station in teh stations list.
+    We do this by checking if any stations in the list match the friend's 
+    starting location.
+    
+    4. We rearrange the stations list such that the friend's station will be the 
+    first. This is important as the train will loop back to the first station 
+    after the last. And we want to follow where the friend is going.
+    
+    5. We compute the scheduled time for each station and the total loop time.
+    This will store the exact times in the cycle when the friend arrives at each
+    station. We also compute the maximum possible cycle time, this is used to
+    determine the time when the train is at each station. 
+    
+    6. We initialise the state tracking for modified Dijkstra. This will store
+    the best cost and time for each (location, time % cycle_time) pair.
+    
+    7. We initialise the MinHeap for modified Dijkstra. It holds:
+    (total_cost, total_time, location, remainder, path). The MinHeap prioritises
+    the lowest cost first, then the lowest time, other values in the tuple are
+    tie breakers.
+    
+    8. We start the main search loop for finding the optimal interception path.
+    While there are states to explore in the MinHeap, we pop the current state
+    from the MinHeap. If the current state has a better path compared to the
+    current state, we skip it. We check if the current location is a station,
+    if it is, we check if we arrive at the same time as the train. If we do,
+    we return the (total_cost, total_time, path). if we don't, we explore the
+    neighbours of the current location. We relax the state if the new state has
+    a better path compared to the current state. We push the new state into the
+    MinHeap. This continues until we find the optimal interception path or 
+    exhaust all states in the MinHeap.
+    
+    Args:
+        - roads: List of roads, each represented as a tuple (start, end, cost, time)
+        - stations: List of stations, each represented as a tuple (location, time)
+        - start: Starting location of the user
+        - friend_start: Starting location of the friend
         
-    & Returns:
-    &    - A tuple containing the total cost, total time, and the optimal route taken.
-    &    - If no route is found, return None.
+    Returns:
+        - A tuple containing the total cost, total time, and the optimal route taken.
+        - If no route is found, you'll get None. 
     
     Time Complexity: 
-        - Must run in O(|R| log |L|) time.
+        - O(|R| log |L|) time.
         - |R| is the number of roads and |L| is the number of locations.
         
     Space Complexity:
-        - Must use O(|L| + |R|) auxiliary space.
+        - O(|L| + |R|) auxiliary space.
         - |L| is the number of locations and |R| is the number of roads.
+        
+    Notes for marker: 
+        I have used a less pythonic style for this algorithm, hoping for better 
+        readability and easier complexity analysis.
     """
-    # Determine maximum number of locations |L|
-    max_location = 0
-    for road in roads:
+    assert 2 <= len(stations) <= 20, f'No. of total stations |T| must be between 2 and 20 (inclusive), got {len(stations)}'
+    
+    #&.1 Determine maximum number of locations |L|
+    # O(|R|) to find the maximum location in the roads list
+    # O(|T|) = O(1) to find the maximum location in the stations list, O(1) as |T| <= 20
+    max_location: Location = 0
+    for road in roads: 
         max_location = max(max_location, road[0], road[1])
     for station in stations:
         max_location = max(max_location, station[0])
+        assert 1 <= station[1] <= 5, f'Station travel time must be between 1 to 5 (inclusive), got {station[1]}'
 
-    # Initialize adjacency list as a list of empty lists.
-    # Each entry will contain (destination, cost, time) tuples.
-    graph = [[] for _ in range(max_location + 1)]
+    #&.2 Initialize adjacency list as a list of empty lists.
+    graph = []
+    for _ in range(max_location + 1):
+        graph.append([])
+    #&.2.1 Each entry will contain (destination, cost, time) tuples.
+    # O(|R|) to add each road to the adjacency list
     for road_start, road_end, road_cost, road_time in roads:
         graph[road_start].append((road_end, road_cost, road_time))
 
-    # Create a list to map station locations to their indices.
-    station_indices = [-1] * (max_location + 1)
-    for i, (station_loc, _) in enumerate(stations):
-        station_indices[station_loc] = i
-
-    # Find the index of the friend's starting station.
-    friend_start_idx = station_indices[friend_start]
-    if friend_start_idx == -1:
-        return None  # friend_start is not in the stations list.
+    #&.3 Find the index of the friend's starting station.
+    friend_start_index: Location = -1
+    for index, (station_location, _) in enumerate(stations):
+        if station_location == friend_start:
+            friend_start_index = index
+            break
+    if friend_start_index == -1:
+        return None # friend_start is not in the stations list
     
-    # Optionally, you can precompute the train schedule once and use it in the search.
-    # Rotate stations so that friend_start is first.
-    rotated = stations[friend_start_idx:] + stations[:friend_start_idx]
-
-    # Compute scheduled time for each station and total loop time.
+    #&.4 Rearrange stations list such that the friend's station will be the first
+    stations: List[Station] = stations[friend_start_index:] + stations[:friend_start_index]
+    
+    #&.5 Compute scheduled time for each station and total loop time.
     # This will store the exact times in the cycle when the friend arrives at each station.
-    train_sched = [-1] * (max_location + 1)
-    current_time = 0
-    for station, wait_time in rotated:
-        train_sched[station] = current_time
-        current_time += wait_time
-    cycle_time = current_time  # Total cycle duration.
+    train_schedule: List[Time] = [-1] * (max_location + 1)
+    current_time: Time = 0
+    
+    for station, journey_time in stations:
+        train_schedule[station] = current_time
+        current_time += journey_time
+    
+    # Maximum possible cycle time: 20 stations x 5 mins/journey = 100 minutes
+    cycle_time: Time = current_time  # Total cycle duration.
 
-    # We'll use precomputed schedule in the search
-    # State is defined by (location, elapsed_time mod cycle_time)
-    INF = float('inf')
-    best_cost = [[INF] * cycle_time for _ in range(max_location + 1)]
-    best_time = [[INF] * cycle_time for _ in range(max_location + 1)]
-    start_rem = 0  # At time 0.
+    #&.6 Initialise state tracking for modified Dijkstra
+    # This will store the best cost and time for each (location, time % cycle_time) pair.
+    # We'll use this precomputed schedule in the main search loop.
+    best_cost: List[List[Cost]] = [[INFINITY] * cycle_time for _ in range(max_location + 1)]
+    best_time: List[List[Time]] = [[INFINITY] * cycle_time for _ in range(max_location + 1)]
+    start_rem: Time = 0  # At time 0.
     best_cost[start][start_rem] = 0
     best_time[start][start_rem] = 0
     
-    # Priority queue holds tuples: (total_cost, total_time, location, remainder, path)
-    pq = [(0, 0, start, start_rem, [start])]
-    heapq.heapify(pq)
+    #&.7 Initialise MinHeap for modified Dijkstra
+    # It holds: (total_cost, total_time, location, remainder, path)
+    # First value is the start location, with cost and time of 0.
+    # The MinHeap priorities the lowest cost first, then the lowest time.
+    min_heap: List[State] = [(0, 0, start, start_rem, [start])]
     
+    #&.8 Main search loop for finding optimal interception path
     # While there are states to explore in the priority queue
-    while pq:
-        total_cost, total_time, current, rem, path = heapq.heappop(pq)
+    while min_heap:
+        # Pop the current state (minimum) from the MinHeap [ O(log|L|) ]
+        total_cost, total_time, current, rem, path = heapq.heappop(min_heap)
         
         # Skip if a better path to this state was found
         if total_cost != best_cost[current][rem] or total_time != best_time[current][rem]:
             continue
         
-        # Check interception: use the precomputed train schedule.
-        if train_sched[current] != -1:
+        # & Check interception: using the precomputed train schedule.
+        # If the current location is a considered a station
+        if train_schedule[current] != -1: 
             # Get the time when the train is at this station in the cycle
-            train_time = train_sched[current] % cycle_time
+            train_time = train_schedule[current] % cycle_time
             
-            # If we arrive at the same time as the train (modulo cycle time)
+            # If we arrive at the same time as the train
             if rem == train_time:
                 return (total_cost, total_time, path)
         
-        # Explore neighbors.
-        for neighbor, road_cost, road_time in graph[current]:
-            new_cost = total_cost + road_cost
-            new_time = total_time + road_time
-            new_rem = new_time % cycle_time
+        # & Explore neighbors [ O(|R|) ]
+        for neighbour_location, road_cost, road_travel_time in graph[current]:
+            new_cost: Cost = total_cost + road_cost
+            new_time: Time = total_time + road_travel_time
+            new_rem: Time = new_time % cycle_time
             
-            # Only consider if this is a better path to this state
-            if (new_cost < best_cost[neighbor][new_rem] or 
-            (new_cost == best_cost[neighbor][new_rem] and new_time < best_time[neighbor][new_rem])):
-                best_cost[neighbor][new_rem] = new_cost
-                best_time[neighbor][new_rem] = new_time
-                heapq.heappush(pq, (new_cost, new_time, neighbor, new_rem, path + [neighbor]))
+            # Relax if new state has better path compared to current state
+            is_better_cost = new_cost < best_cost[neighbour_location][new_rem]
+            is_same_cost = new_cost == best_cost[neighbour_location][new_rem]
+            is_better_time = new_time < best_time[neighbour_location][new_rem]
+            if is_better_cost or (is_same_cost and is_better_time):
+                best_cost[neighbour_location][new_rem] = new_cost
+                best_time[neighbour_location][new_rem] = new_time
+                new_state: State = (new_cost, new_time, neighbour_location, new_rem, path + [neighbour_location])
+                heapq.heappush(min_heap, new_state) # O(log|L|) to push
 
-    # If we've exhausted all possibilities without finding an interception
+    # No interception possibilties found
     return None
+
+
 
 if __name__ == '__main__':
     # Test case 1, Simple
@@ -164,20 +237,20 @@ if __name__ == '__main__':
     print("Test case 4 (same cost, different time) passed.")
     
     # Test circular route required
-    roads = [(0,1,5,1), (1,2,5,1), (2,3,5,1), (3,0,5,7)]
-    stations = [(1,3), (3,7)]
-    start = 0
-    friend_start = 1
+    roads: List[Road] = [(0,1,5,1), (1,2,5,1), (2,3,5,1), (3,0,5,7)]
+    stations: List[Station] = [(1,3), (3, 5)]
+    start: Location = 0
+    friend_start: Location = 1
 
     result = intercept(roads, stations, start, friend_start)
     assert result == (15, 3, [0,1,2,3]), f'Expected (15, 3, [0,1,2,3]), got {result}'
     print("Test (circular route) passed.")
     
     # Test no valid path
-    roads = [(0,1,5,2), (1,2,5,3), (2,0,5,4)]
-    stations = [(3,2), (4,3)]
-    start = 0
-    friend_start = 3
+    roads: List[Road] = [(0,1,5,2), (1,2,5,3), (2,0,5,4)]
+    stations: List[Station] = [(3,2), (4,3)]
+    start: Location = 0
+    friend_start: Location = 3
     
     result = intercept(roads, stations, start, friend_start)
     assert result == None, f'Expected None, got {result}'

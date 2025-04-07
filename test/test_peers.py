@@ -1,8 +1,7 @@
 from intercept import intercept
 import unittest
 
-class JasonAlexanderTests(unittest.TestCase):
-
+class PeerTestCases(unittest.TestCase):
     def test_1(self):
         roads = [(0, 2, 10, 3), (1, 2, 5, 2), (2, 1, 15, 5), (2, 0, 12, 10)]
         stations = [(0, 5), (1, 5)]
@@ -49,6 +48,28 @@ class JasonAlexanderTests(unittest.TestCase):
         expected_output = (20, 10, [1, 2])
         result = intercept(roads, stations, start, friendStart)
         self.assertEqual(result, expected_output)
+        
+    def test_case_set2(self):
+        a = [1,2,3,4,5,6,7,8,9,10,11,12]
+        stations = [(4,3), (5,3), (6,3)]
+        start = 1
+        friendStart = 6
+        roads = [None] * len(a)
+        for number in a:
+            roads[number-1] = [(1,2,1,3), (2,3,1,3), (3,1,1,3), (1,4,1,number), (4,5,1,3), (5,6,1,3), (6,4,1,3)]
+
+        self.assertIsNone(intercept(roads[0], stations, start, friendStart))
+        self.assertIsNone(intercept(roads[1], stations, start, friendStart))
+        self.assertEqual(intercept(roads[2], stations, start, friendStart), (1, 3, [1,4]))
+        self.assertIsNone(intercept(roads[3], stations, start, friendStart))
+        self.assertIsNone(intercept(roads[4], stations, start, friendStart))
+        self.assertIsNone(intercept(roads[5], stations, start, friendStart))
+        self.assertIsNone(intercept(roads[6], stations, start, friendStart))
+        self.assertIsNone(intercept(roads[7], stations, start, friendStart))
+        self.assertIsNone(intercept(roads[8], stations, start, friendStart))
+        self.assertIsNone(intercept(roads[9], stations, start, friendStart))
+        self.assertIsNone(intercept(roads[10], stations, start, friendStart))
+        self.assertEqual(intercept(roads[11], stations, start, friendStart), (1, 12, [1,4]))
 
 if __name__ == '__main__':
   unittest.main()
