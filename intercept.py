@@ -69,10 +69,7 @@ def intercept(
     
     # Optionally, you can precompute the train schedule once and use it in the search.
     # Rotate stations so that friend_start is first.
-    m = len(stations)
-    print(stations)
     rotated = stations[friend_start_idx:] + stations[:friend_start_idx]
-    print(rotated)
 
     # Compute scheduled time for each station and total loop time.
     # This will store the exact times in the cycle when the friend arrives at each station.
