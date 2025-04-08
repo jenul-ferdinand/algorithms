@@ -213,7 +213,7 @@ def intercept(
                     # TODO: Improve the path tracking logic, only construct the path when needed
                     new_path: Route = path + [neighbour_loc]
                     new_state: State = (new_cost, new_time, neighbour_loc, new_rem, new_path)
-                    heapq.heappush(min_heap, new_state) # O(log|L|) to push
+                    heapq.heappush(min_heap, new_state) # O(log|L|) to push.
 
     # No interception possibilties found
     return None
