@@ -38,7 +38,7 @@ def intercept(
         the same cost, the one with the least total driving time will be chosen.
     
     Approach description (main function):
-        
+
     
     1. First we determine the maximum number of locations in the graph. We do this
     by iterating through the roads start and end locations and finding the maximum.
@@ -159,13 +159,16 @@ def intercept(
     for station, journey_time in stations:
         train_schedule[station] = cycle_time
         cycle_time += journey_time
+    # If the cycle time is still 0, it means the stations are not valid.
+    if cycle_time == 0:
+        return None
 
     #&.6 Initialise state tracking for modified Dijkstra
     # This will store the best cost and time for each (location, time % cycle_time) pair.
     best_cost: List[List[Cost]] = [[INFINITY] * cycle_time for _ in range(max_location + 1)]
     best_time: List[List[Time]] = [[INFINITY] * cycle_time for _ in range(max_location + 1)]
     
-    start_rem: Time = 0  # At time 0.
+    start_rem: Time = 0  # Driver starts at time 0. Remainder is 0.
     best_cost[start][start_rem] = 0
     best_time[start][start_rem] = 0
     
@@ -175,37 +178,42 @@ def intercept(
     #&.8 Main search to find optimal intercept path and exploring neighbouring states
     while min_heap:
         #&.8.1 Pop the current state (minimum) from the MinHeap [ O(log|L|) ]
-        total_cost, total_time, current, time_remainder, path = heapq.heappop(min_heap)
-        # Skip if a better path to this state was found
-        is_not_best_cost: bool = total_cost != best_cost[current][time_remainder]
-        is_not_best_time: bool = total_time != best_time[current][time_remainder]
-        if is_not_best_cost or is_not_best_time:
+        total_cost, total_time, curr_loc, time_remainder, path = heapq.heappop(min_heap)
+        
+        # Skip this state, if a better path is found
+        is_worse_cost: bool = total_cost > best_cost[curr_loc][time_remainder]
+        is_same_cost: bool = total_cost == best_cost[curr_loc][time_remainder]
+        is_worse_time: bool = total_time > best_time[curr_loc][time_remainder]
+        if is_worse_cost or (is_same_cost and is_worse_time):
             continue
         
         #&.8.2 Check interception: using the precomputed train schedule.
-        is_current_location_a_station: bool = train_schedule[current] != -1
+        is_current_location_a_station: bool = train_schedule[curr_loc] != -1
         if is_current_location_a_station: 
             # Get the time when the train is at this station in the cycle
-            train_time: Time = train_schedule[current]
+            train_time: Time = train_schedule[curr_loc]
             # If we arrive at the same time as the train
             if time_remainder == train_time:
                 return (total_cost, total_time, path)
     
         #&.8.3 Explore neighbors [ O(|R|) ]
-        for neighbour_loc, road_cost, road_travel_time in graph[current]:
-            new_cost: Cost = total_cost + road_cost
-            new_time: Time = total_time + road_travel_time
-            new_rem: Time = new_time % cycle_time
-            
-            # Relax if new state has better path compared to current state
-            is_better_cost: bool = new_cost < best_cost[neighbour_loc][new_rem]
-            is_same_cost: bool = new_cost == best_cost[neighbour_loc][new_rem]
-            is_better_time: bool = new_time < best_time[neighbour_loc][new_rem]
-            if is_better_cost or (is_same_cost and is_better_time):
-                best_cost[neighbour_loc][new_rem] = new_cost
-                best_time[neighbour_loc][new_rem] = new_time
-                new_state: State = (new_cost, new_time, neighbour_loc, new_rem, path + [neighbour_loc])
-                heapq.heappush(min_heap, new_state) # O(log|L|) to push
+        if curr_loc <= max_location:
+            for neighbour_loc, road_cost, road_travel_time in graph[curr_loc]:
+                new_cost: Cost = total_cost + road_cost
+                new_time: Time = total_time + road_travel_time
+                new_rem: Time = new_time % cycle_time
+                
+                # Relax if new state has better path compared to current state
+                is_better_cost: bool = new_cost < best_cost[neighbour_loc][new_rem]
+                is_same_cost: bool = new_cost == best_cost[neighbour_loc][new_rem]
+                is_better_time: bool = new_time < best_time[neighbour_loc][new_rem]
+                if is_better_cost or (is_same_cost and is_better_time):
+                    best_cost[neighbour_loc][new_rem] = new_cost
+                    best_time[neighbour_loc][new_rem] = new_time
+                    # TODO: Improve the path tracking logic, only construct the path when needed
+                    new_path: Route = path + [neighbour_loc]
+                    new_state: State = (new_cost, new_time, neighbour_loc, new_rem, new_path)
+                    heapq.heappush(min_heap, new_state) # O(log|L|) to push
 
     # No interception possibilties found
     return None
