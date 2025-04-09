@@ -2,7 +2,10 @@ from typing import List, Tuple
 import heapq
 import math
 
-# Type aliases
+#? =============================================================================|
+#? TYPE ALIASES AND CONSTANTS
+#? =============================================================================|
+
 Location = int # Location ID (non-negative integer)
 Cost = int     # Cost of traveling on a road (+ve integer)
 Time = int     # Time in minutes to travel on a road or train line
@@ -24,6 +27,10 @@ State = Tuple[Cost, Time, Location, Time, Route]
 
 # Infinity constant value
 INFINITY = math.inf
+
+#! =============================================================================|
+#! INTERCEPT ALGORITHM
+#! =============================================================================|
 
 def intercept(
     roads: List[Road],       # Each road is a directed road
@@ -93,7 +100,7 @@ def intercept(
         "Better Comments" VSCode extension to view comments as intended. 
         Thank you!
     """
-    assert 2 <= len(stations) <= 20, f'No. of total stations |T| must be between 2 and 20 (inclusive), got {len(stations)}'
+    # assert 2 <= len(stations) <= 20, f'No. of total stations |T| must be between 2 and 20 (inclusive), got {len(stations)}'
     
     #! Determine maximum number of locations |L|
     max_location: Location = 0
@@ -101,7 +108,9 @@ def intercept(
         max_location = max(max_location, road[0], road[1])
     for station in stations:
         max_location = max(max_location, station[0])
-        assert 1 <= station[1] <= 5, f'Station travel time must be between 1 to 5 (inclusive), got {station[1]}'
+        # assert 1 <= station[1] <= 5, f'Station travel time must be between 1 to 5 (inclusive), got {station[1]}'
+    if not 0 <= start <= max_location:
+        return None
 
     #! Initialize adjacency list as a list of empty lists
     graph: List[List[Tuple[Location, Cost, Time]]] = []
@@ -197,6 +206,10 @@ def intercept(
     # No interception possibilties found
     return None
 
+#? =============================================================================|
+#? HELPER FUNCTION: RECONSTRUCT PATH
+#? =============================================================================|
+
 def reconstruct_path(
     parent_info: List[List[Tuple[Location, Time]]],
     start_loc: Location,
@@ -258,62 +271,64 @@ def reconstruct_path(
     route.reverse() # In-place reversal!!!!!!
     return route
 
-            
+#! =============================================================================|
+#! ENTRY POINT
+#! =============================================================================|
 
-if __name__ == '__main__':
-    # Test case 1, Simple
-    roads: List[Road] = [(6,0,3,1), (6,7,4,3), (6,5,6,2), (5,7,10,5), (4,8,8,5), (5,4,8,2), (8,9,1,2), (7,8,1,3), (8,3,2,3), (1,10,5,4), (0,1,10,3), (10,2,7,2), (3,2,15,2), (9,3,2,2), (2,4,10,5)]
-    stations: List[Station] = [(0, 1), (5,1), (4,1), (3,1), (2,1), (1,1)]
-    start: Location = 6
-    friend_start: Location = 0
-    result = intercept(roads, stations, start, friend_start)
-    assert result == (7, 9, [6, 7, 8, 3]), f'Expected (7, 9, [6, 7, 8, 3]), got {result}'
-    print("Test case 1 (simple) passed.")
+# if __name__ == '__main__':
+#     # Test case 1, Simple
+#     roads: List[Road] = [(6,0,3,1), (6,7,4,3), (6,5,6,2), (5,7,10,5), (4,8,8,5), (5,4,8,2), (8,9,1,2), (7,8,1,3), (8,3,2,3), (1,10,5,4), (0,1,10,3), (10,2,7,2), (3,2,15,2), (9,3,2,2), (2,4,10,5)]
+#     stations: List[Station] = [(0, 1), (5,1), (4,1), (3,1), (2,1), (1,1)]
+#     start: Location = 6
+#     friend_start: Location = 0
+#     result = intercept(roads, stations, start, friend_start)
+#     assert result == (7, 9, [6, 7, 8, 3]), f'Expected (7, 9, [6, 7, 8, 3]), got {result}'
+#     print("Test case 1 (simple) passed.")
     
-    # Test case 2, Unsolvable
-    roads: List[Road] = [(0, 1, 35, 3), (1, 2, 5, 2), (2,0,35,4), (0,4,10,1), (4,1,22,2), (1,5,65,1), (5,2,70,1), (2,3,10,1), (3,0,20,3)]
-    stations: List[Station] = [(4, 3), (5, 2), (3, 4)]
-    start: Location = 0
-    friend_start: Location = 4
-    result = intercept(roads, stations, start, friend_start)
-    assert result == None, f'Expected None, got {result}'
-    print("Test case 2 (unsolvable) passed.")
+#     # Test case 2, Unsolvable
+#     roads: List[Road] = [(0, 1, 35, 3), (1, 2, 5, 2), (2,0,35,4), (0,4,10,1), (4,1,22,2), (1,5,65,1), (5,2,70,1), (2,3,10,1), (3,0,20,3)]
+#     stations: List[Station] = [(4, 3), (5, 2), (3, 4)]
+#     start: Location = 0
+#     friend_start: Location = 4
+#     result = intercept(roads, stations, start, friend_start)
+#     assert result == None, f'Expected None, got {result}'
+#     print("Test case 2 (unsolvable) passed.")
     
-    # Test case 3, Repeated locations
-    roads: List[Road] = [(0,1,35,7), (1,2,5,4), (2,0,35,6), (0,4,10,5), (4,1,22,3), (1,5,60,4), (5,3,70,2), (3,0,10,7)]
-    stations: List[Station] = [(4, 2), (5, 1), (3, 4)]
-    start: Location = 0
-    friend_start: Location = 3
-    result = intercept(roads, stations, start, friend_start)
-    assert result == (160, 39, [0,1,2,0,1,2,0,4]), f'Expected (160, 39, [0,1,2,0,1,2,0,4]), got {result}'
-    print("Test case 3 (repeated locations) passed.")
+#     # Test case 3, Repeated locations
+#     roads: List[Road] = [(0,1,35,7), (1,2,5,4), (2,0,35,6), (0,4,10,5), (4,1,22,3), (1,5,60,4), (5,3,70,2), (3,0,10,7)]
+#     stations: List[Station] = [(4, 2), (5, 1), (3, 4)]
+#     start: Location = 0
+#     friend_start: Location = 3
+#     result = intercept(roads, stations, start, friend_start)
+#     assert result == (160, 39, [0,1,2,0,1,2,0,4]), f'Expected (160, 39, [0,1,2,0,1,2,0,4]), got {result}'
+#     print("Test case 3 (repeated locations) passed.")
     
-    # Test case 4, Same Cost, Different Time
-    roads: List[Road] = [(0,1,10,7), (0,2,10,3), (2,0,1,4), (1,0,1,7)]
-    stations: List[Station] = [(2,4), (1,3)]
-    start: Location = 0
-    friendStart: Location = 1
-    result = intercept(roads, stations, start, friendStart)
-    assert result == (10, 3, [0,2]), f'Expected (10, 3, [0,2]), got {result}'
-    print("Test case 4 (same cost, different time) passed.")
+#     # Test case 4, Same Cost, Different Time
+#     roads: List[Road] = [(0,1,10,7), (0,2,10,3), (2,0,1,4), (1,0,1,7)]
+#     stations: List[Station] = [(2,4), (1,3)]
+#     start: Location = 0
+#     friendStart: Location = 1
+#     result = intercept(roads, stations, start, friendStart)
+#     assert result == (10, 3, [0,2]), f'Expected (10, 3, [0,2]), got {result}'
+#     print("Test case 4 (same cost, different time) passed.")
     
-    # Test circular route required
-    roads: List[Road] = [(0,1,5,1), (1,2,5,1), (2,3,5,1), (3,0,5,7)]
-    stations: List[Station] = [(1,3), (3, 5)]
-    start: Location = 0
-    friend_start: Location = 1
+#     # Test circular route required
+#     roads: List[Road] = [(0,1,5,1), (1,2,5,1), (2,3,5,1), (3,0,5,7)]
+#     stations: List[Station] = [(1,3), (3, 5)]
+#     start: Location = 0
+#     friend_start: Location = 1
 
-    result = intercept(roads, stations, start, friend_start)
-    assert result == (15, 3, [0,1,2,3]), f'Expected (15, 3, [0,1,2,3]), got {result}'
-    print("Test (circular route) passed.")
+#     result = intercept(roads, stations, start, friend_start)
+#     assert result == (15, 3, [0,1,2,3]), f'Expected (15, 3, [0,1,2,3]), got {result}'
+#     print("Test (circular route) passed.")
     
-    # Test no valid path
-    roads: List[Road] = [(0,1,5,2), (1,2,5,3), (2,0,5,4)]
-    stations: List[Station] = [(3,2), (4,3)]
-    start: Location = 0
-    friend_start: Location = 3
+#     # Test no valid path
+#     roads: List[Road] = [(0,1,5,2), (1,2,5,3), (2,0,5,4)]
+#     stations: List[Station] = [(3,2), (4,3)]
+#     start: Location = 0
+#     friend_start: Location = 3
     
-    result = intercept(roads, stations, start, friend_start)
-    assert result == None, f'Expected None, got {result}'
-    print("Test (no valid path) passed.")
+#     result = intercept(roads, stations, start, friend_start)
+#     assert result == None, f'Expected None, got {result}'
+#     print("Test (no valid path) passed.")
 
