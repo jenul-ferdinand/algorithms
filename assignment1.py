@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Any
 import heapq
 import math
 
@@ -23,7 +23,11 @@ Route = List[Location]
 
 # A state is represented as a tuple of 
 # (cost, time, location, remainder, path)
-State = Tuple[Cost, Time, Location, Time, Route]
+State = Tuple[Cost, Time, Location, Time]
+
+# A parent state is represented as a tuple of 
+# (previous location, previous remainder)
+ParentState = Tuple[Location, Time]
 
 # Infinity constant value
 INFINITY = math.inf
@@ -145,7 +149,7 @@ def intercept(
     best_cost: List[List[Cost]] = [[INFINITY] * cycle_time for _ in range(max_location + 1)]
     best_time: List[List[Time]] = [[INFINITY] * cycle_time for _ in range(max_location + 1)]
     # Stores (parent_loc, parent_rem) for each (location, cycle_time) pair.
-    parent_info: List[List] = [[None] * cycle_time for _ in range(max_location + 1)]
+    parent_info: List[List[ParentState]] = [[None] * cycle_time for _ in range(max_location + 1)]
     
     # Initialise the starting state
     start_rem: Time = 0  # Driver starts at time 0. Remainder is 0.
@@ -207,7 +211,7 @@ def intercept(
 #? =============================================================================|
 
 def reconstruct_path(
-    parent_info: List[List[Tuple[Location, Time]]],
+    parent_info: List[List[ParentState]],
     start_loc: Location,
     end_loc: Location,
     end_rem: Time
@@ -235,7 +239,7 @@ def reconstruct_path(
     Time Complexity: O(P), where P is the number of locations in the path.       
     Space Complexity: O(P), for storing the reconstructed path
     """
-    route = []
+    route: Route = []
     
     # Start from end location and remainder to backtrack until one before the start.
     current_loc: Location = end_loc
