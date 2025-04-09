@@ -40,10 +40,6 @@ def intercept(
 ) -> Tuple[Cost, Time, Route] | None:
     """
     Function description:
-        Finds the optimal route for a driver to intercept their friend at a train
-        station. Prioritising cost over time, meaning that if multiple routes share 
-        the same cost, the one with the least total driving time will be chosen.
-        
         Determines the optimal route for a driver to intercept their friend at a
         train station. The optimal route minimises travel costs first, and then
         travel time as a tie-breaker. Interception requires arriving at a station
