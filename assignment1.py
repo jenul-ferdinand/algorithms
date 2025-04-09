@@ -2,6 +2,8 @@ from typing import List, Tuple, Any
 import heapq
 import math
 
+__author__ = "Jenul Ferdinand (33119805)"
+
 #? =============================================================================|
 #? TYPE ALIASES AND CONSTANTS
 #? =============================================================================|
