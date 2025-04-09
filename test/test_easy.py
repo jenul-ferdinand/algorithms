@@ -1,4 +1,4 @@
-from intercept import intercept
+from assignment1 import intercept
 import unittest
 
 class SimpleTestCases(unittest.TestCase):
