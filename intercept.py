@@ -188,7 +188,9 @@ def intercept(
                 if is_better_cost or (is_same_cost and is_better_time):
                     best_cost[neighbour_loc][new_rem] = new_cost
                     best_time[neighbour_loc][new_rem] = new_time
+
                     parent_info[neighbour_loc][new_rem] = (curr_loc, time_remainder)
+                    
                     new_state: State = (new_cost, new_time, neighbour_loc, new_rem)
                     heapq.heappush(min_heap, new_state) # O(log|L|) to push
 
