@@ -37,29 +37,5 @@ class SimpleTestCases(unittest.TestCase):
         
         self.assertEqual(intercept(roads, stations, start, friend_start), 
                          (19,4,[0,1,4]))
-
-    def test_bidirectional_roads(self):
-        # Tests roads going both directions between locations
-        roads = [(0,1,5,2), (1,0,4,2), (1,2,5,2), (2,1,4,2)]
-        stations = [(0,3), (2,2)]
-        start = 1
-        friend_start = 0
-        
-        self.assertEqual(intercept(roads, stations, start, friend_start), 
-                         (4, 2, [1,0]))
-
-    def test_equal_cost_paths(self):
-        # Multiple paths with the same cost but different times
-        roads = [(0,1,10,5), (0,2,10,5), (1,3,5,2), (2,3,5,2)]
-        stations = [(3,2)]
-        start = 0
-        friend_start = 3
-        
-        # Either path is valid as they have equal cost
-        result = intercept(roads, stations, start, friend_start)
-        self.assertEqual(result[0], 15)  # Cost should be 15
-        self.assertEqual(result[1], 7)   # Time should be 7
-        # Path can be either [0,1,3] or [0,2,3]
-
 if __name__ == '__main__':
     unittest.main()

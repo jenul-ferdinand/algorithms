@@ -36,94 +36,66 @@ def intercept(
         Finds the optimal route for a driver to intercept their friend at a train
         station. Prioritising cost over time, meaning that if multiple routes share 
         the same cost, the one with the least total driving time will be chosen.
+        
+        Determines the optimal route for a driver to intercept their friend at a
+        train station. The optimal route minimises travel costs first, and then
+        travel time as a tie-breaker. Interception requires arriving at a station
+        at the exact same time as the friend's train. Uses Dijkstra on a 
+        state-space graph with efficient path reconstruction using parent state
+        tracking.
     
     Approach description (main function):
-
+        Models the problem as a shortest path search on `(location, time_remainder)`
+        state space. Pre-calculates the train schedule and cycle time. Uses
+        Djikstra's algorithm with a MinHeap prioritised by (cost, time). Stores 
+        the best cost, best time, and parent state `(prev_loc, prev_rem)` for
+        each reachable state `(loc, rem)` in 2D lists. When an interception state
+        is found, the path is reconstructed efficiently by backtracking through 
+        the parent_info list. This avoids storing full paths in the heap.
     
-    1. First we determine the maximum number of locations in the graph. We do this
-    by iterating through the roads start and end locations and finding the maximum.
-    We also check the stations to find the maximum location, this is important,
-    because one or more station(s) might not be connected to any roads locations.
-    
-    2. We create the adjacency list as a list of empty lists, where each entry
-    will contain a tuple of (destination location, cost, time). The key will be 
-    the starting location of the road (i.e. `graph[0]` to check location 0's
-    neighbours).
-    
-    3. We find the index of the friend's starting station in the stations list.
-    We do this by checking if any stations in the list match the friend's 
-    starting location.
-    
-    4. We rearrange the stations list such that the friend's station will be the 
-    first. This is important as the train will loop back to the first station 
-    after the last. We want to follow where the friend is going.
-    
-    5. We compute the scheduled time for each station and the total loop time.
-    This will store the exact times in the cycle when the friend arrives at each
-    station. We also compute the maximum possible cycle time, this is used to
-    determine the time when the train is at each station. 
-    
-    6. We initialise the state tracking for modified Dijkstra. This will store
-    the best cost and time for each (location, time % cycle_time) pair.
-    
-    7. We initialise the MinHeap for modified Dijkstra. It holds:
-    (total_cost, total_time, location, remainder, path). The MinHeap prioritises
-    the lowest cost first, then the lowest time, other values in the tuple act
-    as tie breakers.
-    
-    8. We start the main search loop for finding the optimal interception path.
-    While there are states to explore in the MinHeap, we pop the current state
-    from the MinHeap. If the current state has a better path compared to the
-    current state, we skip it. We check if the current location is a station,
-    if it is, we check if we arrive at the same time as the train. If we do,
-    we return the (total_cost, total_time, path). if we don't, we explore the
-    neighbours of the current location. We relax the state if the new state has
-    a better path compared to the current state. We push the new state into the
-    MinHeap. This continues until we find the optimal interception path or 
-    exhaust all states in the MinHeap.
-    
-    Args:
+    Input:
         - roads: List of roads, each represented as a tuple (start, end, cost, time)
         - stations: List of stations, each represented as a tuple (location, time)
         - start: Starting location of the user
         - friend_start: Starting location of the friend
         
-    Returns:
-        - A tuple containing the total cost, total time, and the optimal route taken.
+    Output:
+        - Tuple (total cost, total time, optimal route) if interception is possible.
         - If no route is found, you'll get None. 
     
-    Time Complexity: 
-        - O(|R| log |L|) time.
-        - |R| is the number of roads and |L| is the number of locations.
-        
+    Time Complexity: O(|R| log |L|)
     Time Complexity Analysis:
-        The algorithm uses a modified Dijkstra's algorithm to find the optimal
-        interception path. The main loop runs while there are states in the MinHeap.
-        Popping from the MinHeap takes O(log |L|) time, and exploring the neighbours
-        takes O(|R|) time. The total time complexity is O(|R| log |L|) because we
-        are using a MinHeap to keep track of the states. The number of states is 
-        bounded by the number of roads and locations. The modified Dijkstra
-        part dominates in time overall.
+        Dominated by Dijkstra with a MinHeap on the state space graph.
+        Number of states O(|L| * C) = O(|L|). Number of edges O(|R| * C) = O(|R|).
+        Heap operations take O(log |L|). Total time O(|R| log |L|).
+        Path reconstruction takes O(P), where P is the path length (<= |L|*C = O(|L|)),
+        which is less dominant than Dijkstra. Note that C is the cycle time, which is
+        a constant value (<= 100 minutes max).
         
-    Space Complexity:
-        - O(|L| + |R|) auxiliary space.
-        - |L| is the number of locations and |R| is the number of roads.
-        
+    Space Complexity: O(|L| + |R|) auxiliary space.
     Space Complexity Analysis:
-        The algorithm uses a graph represented as an adjacency list, which takes
-        O(|L| + |R|) space. The best_cost and best_time arrays also take 
-        O(|L| * cycle_time) space. The MinHeap takes O(|L|) space. Overall, 
-        the space complexity is O(|L| + |R|). Note that the worst case possible
-        cycle time is 20 stations x 5 mins/journey = 100 minutes. This is a 
-        constant value, so it doesn't affect the overall space complexity.
+        - Adjacency list `graph`: O(|L| + |R|) space.
+        - `best_cost`, `best_time`: O(|L| * C) = O(|L|).
+        - `parent_info`: O(|L| * C) = O(|L|). Stores tuples, constant size per entry.
+        - MinHeap: Stores O(|L|) states, each constant size (no path list). O(|L|).
+        - Reconstructed path: O(P) = O(|L|).
+        Total auxiliary space: O(|L| + |R|)
+        
+    Terms:
+        - |L|: Number of locations in the graph (including stations).
+        - |R|: Number of roads in the graph.
+        - C: Cycle time (total time taken to complete the loop of stations).
+        - P: Number of locations in the optimal path.
         
     Note for marker: 
         I have used a less pythonic style for this algorithm, hoping for better 
-        readability and easier complexity analysis.
+        readability and easier complexity analysis. Also you can use the
+        "Better Comments" VSCode extension to view comments as intended. 
+        Thank you!
     """
     assert 2 <= len(stations) <= 20, f'No. of total stations |T| must be between 2 and 20 (inclusive), got {len(stations)}'
     
-    #&.1 Determine maximum number of locations |L|
+    #! Determine maximum number of locations |L|
     max_location: Location = 0
     for road in roads: 
         max_location = max(max_location, road[0], road[1])
@@ -131,15 +103,15 @@ def intercept(
         max_location = max(max_location, station[0])
         assert 1 <= station[1] <= 5, f'Station travel time must be between 1 to 5 (inclusive), got {station[1]}'
 
-    #&.2 Initialize adjacency list as a list of empty lists.
+    #! Initialize adjacency list as a list of empty lists
     graph: List[List[Tuple[Location, Cost, Time]]] = []
     for _ in range(max_location + 1):
         graph.append([])
-    #&.2.1 Each entry will contain (destination, cost, time) tuples.
+    # Each [starting location] entry will contain (destination, cost, time) tuples
     for road_start, road_end, road_cost, road_time in roads:
         graph[road_start].append((road_end, road_cost, road_time))
 
-    #&.3 Find the index of the friend's starting station.
+    #! Find the index of the friend's starting station
     friend_start_index: Location = -1
     for index, (station_location, _) in enumerate(stations):
         if station_location == friend_start:
@@ -148,10 +120,10 @@ def intercept(
     if friend_start_index == -1:
         return None # friend_start is not in the stations list
     
-    #&.4 Rearrange stations list such that the friend's station will be the first
+    #! Rearrange stations list such that the friend's station will be the first
     stations: List[Station] = stations[friend_start_index:] + stations[:friend_start_index]
     
-    #&.5 Compute scheduled time for each station and total loop time.
+    #! Compute scheduled time for each station and total loop time
     # This will store the exact times in the cycle when the friend arrives at each station.
     train_schedule: List[Time] = [-1] * (max_location + 1)
     # The cycle time is the total time taken to complete the loop of stations.
@@ -163,22 +135,24 @@ def intercept(
     if cycle_time == 0:
         return None
 
-    #&.6 Initialise state tracking for modified Dijkstra
-    # This will store the best cost and time for each (location, time % cycle_time) pair.
+    #! Initialise state tracking for modified Dijkstra
+    # This will store the best cost and time for each (location, cycle_time) pair.
     best_cost: List[List[Cost]] = [[INFINITY] * cycle_time for _ in range(max_location + 1)]
     best_time: List[List[Time]] = [[INFINITY] * cycle_time for _ in range(max_location + 1)]
+    # Stores (parent_loc, parent_rem) for each (location, cycle_time) pair.
+    parent_info: List[List] = [[None] * cycle_time for _ in range(max_location + 1)]
     
+    # Initialise the starting state
     start_rem: Time = 0  # Driver starts at time 0. Remainder is 0.
     best_cost[start][start_rem] = 0
     best_time[start][start_rem] = 0
     
-    #&.7 Initialise MinHeap with starting state for modified Dijkstra
-    min_heap: List[State] = [(0, 0, start, start_rem, [start])]
-    
-    #&.8 Main search to find optimal intercept path and exploring neighbouring states
+    #! Main search to find optimal intercept path and exploring neighbouring states
+    # Initialise MinHeap with starting state (no need to heapify since just one)
+    min_heap: List[State] = [(0, 0, start, start_rem)]
     while min_heap:
-        #&.8.1 Pop the current state (minimum) from the MinHeap [ O(log|L|) ]
-        total_cost, total_time, curr_loc, time_remainder, path = heapq.heappop(min_heap)
+        #* Pop the current state (minimum) from the MinHeap [ O(log|L|) ]
+        total_cost, total_time, curr_loc, time_remainder = heapq.heappop(min_heap)
         
         # Skip this state, if a better path is found
         is_worse_cost: bool = total_cost > best_cost[curr_loc][time_remainder]
@@ -187,16 +161,20 @@ def intercept(
         if is_worse_cost or (is_same_cost and is_worse_time):
             continue
         
-        #&.8.2 Check interception: using the precomputed train schedule.
+        #* Check interception: using the precomputed train schedule.
         is_current_location_a_station: bool = train_schedule[curr_loc] != -1
         if is_current_location_a_station: 
             # Get the time when the train is at this station in the cycle
             train_time: Time = train_schedule[curr_loc]
+            
             # If we arrive at the same time as the train
             if time_remainder == train_time:
+                # Reconstruct the full path
+                path = reconstruct_path(parent_info, start, curr_loc, time_remainder)
+            
                 return (total_cost, total_time, path)
     
-        #&.8.3 Explore neighbors [ O(|R|) ]
+        #* Explore neighbors [ O(|R|) ]
         if curr_loc <= max_location:
             for neighbour_loc, road_cost, road_travel_time in graph[curr_loc]:
                 new_cost: Cost = total_cost + road_cost
@@ -210,15 +188,75 @@ def intercept(
                 if is_better_cost or (is_same_cost and is_better_time):
                     best_cost[neighbour_loc][new_rem] = new_cost
                     best_time[neighbour_loc][new_rem] = new_time
-                    # TODO: Improve the path tracking logic, only construct the path when needed
-                    new_path: Route = path + [neighbour_loc]
-                    new_state: State = (new_cost, new_time, neighbour_loc, new_rem, new_path)
+                    parent_info[neighbour_loc][new_rem] = (curr_loc, time_remainder)
+                    new_state: State = (new_cost, new_time, neighbour_loc, new_rem)
                     heapq.heappush(min_heap, new_state) # O(log|L|) to push
 
     # No interception possibilties found
     return None
 
+def reconstruct_path(
+    parent_info: List[List[Tuple[Location, Time]]],
+    start_loc: Location,
+    end_loc: Location,
+    end_rem: Time
+) -> Route:
+    """
+    Function Description:
+        Helper function to reconstruct the path taken to intercept the friend.
+        
+    Approach Description:
+        While the current location is not the starting location and the remainder
+        is not 0 (indicating the end of the cycle), reconstruct the path backwards.
+        The path is reconstructed by backtracking through the parent_info list.
+        The path is built in reverse order, so it is reversed before returning.
+    
+    Input:
+        - parent_info: 2D list where parent_info[loc][rem] stores the 
+                       (prev_loc, prev_rem) tuple that led to state (loc, rem).
+        - start_loc: Starting location of the entire journey
+        - end_loc: The final location (interception station) of the path.
+        - end_rem: The time remainder at the final location.
+        
+    Output:
+        - A list of location IDs representing the path from start_loc to end_loc.
+        
+    Time Complexity: O(P), where P is the number of locations in the path.       
+    Space Complexity: O(P), for storing the reconstructed path
+    """
+    route = []
+    
+    # Start from end location and remainder to backtrack until one before the start.
+    current_loc: Location = end_loc
+    current_rem: Time = end_rem
+    
+    # While the current location is not the starting location and the remainder is not 0
+    # (indicating the end of the cycle), reconstruct the path backwards.
+    while current_loc != start_loc or current_rem != 0:
+        # Add the current location to the route
+        route.append(current_loc)
+        
+        # Handle invalid current state
+        is_curr_loc_invalid: bool = current_loc < 0 or current_loc >= len(parent_info)
+        is_curr_rem_invalid: bool = current_rem < 0 or current_rem >= len(parent_info[current_loc])
+        is_curr_state_none: bool = parent_info[current_loc][current_rem] == None
+        if is_curr_loc_invalid or is_curr_rem_invalid or is_curr_state_none:
+            return []
+        
+        # Get the previous state from current state
+        prev_loc, prev_rem = parent_info[current_loc][current_rem]
+        
+        # Update the current state to the previous state
+        current_loc, current_rem = prev_loc, prev_rem
+    
+    # Add the starting location
+    route.append(start_loc)
+    
+    # Reverse the route and return it
+    route.reverse() # In-place reversal!!!!!!
+    return route
 
+            
 
 if __name__ == '__main__':
     # Test case 1, Simple
