@@ -12,7 +12,7 @@ class SimpleTestCases(unittest.TestCase):
         
         # [../images/test_linear_path.png]
         """
-        roads = [(0,1,5,2), (1,2,5,2), (2,3,5,2), (3,4,5,2), (1,4,30,2)]
+        roads = [(0,1,5,2), (1,2,5,2), (2,3,5,2), (3,4,5,2), (1,4,30,2), (4,0,5,2)]
         stations = [(4,2), (2,2)]
         start = 0
         friend_start = 4
@@ -30,7 +30,7 @@ class SimpleTestCases(unittest.TestCase):
         # [../images/test_branch_choice.png]
         """
         # Need to choose between two paths, one clearly better than the other
-        roads = [(0,1,5,2), (1,2,5,2), (2,3,5,2), (3,4,5,2), (1,4,14,2)]
+        roads = [(0,1,5,2), (1,2,5,2), (2,3,5,2), (3,4,5,2), (1,4,14,2), (4,0,5,2)]
         stations = [(4,2), (2,2)]
         start = 0
         friend_start = 4

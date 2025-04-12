@@ -70,6 +70,27 @@ class PeerTestCases(unittest.TestCase):
         self.assertIsNone(intercept(roads[9], stations, start, friendStart))
         self.assertIsNone(intercept(roads[10], stations, start, friendStart))
         self.assertEqual(intercept(roads[11], stations, start, friendStart), (1, 12, [1,4]))
+        
+    def test_repeatedV2(self):
+        roads = [(0, 1, 20, 3), (1, 2, 10, 2), (2, 0, 15, 4), (0, 3, 50, 2), (3, 4, 10, 1), (4, 5, 10, 1), (5, 6, 10, 1), (6, 1, 30, 2)]
+        stations = [(3, 2), (6, 1), (1, 4)]   
+        start = 0
+        friendStart = 6
+
+        self.assertEqual(intercept(roads, stations, start, friendStart), (125, 14, [0, 1, 2, 0, 3, 4, 5, 6]))
+        
+    def test_long_chase(self):
+        import sys
+        rec_lim = sys.getrecursionlimit()
+        sys.setrecursionlimit(2000)
+        roads = [(i, i+1, 3, 5) for i in range(19)] + [(19, 0, 3, 4)]
+        stations = [(i, 5) for i in range(20)]
+        start = 0
+        friend_start = 19
+
+        #1900 edges traversed/95 cycles
+        self.assertEqual(intercept(roads, stations, start, friend_start), (5700, 9405, [i for i in range(20)]*95+[0]))
+        sys.setrecursionlimit(rec_lim)
 
 if __name__ == '__main__':
   unittest.main()
