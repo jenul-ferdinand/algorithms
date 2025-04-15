@@ -124,5 +124,37 @@ class PeerTestCases(unittest.TestCase):
         self.assertEqual(intercept(roads, stations, start, friend_start), (5700, 9405, [i for i in range(20)]*95+[0]))
         sys.setrecursionlimit(rec_lim)
 
+    def test_double_road(self):
+        roads = [(0, 1, 5, 5), (0, 1, 5, 5), (1, 2, 5, 5), (2, 0, 5, 5)]
+        stations = [(2, 5), (1, 5)]
+        start = 0
+        friend_start = 2
+        
+        self.assertEqual(intercept(roads, stations, start, friend_start), (5, 5, [0,1]))
+
+    def test_double_road_all(self):
+        roads = [(0, 1, 5, 5), (0, 1, 5, 5), (0, 1, 6, 5), (0, 1, 5, 6), (1, 2, 5, 5), (2, 0, 5, 5)]
+        stations = [(2, 5), (1, 5)]
+        start = 0
+        friend_start = 2
+        
+        self.assertEqual(intercept(roads, stations, start, friend_start), (5, 5, [0,1]))
+
+    def test_short_none(self):
+        roads = [(0, 1, 2, 1), (1, 0, 2, 1)]
+        stations = [(0, 5), (1, 5)]
+        start = 0
+        friend_start = 1
+
+        self.assertIsNone(intercept(roads, stations, start, friend_start))
+
+    def test_short_long(self):
+        roads = [(0, 1, 2, 1), (1, 0, 2, 1)]
+        stations = [(0, 4), (1, 5)]
+        start = 0
+        friend_start = 1
+
+        self.assertEqual(intercept(roads, stations, start, friend_start), (18, 9, [0,1]*5))
+
 if __name__ == '__main__':
   unittest.main()
