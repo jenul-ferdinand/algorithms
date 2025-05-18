@@ -1,5 +1,9 @@
 from typing import List, Tuple
 
+# A word is a string of lowercase letters a..z 
+Word = str
+
+# Fixed alphabet size for lowercase letters
 ALPHABET_SIZE = 26
 
 class TrieNode:
@@ -11,10 +15,18 @@ class TrieNode:
         self.word = None
 
 class Bad_AI:
-    def __init__(self, list_words):
-        # Create a data structure that stores list_words efficiently for the 
-        # next task. 
-        # Remember dictionaries (including hashing) & sets are NOT ALLOWED.
+    def __init__(
+        self, 
+        list_words: List[Word]
+    ) -> None:
+        """
+        Builds a trie storing list_words for subsequent 1-substitution searches.
+        
+        Time Complexity: O(C)
+        Space Complexity: O(C)
+        Where:
+        - C is the total number of characters in list_words.
+        """
         self.root = TrieNode()
         for w in list_words:
             node = self.root
@@ -25,9 +37,21 @@ class Bad_AI:
                 node = node.children[idx]
             node.word = w
 
-    def check_word(self, sus_word):
-        # This function should identify words with Levenshtein distance
-        # value of exactly one (substitution).
+    def check_word(
+        self, 
+        sus_word: Word
+    ) -> List[Word]:
+        """
+        Return all words from list_words whose Levenshtein distance to sus_word
+        is exactly one (allowing only substitution).
+        
+        Time Complexity: O(J * N) + O(X)
+        Auxiliary Space Complexity: O(X)
+        Where:
+        - J is the length of sus_word
+        - N is the length of list_words
+        - X is the total number of characters returned.        
+        """
         result = []
         n = len(sus_word)
         
