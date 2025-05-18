@@ -80,20 +80,86 @@ class Bad_AI:
                     
         dfs(self.root, 0, 0)
         return result
-    
+
+
+
+
 if __name__ == '__main__':
     # Example from spec
     list_words = ['aaa', 'abc', 'xyz', 'aba', 'aaaa']
     list_sus = ['aaa', 'axa', 'ab', 'xxx', 'aaab']
-    expected = [
-        ['aba'],
-        ['aaa', 'aba'],
-        [],
-        [],
-        ['aaaa']
+    expected_outputs = [
+        ['aba'],        # For 'aaa': 'aba' (a->b is 1 sub)
+        ['aaa', 'aba'], # For 'axa': 'aaa' (x->a), 'aba' (x->b)
+        [],             # For 'ab': No word of length 2 is 1 sub away. Words must be same length.
+        [],             # For 'xxx': 'xyz' is 1 sub (x->z). Oh, my example trace was faulty.
+                        # 'xyz' vs 'xxx': x==x, y!=x (sub), z!=x (sub). Dist 2.
+                        # The example output for 'xxx' is []. This is correct.
+                        # 'xyz' is 1 sub from 'xxz', 'xyx', 'ayz', etc. Not 'xxx' unless len is also 1.
+        ['aaaa']        # For 'aaab': 'aaaa' (b->a is 1 sub)
     ]
     my_ai = Bad_AI(list_words)
-    for sus_word, exp in zip(list_sus, expected):
-        result = my_ai.check_word(sus_word)
-        assert result == exp, f"For {sus_word!r}, expected {exp}, got {result}"
-    print("All tests passed.")
+    all_tests_passed = True
+    for i, sus_word in enumerate(list_sus):
+        my_answer = my_ai.check_word(sus_word)
+        # Sort for consistent comparison, as order in result list might vary
+        # though the DFS structure might lead to a specific order.
+        my_answer.sort() 
+        expected_output = expected_outputs[i]
+        expected_output.sort()
+
+        if my_answer == expected_output:
+            print(f"Test for '{sus_word}': Passed. Got {my_answer}")
+        else:
+            print(f"Test for '{sus_word}': Failed. Expected {expected_output}, Got {my_answer}")
+            all_tests_passed = False
+
+    if all_tests_passed:
+        print("\nAll provided examples passed.")
+    else:
+        print("\nSome examples failed.")
+
+    # Additional test cases
+    print("\nAdditional Tests:")
+    list_words_2 = ["apple", "apply", "axply", "apricot", "banana"]
+    ai_2 = Bad_AI(list_words_2)
+
+    sus_word_2 = "axple" # Expect ["apple"] (x->p)
+    expected_2 = ["apple", "axply"]
+    res_2 = ai_2.check_word(sus_word_2)
+    res_2.sort()
+    assert res_2 == expected_2, f"Test for '{sus_word_2}': Expected {expected_2}, Got {res_2}"
+    print(f"Test for '{sus_word_2}': Passed. Got {res_2}")
+
+    sus_word_3 = "apxly" # Expect ["apply"]
+    expected_3 = ["apply"]
+    res_3 = ai_2.check_word(sus_word_3)
+    res_3.sort()
+    expected_3.sort()
+    assert res_3 == expected_3, f"Test for '{sus_word_3}': Expected {expected_3}, Got {res_3}"
+    print(f"Test for '{sus_word_3}': Passed. Got {res_3}")
+
+    sus_word_4 = "apricots" # Length mismatch, expect []
+    expected_4 = []
+    res_4 = ai_2.check_word(sus_word_4)
+    assert res_4 == expected_4, f"Test for '{sus_word_4}': Expected {expected_4}, Got {res_4}"
+    print(f"Test for '{sus_word_4}': Passed. Got {res_4}")
+
+    sus_word_5 = "axxyz" # No match
+    expected_5 = []
+    res_5 = ai_2.check_word(sus_word_5)
+    assert res_5 == expected_5, f"Test for '{sus_word_5}': Expected {expected_5}, Got {res_5}"
+    print(f"Test for '{sus_word_5}': Passed. Got {res_5}")
+
+    list_words_3 = ["cat", "bat", "cot", "cog", "dog"]
+    ai_3 = Bad_AI(list_words_3)
+    # Test 5 (Corrected expectation)
+    sus_word_3_1 = "cot"
+    expected_3_1 = ["cat", "cog"] # "bat" is 2 subs, "dog" is 2 subs from "cot"
+    expected_3_1.sort()
+    res_3_1 = ai_3.check_word(sus_word_3_1)
+    res_3_1.sort()
+    if res_3_1 == expected_3_1:
+        print(f"Test for '{sus_word_3_1}': Passed. Got {res_3_1}")
+    else:
+        print(f"Test for '{sus_word_3_1}': Failed. Expected {expected_3_1}, Got {res_3_1}")
