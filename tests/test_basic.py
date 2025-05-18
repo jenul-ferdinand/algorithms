@@ -1,4 +1,4 @@
-from assignment2 import crowdedCampus
+from crowded_campus import crowdedCampus
 from helpers import make_full_prefs, make_full_prefs_random
 import unittest
 

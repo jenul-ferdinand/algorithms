@@ -65,6 +65,8 @@ def crowdedCampus(
 
     if satisfied < min_satis:
         return None
+    
+    print('After phase 1 allocation:', allocation)
 
     # compute how many more each class must still take (min)
     # and how many at most (max)
@@ -73,7 +75,9 @@ def crowdedCampus(
 
     # collect all students not yet assigned
     remaining = [i for i in range(num_students) if allocation[i] == -1]
-
+    
+    print('After phase 1 remaining:', remaining) 
+    
     # * Phase 2a: fulfill every class's remaining minimum by popping students
     for j in range(num_classes):
         needed_for_min = max(0, class_mins[j] - class_filled[j])
@@ -87,12 +91,14 @@ def crowdedCampus(
             
             student = remaining.pop()
             allocation[student] = j
-            rem_mins[j] -= 1
+            class_filled[j] += 1
             needed_for_min -= 1
             
     for j in range(num_classes):
         if class_filled[j] < class_mins[j]:
             return None
+        
+    print('After phase 2a allocation:', allocation) # Outptting: [0,1,2]
 
     # * Phase 2b: assign any leftover students to classes with remaining capacity
     for student in remaining:
@@ -111,10 +117,10 @@ def crowdedCampus(
         if not class_mins[j] <= class_filled[j] <= class_maxs[j]:
             print("Logic flaw")
             return None 
+        
+    print('After phase 2b allocation:', allocation)
 
     return allocation
-
-
 
 if __name__ == '__main__':
     pass
