@@ -7,6 +7,11 @@ Word = str
 ALPHABET_SIZE = 26
 
 class TrieNode:
+    """
+    A class representing a node in a trie.
+    
+    Alphabet size is fixed to 26 for lowercase letters a..z.
+    """
     __slots__ = ('children', 'word')
     def __init__(self):
         # Fixed-size array of 26 references (None or TrieNode)
@@ -55,7 +60,7 @@ class Bad_AI:
         result = []
         n = len(sus_word)
         
-        def dfs(node, i, mismatches):
+        def dfs(node: TrieNode, i, mismatches):
             # If we've processed all characters
             if i == n:
                 # Exactly one substitution and end of word
@@ -65,7 +70,7 @@ class Bad_AI:
             
             orig_idx = ord(sus_word[i]) - ord('a')
             # Try matching and substitution
-            for c in range(26):
+            for c in range(ALPHABET_SIZE):
                 child = node.children[c]
                 if not child:
                     continue
