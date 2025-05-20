@@ -16,7 +16,7 @@ class TrieNode:
     def __init__(self):
         # Fixed-size array of 26 references (None or TrieNode)
         self.children = [None] * ALPHABET_SIZE
-        # Store complete word at terminal nodes
+        # Store complete word at     terminal nodes
         self.word = None
 
 class Bad_AI:
