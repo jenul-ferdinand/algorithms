@@ -1,7 +1,7 @@
 import unittest
 from crowded_campus import crowdedCampus
 
-class TestCrowdedCampus(unittest.TestCase):
+class TestQ1NoahDall(unittest.TestCase):
     def validate_allocation(self, n, m, time_preferences, proposed_classes, minimum_satisfaction, allocation):
         self.assertIsInstance(allocation, list)
         self.assertEqual(len(allocation), n)

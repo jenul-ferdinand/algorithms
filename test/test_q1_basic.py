@@ -2,7 +2,7 @@ from crowded_campus import crowdedCampus
 from helpers import make_full_prefs, make_full_prefs_random
 import unittest
 
-class TestBasic(unittest.TestCase):
+class TestQ1Basic(unittest.TestCase):
     def single_student_and_class(self):
         res = crowdedCampus(
             num_students = 1, 
@@ -105,3 +105,6 @@ class TestBasic(unittest.TestCase):
             min_satis=0
         )
         self.assertIsNone(res)
+        
+if __name__ == '__main__':
+    unittest.main()

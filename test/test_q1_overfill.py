@@ -2,7 +2,7 @@ from crowded_campus import crowdedCampus
 from helpers import make_full_prefs, make_full_prefs_random
 import unittest
 
-class TestOverfill(unittest.TestCase):
+class TestQ1Overfill(unittest.TestCase):
     def test_overfill_phase2a(self):
         res = crowdedCampus(
             num_students=3,

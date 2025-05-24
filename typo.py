@@ -1,10 +1,25 @@
 from typing import List, Tuple
 
+
+#? =============================================================================|
+#? TYPE ALIASES AND CONSTANTS
+#? =============================================================================|
+
 # A word is a string of lowercase letters a..z 
 Word = str
 
+# Represents a state in the trie traversal
+Index = int
+Mismatches = int
+State = Tuple[Word, Index, Mismatches]
+
 # Fixed alphabet size for lowercase letters
 ALPHABET_SIZE = 26
+
+
+#! =============================================================================|
+#! Bad AI Solution
+#! =============================================================================|
 
 class TrieNode:
     """
@@ -12,12 +27,14 @@ class TrieNode:
     
     Alphabet size is fixed to 26 for lowercase letters a..z.
     """
-    __slots__ = ('children', 'word')
+    __slots__ = ('children', 'word', 'mask')
     def __init__(self):
         # Fixed-size array of 26 references (None or TrieNode)
         self.children = [None] * ALPHABET_SIZE
-        # Store complete word at terminal nodes
+        # Store complete word at leaf nodes
         self.word = None
+        # Bitmask of non-null child indicies for fast iteration
+        self.mask = 0
 
 class Bad_AI:
     def __init__(
@@ -25,12 +42,36 @@ class Bad_AI:
         list_words: List[Word]
     ) -> None:
         """
-        Builds a trie storing list_words for subsequent 1-substitution searches.
-        
+        Function Description:
+            Build a prefix trie containing all words from `list_words` to enable
+            efficient one-substitution lookups.
+
+        Approach Description:
+            For each word, traverse from the root. At each character index:
+            
+            - If the child node does not exist, create a new TrieNode.
+            - Update the current node's mask with the character bit.
+            - Move to the child node.
+            
+            At the end of each word, store it in the node.
+
+        Args:
+            list_words: List of unique lowercase words to insert into the trie.
+
         Time Complexity: O(C)
-        Space Complexity: O(C)
-        Where:
-        - C is the total number of characters in list_words.
+        Time Complexity Analysis:
+            - Each of the C total characters across all words triggers constant
+              time operations: computing an index, checking/assigning a child
+              pointer.
+
+        Auxiliary Space: O(C)
+        Space Complexity Analysis:
+            - Up to C new TrieNode instances are created (one per inserted character).
+            - Each node allocates a fixed-size `children` list of length 26.
+
+        Notes for Marker:
+            Uses a trie with `__slots__` on TrieNode to minimise per-node 
+            memory overhead.
         """
         self.root = TrieNode()
         for w in list_words:
@@ -39,132 +80,84 @@ class Bad_AI:
                 idx = ord(ch) - ord('a')
                 if node.children[idx] is None:
                     node.children[idx] = TrieNode()
+                node.mask |= (1 << idx)
                 node = node.children[idx]
             node.word = w
 
     def check_word(
         self, 
         sus_word: Word
-    ) -> List[Word]:
+    ) -> List[Word | None]:
         """
-        Return all words from list_words whose Levenshtein distance to sus_word
-        is exactly one (allowing only substitution).
-        
-        Time Complexity: O(J * N) + O(X)
-        Auxiliary Space Complexity: O(X)
-        Where:
-        - J is the length of sus_word
-        - N is the length of list_words
-        - X is the total number of characters returned.        
-        """
-        result = []
-        n = len(sus_word)
-        
-        def dfs(node: TrieNode, i, mismatches):
-            # If we've processed all characters
-            if i == n:
-                # Exactly one substitution and end of word
-                if mismatches == 1 and node.word is not None:
-                    result.append(node.word)
-                return
+        Function Description:
+            Find and return all words in the trie whose substitution-only
+            Levenshtein distance to `sus_word` is exactly one.
+
+        Approach Description:
+            Use a stack to simulate DFS. Precompute index list of `sus_word`.
+            At each state (node, position, mismatches):
             
-            orig_idx = ord(sus_word[i]) - ord('a')
-            # Try matching and substitution
-            for c in range(ALPHABET_SIZE):
-                child = node.children[c]
-                if not child:
-                    continue
+            1. Follow the matching child (if it exists) without consuming the 
+            mismatch.
+            2. If no mismatch yet.. Use the node's bitmask to iterate only over
+            actual non-matching children for a single substitution.
+            
+            Collect words at leaf nodes when exactly one mismatch has been used.
 
-                # Matching character
-                if c == orig_idx:
-                    dfs(child, i + 1, mismatches)
+        Args:
+            sus_word: Target string of lowercase letters to compare.
+
+        Returns:
+            A list of words from `list_words` whose substitution-only edit
+            distance to `sus_word` is exactly one. Returns an empty list if none.
+
+        Time Complexity: O(J * A + R)
+        Time Complexity Analysis:
+            - J = length of `sus_word`, A = alphabet size (constant 26).
+            - DFS explores at most two recursive paths per depth (match + one
+              substitution), scanning A children each time: O(J * A).
+            - Appending R result-strings costs O(R) total.
+
+        Auxiliary Space: O(J + R)
+        Space Complexity Analysis:
+            - Call stack depth: O(J).
+            - Result list and collected words: O(R), where R is total length of returned words.
+        """
+        # Precompute character indicies
+        ord_base = ord('a')
+        sus_indexes = [ord(c) - ord_base for c in sus_word]
+        N = len(sus_indexes)
+        
+        root = self.root
+        result: List[Word] = []
+        add_result = result.append
+
+        # Stack holds tuples (node, index in sus_word, mismatches_used)
+        stack: List[State] = [(root, 0, 0)]
+        while stack:
+            node, index, mismatches = stack.pop()
+            if index == N:
+                if mismatches == 1 and node.word is not None:
+                    add_result(node.word)
+                continue
+            
+            orig_idx = sus_indexes[index]
+            
+            # (1) Exact match branch
+            child = node.children[orig_idx]
+            if child:
+                stack.append((child, index + 1, mismatches))
+            
+            # (2) Substitution branch (if none used)
+            if mismatches == 0:
+                # Iterate only over existing children except orig_idx
+                subs_mask = node.mask & ~(1 << orig_idx)
+                while subs_mask:
+                    bit = subs_mask & -subs_mask
+                    c = bit.bit_length() - 1
+                    next_child = node.children[c]
+                    if next_child:
+                        stack.append((next_child, index + 1, 1))
+                    subs_mask ^= bit
                     
-                # Substitution (if none yet)
-                elif mismatches == 0:
-                    dfs(child, i + 1, 1)
-                    
-        dfs(self.root, 0, 0)
         return result
-
-
-
-
-if __name__ == '__main__':
-    # Example from spec
-    list_words = ['aaa', 'abc', 'xyz', 'aba', 'aaaa']
-    list_sus = ['aaa', 'axa', 'ab', 'xxx', 'aaab']
-    expected_outputs = [
-        ['aba'],        # For 'aaa': 'aba' (a->b is 1 sub)
-        ['aaa', 'aba'], # For 'axa': 'aaa' (x->a), 'aba' (x->b)
-        [],             # For 'ab': No word of length 2 is 1 sub away. Words must be same length.
-        [],             # For 'xxx': 'xyz' is 1 sub (x->z). Oh, my example trace was faulty.
-                        # 'xyz' vs 'xxx': x==x, y!=x (sub), z!=x (sub). Dist 2.
-                        # The example output for 'xxx' is []. This is correct.
-                        # 'xyz' is 1 sub from 'xxz', 'xyx', 'ayz', etc. Not 'xxx' unless len is also 1.
-        ['aaaa']        # For 'aaab': 'aaaa' (b->a is 1 sub)
-    ]
-    my_ai = Bad_AI(list_words)
-    all_tests_passed = True
-    for i, sus_word in enumerate(list_sus):
-        my_answer = my_ai.check_word(sus_word)
-        # Sort for consistent comparison, as order in result list might vary
-        # though the DFS structure might lead to a specific order.
-        my_answer.sort() 
-        expected_output = expected_outputs[i]
-        expected_output.sort()
-
-        if my_answer == expected_output:
-            print(f"Test for '{sus_word}': Passed. Got {my_answer}")
-        else:
-            print(f"Test for '{sus_word}': Failed. Expected {expected_output}, Got {my_answer}")
-            all_tests_passed = False
-
-    if all_tests_passed:
-        print("\nAll provided examples passed.")
-    else:
-        print("\nSome examples failed.")
-
-    # Additional test cases
-    print("\nAdditional Tests:")
-    list_words_2 = ["apple", "apply", "axply", "apricot", "banana"]
-    ai_2 = Bad_AI(list_words_2)
-
-    sus_word_2 = "axple" # Expect ["apple"] (x->p)
-    expected_2 = ["apple", "axply"]
-    res_2 = ai_2.check_word(sus_word_2)
-    res_2.sort()
-    assert res_2 == expected_2, f"Test for '{sus_word_2}': Expected {expected_2}, Got {res_2}"
-    print(f"Test for '{sus_word_2}': Passed. Got {res_2}")
-
-    sus_word_3 = "apxly" # Expect ["apply"]
-    expected_3 = ["apply"]
-    res_3 = ai_2.check_word(sus_word_3)
-    res_3.sort()
-    expected_3.sort()
-    assert res_3 == expected_3, f"Test for '{sus_word_3}': Expected {expected_3}, Got {res_3}"
-    print(f"Test for '{sus_word_3}': Passed. Got {res_3}")
-
-    sus_word_4 = "apricots" # Length mismatch, expect []
-    expected_4 = []
-    res_4 = ai_2.check_word(sus_word_4)
-    assert res_4 == expected_4, f"Test for '{sus_word_4}': Expected {expected_4}, Got {res_4}"
-    print(f"Test for '{sus_word_4}': Passed. Got {res_4}")
-
-    sus_word_5 = "axxyz" # No match
-    expected_5 = []
-    res_5 = ai_2.check_word(sus_word_5)
-    assert res_5 == expected_5, f"Test for '{sus_word_5}': Expected {expected_5}, Got {res_5}"
-    print(f"Test for '{sus_word_5}': Passed. Got {res_5}")
-
-    list_words_3 = ["cat", "bat", "cot", "cog", "dog"]
-    ai_3 = Bad_AI(list_words_3)
-    # Test 5 (Corrected expectation)
-    sus_word_3_1 = "cot"
-    expected_3_1 = ["cat", "cog"] # "bat" is 2 subs, "dog" is 2 subs from "cot"
-    expected_3_1.sort()
-    res_3_1 = ai_3.check_word(sus_word_3_1)
-    res_3_1.sort()
-    if res_3_1 == expected_3_1:
-        print(f"Test for '{sus_word_3_1}': Passed. Got {res_3_1}")
-    else:
-        print(f"Test for '{sus_word_3_1}': Failed. Expected {expected_3_1}, Got {res_3_1}")

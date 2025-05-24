@@ -2,7 +2,7 @@ from crowded_campus import crowdedCampus
 from helpers import make_full_prefs, make_full_prefs_random
 import unittest
 
-class TestGabrielGarriock(unittest.TestCase):
+class TestQ1GabrielGarriock(unittest.TestCase):
     def test_gabriel_case1(self):
         res = crowdedCampus(
             num_students=1,
