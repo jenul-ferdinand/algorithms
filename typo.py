@@ -11,7 +11,7 @@ Word = str
 # Represents a state in the trie traversal
 Index = int
 Mismatches = int
-State = Tuple[Word, Index, Mismatches]
+State = Tuple['TrieNode', Index, Mismatches]
 
 # Fixed alphabet size for lowercase letters
 ALPHABET_SIZE = 26
@@ -87,7 +87,7 @@ class Bad_AI:
     def check_word(
         self, 
         sus_word: Word
-    ) -> List[Word | None]:
+    ) -> List[Word]:
         """
         Function Description:
             Find and return all words in the trie whose substitution-only

@@ -40,7 +40,7 @@ def crowdedCampus(
     time_prefs: List[Preference],
     classes: List[Class],
     min_satis: Satisfaction
-) -> Allocation:
+) -> Allocation | None:
     """
     Function Description:
         Verifies whether a valid allocation of students into proposed classes exists
@@ -71,15 +71,15 @@ def crowdedCampus(
         An allocation list of length n where allocation[i] is the class index
         assigned to student i, or None if no valid allocation exists.
 
-    Time Complexity: O(n * m) = O(n^2) worst-case when m = Θ(n).
+    Time Complexity: O(n * m) = O(n^2) worst-case when m is on average O(n).
     Time Complexity Analysis:
         - Building `time_to_classes`: O(m).
         - Phase 1 (top-5 greedy): Each of the n students checks up to 5 preferences,
           scanning classes in that slot ⇒ O(n * 5 * (m/20)) = O(n * m).
         - Phase 2a/2b fill operations: linear scans over students and classes ⇒ O(n + m).
-        Total: O(n * m) ⇒ O(n^2) if m = Θ(n).
+        Total: O(n * m) ⇒ O(n^2) if m is on average O(n).
 
-    Auxiliary Space: O(n + m) = O(n) worst-case when m = Θ(n).
+    Auxiliary Space: O(n + m) = O(n) worst-case when m = O(n).
     Space Complexity Analysis:
         - `time_to_classes`: O(m + 20).
         - `allocation`, `class_filled`: O(n + m).
