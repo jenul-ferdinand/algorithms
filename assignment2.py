@@ -2,7 +2,7 @@ from typing import List, Tuple
 
 __author__ = "Jenul Devon Ferdinand (33119805)"
 __email__ = "jfer0043@student.monash.edu"
-__date__ = "24/05/2025"
+__date__ = "26/05/2025"
 
 
 #? =============================================================================|
@@ -102,7 +102,7 @@ def crowdedCampus(
     time_to_classes: List[List[ClassTime]] = [[] for _ in range(20)]
     for j, c in enumerate(classes):
         class_time: ClassTime = c[0] # Get the class time
-        time_to_classes[class_time].append(j) # key (class_time) to value (student index)
+        time_to_classes[class_time].append(j) # key (cls_time) to val (stu_idx)
 
     # Get class mins and maxs
     class_mins: List[MinStudents] = [c[1] for c in classes]
@@ -140,7 +140,7 @@ def crowdedCampus(
         needed_for_min = max(0, class_mins[j] - class_filled[j])
         while needed_for_min > 0:
             if not remaining:
-                return None # Not enough students overall
+                return None
             
             student = remaining.pop()
             
@@ -156,7 +156,7 @@ def crowdedCampus(
     for student in remaining:
         placed = False
         for j in range(num_classes):
-            if class_filled[j] < class_maxs[j]: # Check current filled against original max
+            if class_filled[j] < class_maxs[j]: 
                 allocation[student] = j
                 class_filled[j] += 1
                 placed = True
@@ -234,16 +234,16 @@ class Bad_AI:
 
         Auxiliary Space: O(C)
         Space Complexity Analysis:
-            - Up to C new TrieNode instances are created (one per inserted character).
+            - Up to C new TrieNode instances are created (one per inserted char)
             - Each node allocates a fixed-size `children` list of length 26.
 
         Notes for Marker:
             Uses a trie with `__slots__` on TrieNode to minimise per-node 
             memory overhead.
         """
-        self.root = TrieNode()
+        self.root: TrieNode = TrieNode()
         for w in list_words:
-            node = self.root
+            node: TrieNode = self.root
             for ch in w:
                 idx = ord(ch) - ord('a')
                 if node.children[idx] is None:
@@ -296,9 +296,8 @@ class Bad_AI:
         sus_indexes = [ord(c) - ord_base for c in sus_word]
         N = len(sus_indexes)
         
-        root = self.root
+        root: TrieNode = self.root
         result: List[Word] = []
-        add_result = result.append
 
         # Stack holds tuples (node, index in sus_word, mismatches_used)
         stack: List[State] = [(root, 0, 0)]
@@ -306,7 +305,7 @@ class Bad_AI:
             node, index, mismatches = stack.pop()
             if index == N:
                 if mismatches == 1 and node.word is not None:
-                    add_result(node.word)
+                    result.append(node.word)
                 continue
             
             orig_idx = sus_indexes[index]
