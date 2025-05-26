@@ -1,5 +1,5 @@
 import unittest
-from typo import Bad_AI
+from assignment2 import Bad_AI
 
 class TestQ2NoahDall(unittest.TestCase):
     def test1(self):

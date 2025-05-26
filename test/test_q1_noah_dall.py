@@ -1,5 +1,5 @@
 import unittest
-from crowded_campus import crowdedCampus
+from assignment2 import crowdedCampus
 
 class TestQ1NoahDall(unittest.TestCase):
     def validate_allocation(self, n, m, time_preferences, proposed_classes, minimum_satisfaction, allocation):

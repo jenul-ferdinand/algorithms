@@ -1,4 +1,4 @@
-from crowded_campus import crowdedCampus
+from assignment2 import crowdedCampus
 import unittest
 
 class TestQ1AlinMerchant(unittest.TestCase):

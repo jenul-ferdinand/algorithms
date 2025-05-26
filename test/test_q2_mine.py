@@ -1,5 +1,5 @@
 import unittest
-from typo import Bad_AI
+from assignment2 import Bad_AI
 
 class TestQ2Mine(unittest.TestCase):
     def test_spec_examples(self):
