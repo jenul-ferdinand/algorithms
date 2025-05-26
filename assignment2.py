@@ -1,9 +1,8 @@
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 __author__ = "Jenul Devon Ferdinand (33119805)"
 __email__ = "jfer0043@student.monash.edu"
-__date__ = "26/05/2025"
-
+__date__ = "27/05/2025"
 
 #? =============================================================================|
 #? TYPE ALIASES AND CONSTANTS
@@ -13,25 +12,24 @@ __date__ = "26/05/2025"
 Satisfaction = int
 
 # Represents a class which is a list of integers (max 3 elements)
-# i.e., [class_time, min_students, max_students]
-Class = List[int] 
+# [class_time, min_students, max_students]
+Class = List[int]
 ClassTime = int
 MinStudents = int
 MaxStudents = int
 
-# A preference is a list of class times
+# A preference is a list of class times permutation {0..19}
 Preference = List[ClassTime]
 
-# An allocation is a list of class times where each index is a student, 
+# An allocation is a list of class times where each index is a student,
 # indexed in order based on the order of students from time_prefs.
-Allocation = List[ClassTime]
+Allocation = List[int]
 
 # Allocation value for unassigned students
-UNASSIGNED = -1 
-
+UNASSIGNED = -1
 
 #! =============================================================================|
-#! Crowded Campus Algorithm
+#! Crowded Campus Algorithm with Elastic Swap Repair
 #! =============================================================================|
 
 def crowdedCampus(
@@ -40,25 +38,29 @@ def crowdedCampus(
     time_prefs: List[Preference],
     classes: List[Class],
     min_satis: Satisfaction
-) -> Allocation | None:
+) -> Optional[Allocation]:
     """
     Function Description:
-        Verifies whether a valid allocation of students into proposed classes exists
-        that satisfies each class's capacity constraints and ensures at least
-        `min_satis` students get put in a class in their top-5 preferred time slots.
+        Verifies whether a valid allocation of students into proposed classes 
+        exists that satisfies each class's capacity constraints, and ensures at 
+        least `min_satis` students are placed in a class whose time-slot is 
+        within their top-5 preferences.
 
     Approach Description:
-        Two step greedy algorithm:
-        1. Step 1 - Greedy Top-5 Assignment:
-           Iterate through each student and attempt to assign them to one of their
-           top-5 preferred time slots by selecting the first available class with
-           remaining capacity.
+        1. Greedy top-5 assignment: For each student, assign to the first 
+        available class among their top-5 where capacity remains.
+        
+        2. Fill minimums also with swapping: For each class, fulfill its minimum
+        occupancy by assigning from the pool of unassigned students; if that pool
+        is empty, reassign students from classes currently above their min,
+        even if it reduces satisfaction, tracking final satisfaction later.
+        
+        3. Dump leftovers: Assign any still-unassigned students to any class
+        with remaining capacity.
            
-        2. Step 2 - Fill to Meet Minimums and Dump Remaining:
-           a. Collect all unassigned students and fulfill each class's minimum
-              occupancy by assigning from this pool.
-           b. Assign any leftover students to classes with remaining capacity.
-
+        4. Check satisfaction: Calculate the number of students in their top-5
+        slots; if it's below `min_satis`, return None.
+        
     Args:
         - num_students: Number of students (n).
         - num_classes: Number of proposed classes (m).
@@ -73,99 +75,124 @@ def crowdedCampus(
         An allocation list of length n where allocation[i] is the class index
         assigned to student i, or None if no valid allocation exists.
 
-    Time Complexity: O(n * m)=O(n^2) worst-case when m is on average O(n).
+    Time Complexity: O(N * M) = O(N^2) worst-case when M is on average O(N).
     Time Complexity Analysis:
-        - Constructing time_to_classes: O(m).
-        - Step 1 (top-5 greedy): Each of the n students checks up to 5 
-        preferences, scanning classes in that slot -> O(n*5*(m/20))=O(n*m).
-        - Step 2a/2b remaining dump: linear scans over students and 
-        classes -> O(n + m).
+        - Building `time_to_classes`: O(M)
+        - Step 1 (greedy top-5): Each of the N students examines up to 5 slots
+            and scans classes in that slot -> O(N * 5 * (M/20)) = O(M * N)
+        - Step 2a (fills mins with swaps): At most N fills/steals, each may 
+            scan O(M + N) in worst case -> O(N * (M + N)) = O(N * M).
+        - Step 2b (dumping leftovers): Scans remaining students (<= N) and up
+            to M classes each -> O(N * M).
+        - Satisfaction counting: O(N * 5) = O(N).
+        Total: O(N * M) -> O(N^2) in the worst case.
+    
+    Auxiliary Space Complexity: O(N + M) = O(N) worst-case when M = O(N).
+    Auxiliary Space Complexity Analysis:
+        - `time_to_classes`: O(M).
+        - `class_mins`, `class_maxs`: O(M).
+        - `allocation`, `class_filled`: O(N + M).
+        - `remaining` list and swap indicies: O(N).
+        - Constant extra variables and counters.
+        Total: O(N + M) -> O(N) in the worst case.
         
-        Total: O(n * m) -> O(n^2) if m is on average O(n).
-
-    Auxiliary Space: O(n + m) = O(n) worst-case when m = O(n).
-    Space Complexity Analysis:
-        - `time_to_classes`: O(m + 20).
-        - `allocation`, `class_filled`: O(n + m).
-        - `remaining` list: O(n).
-        - Constant extra variables.
+    Terms:
+        - N = Number of students (`num_students`)
+        - M = Number of classes (`num_classes`)
         
     Notes for Marker:
-    - This algorithm uses a greedy approach that has two main steps, I 
-    went with this approach to more easily to adhere to the time and space 
-    constraints of the problem, compared to using a more complex max flow 
-    solution.
+    - This algorithm uses a greedy approach, I went with this approach to more 
+    easily to adhere to the time and space constraints of the problem, compared 
+    to using a more complex max flow solution.
     
     Thank you!
     """
-    # Build mapping from timeslot to class indices
-    time_to_classes: List[List[ClassTime]] = [[] for _ in range(20)]
+    # Build time-slot -> class indices mapping
+    time_to_classes: List[List[int]] = [[] for _ in range(20)]
     for j, c in enumerate(classes):
-        class_time: ClassTime = c[0] # Get the class time
-        time_to_classes[class_time].append(j) # key (cls_time) to val (stu_idx)
-
-    # Get class mins and maxs
-    class_mins: List[MinStudents] = [c[1] for c in classes]
-    class_maxs: List[MaxStudents] = [c[2] for c in classes]
+        time_to_classes[c[0]].append(j)
     
+    # Get class mins and maxs
+    class_mins = [c[1] for c in classes]
+    class_maxs = [c[2] for c in classes]
+
     # Allocation state
     allocation: Allocation = [UNASSIGNED] * num_students
-    class_filled: List[int] = [0] * num_classes
-    satisfied = 0
+    class_filled = [0] * num_classes
 
-    # * (1) Greedily assign as many students as we can into a class.
-    # * where the class time is in their top-5, up to each class's max.
-    for student in range(num_students):
-        for pref_rank in range(5):
-            class_time: ClassTime = time_prefs[student][pref_rank]
-            
-            for j in time_to_classes[class_time]:
+    # * (1) Greedily allocate top-5 preferences
+    for i in range(num_students):
+        for r in range(5):
+            slot = time_prefs[i][r]
+            for j in time_to_classes[slot]:
                 if class_filled[j] < class_maxs[j]:
-                    allocation[student] = j
+                    allocation[i] = j
                     class_filled[j] += 1
-                    satisfied += 1
                     break
-            
-            if allocation[student] != UNASSIGNED:
+            if allocation[i] != UNASSIGNED:
                 break
 
+    # * (2) Fill minimums with swap if needed
+    remaining = [i for i, a in enumerate(allocation) if a == UNASSIGNED]
+    for j in range(num_classes):
+        needed = max(0, class_mins[j] - class_filled[j])
+        while needed > 0:
+            if remaining:
+                i = remaining.pop()
+                prev = UNASSIGNED
+            else:
+                # Find any overfull class k to steal from
+                prev = None
+                for k in range(num_classes):
+                    if class_filled[k] > class_mins[k]:
+                        # Steal a student from class k 
+                        for ii in range(num_students):
+                            if allocation[ii] == k:
+                                i = ii
+                                prev = k
+                                break
+                    if prev is not None:
+                        break
+                if prev is None:
+                    return None
+                class_filled[prev] -= 1
+            # Assign student i into class j
+            allocation[i] = j
+            class_filled[j] += 1
+            needed -= 1
+
+    # * (3) Dump any truly leftover students
+    # * (those still UNASSIGNED after step 2)
+    for i, a in enumerate(allocation):
+        if a == UNASSIGNED:
+            placed = False
+            for j in range(num_classes):
+                if class_filled[j] < class_maxs[j]:
+                    allocation[i] = j
+                    class_filled[j] += 1
+                    placed = True
+                    break
+            if not placed:
+                return None
+
+    # Sanity check: occupanccy within [min, max]
+    for j in range(num_classes):
+        if not (class_mins[j] <= class_filled[j] <= class_maxs[j]):
+            return None
+
+    # * (4) Calculate final satisfaction
+    satisfied = 0
+    for i in range(num_students):
+        slot_i = classes[allocation[i]][0]
+        for r in range(5):
+            if time_prefs[i][r] == slot_i:
+                satisfied += 1
+                break
     if satisfied < min_satis:
         return None
 
-    # Collect unassigned students
-    remaining = [i for i in range(num_students) if allocation[i] == -1]
-    
-    # * (2a) Fulfill every class's remaining minimum by popping students
-    for j in range(num_classes):
-        needed_for_min = max(0, class_mins[j] - class_filled[j])
-        while needed_for_min > 0:
-            if not remaining:
-                return None
-            
-            student = remaining.pop()
-            
-            # Check if class j can even take another student
-            if class_filled[j] >= class_maxs[j]:
-                return None 
-            
-            allocation[student] = j
-            class_filled[j] += 1
-            needed_for_min -= 1
-
-    # * (2b) Assign any leftover students to classes with remaining capacity
-    for student in remaining:
-        placed = False
-        for j in range(num_classes):
-            if class_filled[j] < class_maxs[j]: 
-                allocation[student] = j
-                class_filled[j] += 1
-                placed = True
-                break
-        
-        if not placed:
-            return None # This student couldn't be placed 
-    
-    return allocation   
+    # Output proposed allocation
+    return allocation
 
 
 
