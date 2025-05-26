@@ -45,7 +45,7 @@ def crowdedCampus(
     Function Description:
         Verifies whether a valid allocation of students into proposed classes exists
         that satisfies each class's capacity constraints and ensures at least
-        `min_satis` students receive a class in their top-5 preferred time slots.
+        `min_satis` students get put in a class in their top-5 preferred time slots.
 
     Approach Description:
         Two step greedy algorithm:
@@ -60,24 +60,28 @@ def crowdedCampus(
            b. Assign any leftover students to classes with remaining capacity.
 
     Args:
-        num_students: Number of students (n).
-        num_classes: Number of proposed classes (m).
-        time_prefs: List of length n; each element is a permutation of 0..19
-                    indicating a student's ranked time-slot preferences.
-        classes: List of length m; each entry is a another list [class_time, min_students, max_students].
-        min_satis: Minimum number of students that must be assigned within their top-5 preferences.
+        - num_students: Number of students (n).
+        - num_classes: Number of proposed classes (m).
+        - time_prefs: List of length n; each element is a permutation of 0..19
+        indicating a student's ranked time-slot preferences.
+        - classes: List of length m; each entry is another list with 3 integers
+        [class_time, min_students, max_students].
+        - min_satis: Minimum number of students that must be assigned within 
+        their top-5 preferences.
 
     Returns:
         An allocation list of length n where allocation[i] is the class index
         assigned to student i, or None if no valid allocation exists.
 
-    Time Complexity: O(n * m) = O(n^2) worst-case when m is on average O(n).
+    Time Complexity: O(n * m)=O(n^2) worst-case when m is on average O(n).
     Time Complexity Analysis:
-        - Building `time_to_classes`: O(m).
-        - Phase 1 (top-5 greedy): Each of the n students checks up to 5 preferences,
-          scanning classes in that slot ⇒ O(n * 5 * (m/20)) = O(n * m).
-        - Phase 2a/2b fill operations: linear scans over students and classes ⇒ O(n + m).
-        Total: O(n * m) ⇒ O(n^2) if m is on average O(n).
+        - Constructing time_to_classes: O(m).
+        - Step 1 (top-5 greedy): Each of the n students checks up to 5 
+        preferences, scanning classes in that slot -> O(n*5*(m/20))=O(n*m).
+        - Step 2a/2b remaining dump: linear scans over students and 
+        classes -> O(n + m).
+        
+        Total: O(n * m) -> O(n^2) if m is on average O(n).
 
     Auxiliary Space: O(n + m) = O(n) worst-case when m = O(n).
     Space Complexity Analysis:
@@ -96,18 +100,21 @@ def crowdedCampus(
     """
     # Build mapping from timeslot to class indices
     time_to_classes: List[List[ClassTime]] = [[] for _ in range(20)]
-    class_mins: List[MinStudents] = [c[1] for c in classes]
-    class_maxs: List[MaxStudents] = [c[2] for c in classes]
     for j, c in enumerate(classes):
         class_time: ClassTime = c[0] # Get the class time
         time_to_classes[class_time].append(j) # key (class_time) to value (student index)
 
+    # Get class mins and maxs
+    class_mins: List[MinStudents] = [c[1] for c in classes]
+    class_maxs: List[MaxStudents] = [c[2] for c in classes]
+    
+    # Allocation state
     allocation: Allocation = [UNASSIGNED] * num_students
     class_filled: List[int] = [0] * num_classes
     satisfied = 0
 
-    # (1) Greedily assign as many students as we can into a class.
-    # where the class time is in their top-5, up to each class's max.
+    # * (1) Greedily assign as many students as we can into a class.
+    # * where the class time is in their top-5, up to each class's max.
     for student in range(num_students):
         for pref_rank in range(5):
             class_time: ClassTime = time_prefs[student][pref_rank]
@@ -128,7 +135,7 @@ def crowdedCampus(
     # Collect unassigned students
     remaining = [i for i in range(num_students) if allocation[i] == -1]
     
-    # (2a) Fulfill every class's remaining minimum by popping students
+    # * (2a) Fulfill every class's remaining minimum by popping students
     for j in range(num_classes):
         needed_for_min = max(0, class_mins[j] - class_filled[j])
         while needed_for_min > 0:
@@ -145,7 +152,7 @@ def crowdedCampus(
             class_filled[j] += 1
             needed_for_min -= 1
 
-    # (2b) Assign any leftover students to classes with remaining capacity
+    # * (2b) Assign any leftover students to classes with remaining capacity
     for student in remaining:
         placed = False
         for j in range(num_classes):
@@ -158,9 +165,4 @@ def crowdedCampus(
         if not placed:
             return None # This student couldn't be placed 
     
-    # Final check: all classes should be within their min and max
-    for j in range(num_classes):
-        if not class_mins[j] <= class_filled[j] <= class_maxs[j]:
-            return None # Logic flaw if this ever happens ()_()
-        
     return allocation   

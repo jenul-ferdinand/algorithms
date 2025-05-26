@@ -23,9 +23,8 @@ ALPHABET_SIZE = 26
 
 class TrieNode:
     """
-    A class representing a node in a trie.
-    
-    Alphabet size is fixed to 26 for lowercase letters a..z.
+    A node in a prefix trie for lowercase words, with a 26-slot child array and 
+    a bitmask for existing children.
     """
     __slots__ = ('children', 'word', 'mask')
     def __init__(self):
@@ -90,19 +89,20 @@ class Bad_AI:
     ) -> List[Word]:
         """
         Function Description:
-            Find and return all words in the trie whose substitution-only
-            Levenshtein distance to `sus_word` is exactly one.
+            Return all words in the Trie whose substitution-only edit distance 
+            to `sus_word` is exactly one.
 
         Approach Description:
-            Use a stack to simulate DFS. Precompute index list of `sus_word`.
-            At each state (node, position, mismatches):
-            
-            1. Follow the matching child (if it exists) without consuming the 
-            mismatch.
-            2. If no mismatch yet.. Use the node's bitmask to iterate only over
-            actual non-matching children for a single substitution.
-            
-            Collect words at leaf nodes when exactly one mismatch has been used.
+            1. Get integer indices for `sus_word` characters.
+            2. Use a stack of states for DFS: (node, position, mismatches).
+            3. At each state:
+                a. If position == len(sus_word) and mismatches == 1 and 
+                    node.word exists, collect node.word.
+                b. Otherwise, push:
+                    - The exact-match child (same index, same mismatch count).
+                    - If no mismatch used yet, use node.mask to iterate existing
+                    children except the matching one, pushing each with 
+                    mismatches = 1.
 
         Args:
             sus_word: Target string of lowercase letters to compare.
@@ -113,17 +113,16 @@ class Bad_AI:
 
         Time Complexity: O(J * A + R)
         Time Complexity Analysis:
-            - J = length of `sus_word`, A = alphabet size (constant 26).
-            - DFS explores at most two recursive paths per depth (match + one
-              substitution), scanning A children each time: O(J * A).
-            - Appending R result-strings costs O(R) total.
+            - J = length of `sus_word`, A = alphabet size (constant 26),
+                R = total length of returned words.
+            - Each stack step does O(A_mask) work for bitmask iterations.
 
         Auxiliary Space: O(J + R)
         Space Complexity Analysis:
-            - Call stack depth: O(J).
-            - Result list and collected words: O(R), where R is total length of returned words.
+            - Stack size = O(J)
+            - Result list size = O(R) for collected words.
         """
-        # Precompute character indicies
+        # Get character indicies
         ord_base = ord('a')
         sus_indexes = [ord(c) - ord_base for c in sus_word]
         N = len(sus_indexes)
