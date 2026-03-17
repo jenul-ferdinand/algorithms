@@ -15,7 +15,7 @@ def zalg(string: str) -> list[int]:
         if k > right:
             print('case 1')
             i = 0
-            while right + i < n and string[i] == string[k + i]:
+            while k + i < n and string[i] == string[k + i]:
                 i += 1
             z[k] = i
             if z[k] > 0:
@@ -62,3 +62,10 @@ if __name__ == '__main__':
     
     correct = [6,0,1,3,0,1]
     assert z == correct, f'\nExpected {correct},\nGot      {z}'
+
+    del z
+    del correct
+    print("\n")
+
+    z = zalg("aaaaaaaa")
+    print(z)
