@@ -1,2 +1,5 @@
 // Xournal++ autosave files
 *.autosave.xopp
+
+// Python files
+*.pyc
