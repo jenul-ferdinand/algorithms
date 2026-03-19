@@ -35,6 +35,23 @@ def zalg(string: str) -> list[int]:
 
 
 def get_suffix_prefix_length(suffstring: str, prestring: str) -> int:
+    """
+    Returns the length of the longets suffix of suffstring that exactly matches
+    the prefix of prestring.
+
+    Let S be the length of suffstring
+    Let P be the length of prestring
+    Let N be the combined length of both S and P
+
+    Time complexity: O(N + N) = O(N)
+        We pass the combined string of size N into zalg, which in turn takes N
+        iterations to complete the Z array.
+        Then we iterate through the Z array to return the correct z value as our
+        answer.
+    
+    Space complexity: O(N)
+        We store an array of size N for the z array.
+    """
     string = prestring + '$' + suffstring
     n = len(string)
 
