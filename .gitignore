@@ -3,6 +3,3 @@
 
 // Python files
 *.pyc
-
-// VS Code settings
-.vscode/
