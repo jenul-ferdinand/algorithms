@@ -1,4 +1,5 @@
 #include <stdio.h>
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
 
 int main() {
     const char string[] = "abaaba";
@@ -14,7 +15,7 @@ int main() {
     // naive
     for (int k = 1; k < n; k++) {
         if (k > right) {
-            // case 1: naive comparison
+            // case 1 naive comparison
             size_t j = 0;
             while (k+j < n && string[j] == string[k+j]) {
                 j++;
@@ -26,25 +27,18 @@ int main() {
             }
         } 
         else if (k <= right) {
-            // case 2a
-            if (z[k-left] < right-k) {
-                z[k] = z[k-left];
-            }
-            // case 2b
-            else if (z[k-left] >= right-k) {
-                z[k] = right-k;
-
-                // case 2c
-                if (z[k-left] == right-k) {
-                    size_t m = 0;
-                    while (right+m < n && string[right+m] == string[right-k+m]) {
-                        m++;
-                    }
-                    z[k] += m;
-                    if (z[k] > 0) {
-                        left = k;
-                        right = k+z[k];
-                    }
+            // case 2a or 2b
+            z[k] = MIN(z[k-left], right-k);
+            // case 2c naive extension
+            if (z[k-left] == right-k) {
+                size_t m = 0;
+                while (right-m < n && string[right+m] == string[right-k+m]) {
+                    m++;
+                }
+                z[k] += m;
+                if (z[k] > 0) {
+                    left = k;
+                    right = k+z[k];
                 }
             }
         }
