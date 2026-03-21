@@ -2,7 +2,7 @@
 
 int main() {
     const char string[] = "abxbab";
-    const size_t n = sizeof(string) - 1; // 6 elements
+    const size_t n = sizeof(string) - 1;  // 6 elements
 
     int z[n];
     for (size_t i = 0; i < n; i++) z[i] = 0;
@@ -21,10 +21,11 @@ int main() {
     printf("[");
     for (int m = 0; m <= n; m++) {
         printf("%d", z[m]);
-        if (m < n) { printf(", "); }
+        if (m < n) {
+            printf(", ");
+        }
     }
     printf("]");
 
     return 0;
 }
-
