@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <printarr.h>
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
 int main() {
@@ -44,15 +45,7 @@ int main() {
         }
     }
 
-    // print array
-    printf("[");
-    for (int m = 0; m < n; m++) {
-        printf("%d", z[m]);
-        if (m < n - 1) {
-            printf(", ");
-        }
-    }
-    printf("]");
+    printarr(z, n); 
 
     return 0;
 }
