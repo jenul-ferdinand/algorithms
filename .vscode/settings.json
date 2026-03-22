@@ -13,6 +13,11 @@
         "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.formatOnSave": true
     },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "prettier.tabWidth": 4,
+    },
     "rewrap.wrappingColumn": 80,
     "rewrap.autoWrap.enabled": true
 }
