@@ -24,6 +24,15 @@ alignment based on the bad character alone.
 
 
 def boyermoore_extendedbcr(pat: str, string: str) -> bool:
+    """
+    Boyer Moore Extended BCR
+
+    Time complexity (worst): O(mn) where all shifts were one alignment.
+
+    Time complexity (best): O(n/m)
+
+    Space complexity: O(m * |alphabet|) to store the 2D array
+    """
     n = len(string)
     m = len(pat)
 

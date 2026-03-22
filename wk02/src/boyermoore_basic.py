@@ -15,6 +15,19 @@ easier to grasp without good suffix rule and galil's optimisation.
 
 
 def boyermoore_basic(pat: str, txt: str) -> bool:
+    """
+    Boyer Moore Basic
+
+    Let m be the length of the pattern Let n be the length of the string
+
+    Time complexity (worst): O(mn) where all shifts were one alignment.
+
+    Time complexity (best): O(n/m) when the last character of the pattern
+    doesn't appear in the string.
+
+    Space complexity: O(m + |alphabet|)=O(m) to store the dictionary to get the
+    pattern occurrence positions.
+    """
     n = len(txt)
     m = len(pat)
 
