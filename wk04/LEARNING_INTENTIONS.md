@@ -1,0 +1,4 @@
+- Ukkonen's linear-time suffix tree construction
+- Reasoning all its mechanics
+- Proof of why Ukkonen's algorithm run in linear time.
+- (If one can construct a suffix tree in linear time, this implies you will be able to construct a suffix array and BWT (week 3 topic) also in linear time.)

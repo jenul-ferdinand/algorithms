@@ -1,0 +1,3 @@
+- Gusfield's Z algorithm/preprocessing
+- Enabling exact pattern matching with Z-based string preprocessing
+- Linear time construction proof

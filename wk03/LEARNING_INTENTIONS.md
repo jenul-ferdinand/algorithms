@@ -1,0 +1,3 @@
+- BWT of a string
+- Inverting a BWT to reconstruct the original string
+- Use of BWT for pattern matching in time proportional to the pattern length.
