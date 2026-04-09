@@ -1,15 +1,17 @@
 [project]
-name = "fit3155"
+name = "Algorithms"
 version = "0.0.0"
 requires-python = ">=3.10"
+dependencies = [
+    "pytest>=9.0.3",
+    "ruff>=0.15.9",
+]
 
 [tool.ruff]
 line-length = 80
+exclude = ["__pycache__", ".venv"]
 
 [tool.ruff.format]
 docstring-code-format = true
-
-[dependency-groups]
-dev = [
-    "ruff>=0.15.9",
-]
+quote-style = "double"
+indent-style = "space"
