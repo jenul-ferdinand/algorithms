@@ -1,8 +1,8 @@
 import pytest  # noqa
-from wk01.ex01 import higher_lower
-from wk01.ex02 import higher_lower as higher_lower2
-from wk01.ex03 import binary_search
-from wk01.ex04 import digital_root
+from fit1008.wk01.ex01 import higher_lower
+from fit1008.wk01.ex02 import higher_lower as higher_lower2
+from fit1008.wk01.ex03 import binary_search
+from fit1008.wk01.ex04 import digital_root
 
 
 def test_ex01():
