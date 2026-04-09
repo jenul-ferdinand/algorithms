@@ -11,5 +11,5 @@ docstring-code-format = true
 
 [dependency-groups]
 dev = [
-    "ruff>=0.15.7",
+    "ruff>=0.15.9",
 ]
