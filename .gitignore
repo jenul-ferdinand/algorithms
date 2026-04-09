@@ -16,41 +16,6 @@ ENV/
 .env/
 .venv/
 
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IDE specific files
-.idea/
-.vscode/
-*.swp
-*.swo
-.vs/
-
-# Testing
-.coverage
-htmlcov/
-.pytest_cache/
-.tox/
-
-# Mypy cache
-.mypy_cache/
-
-# Documentation
-docs/_build/
-docs/api/
-site/
-
-# Mac OS
-.DS_Store
-
-# Windows
-Thumbs.db
-desktop.ini
-
-# Log files
-*.log
-logs/
-
 # Rust
 target/
 rust/target/
@@ -58,3 +23,13 @@ rust/**/target/
 **/*.rs.bk
 Cargo.lock
 *.pdb
+
+# Xournal++ autosave files
+*.autosave.xopp
+
+# Python files
+*.pyc
+
+# Assignments
+fit3155/ass01/
+fit3155/ass02/
