@@ -1,0 +1,3 @@
+- Introduction to Shannon's information content and entropy
+- Fixed and variable length codes on character and integers
+- Lempel-Ziv (LZ77) algorithm and its variant.

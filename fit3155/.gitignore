@@ -1,0 +1,9 @@
+// Xournal++ autosave files
+*.autosave.xopp
+
+// Python files
+*.pyc
+
+// Assignments
+ass01/
+ass02/
