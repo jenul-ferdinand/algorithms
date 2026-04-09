@@ -1,5 +1,6 @@
 {
     "editor.formatOnSave": true,
+    // Python
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.codeActionsOnSave": {
@@ -11,5 +12,23 @@
         "format": {
             "docstring-code-format": true
         }
-    }
+    },
+    // Markdown
+    "[markdown]": {
+        "editor.wordWrap": "bounded"
+    },
+    // C
+    "[c]": {
+        "editor.defaultFormatter": "ms-vscode.cpptools",
+        "editor.formatOnSave": true
+    },
+    // TypeScript
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.formatOnSave": true,
+        "prettier.tabWidth": 4,
+    },
+    // Rewrap Extension
+    "rewrap.wrappingColumn": 80,
+    "rewrap.autoWrap.enabled": true
 }
