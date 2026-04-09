@@ -1,9 +1,0 @@
-[package]
-name = "wk02"
-version.workspace = true
-edition.workspace = true
-authors.workspace = true
-
-[dependencies]
-
-[dev-dependencies]
