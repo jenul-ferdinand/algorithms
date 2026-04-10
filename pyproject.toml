@@ -1,11 +1,18 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
-name = "Algorithms"
+name = "algorithms"
 version = "0.0.0"
 requires-python = ">=3.10"
 dependencies = [
     "pytest>=9.0.3",
     "ruff>=0.15.9",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["fit1008", "fit2004", "fit3155"]
 
 [tool.ruff]
 line-length = 80

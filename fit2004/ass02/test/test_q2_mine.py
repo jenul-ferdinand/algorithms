@@ -1,5 +1,5 @@
 import unittest
-from assignment2 import Bad_AI
+from fit2004.ass02.assignment2 import Bad_AI
 
 class TestQ2Mine(unittest.TestCase):
     def test_spec_examples(self):

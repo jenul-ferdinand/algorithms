@@ -1,4 +1,4 @@
-from assignment1 import intercept
+from fit2004.ass01.assignment1 import intercept
 import unittest
 
 class PeerTestCases(unittest.TestCase):

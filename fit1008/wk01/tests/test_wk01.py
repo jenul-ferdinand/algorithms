@@ -1,4 +1,5 @@
 import pytest  # noqa
+
 from fit1008.wk01.ex01 import higher_lower
 from fit1008.wk01.ex02 import higher_lower as higher_lower2
 from fit1008.wk01.ex03 import binary_search
@@ -36,10 +37,10 @@ def test_ex02(monkeypatch, capsys):
 def test_ex03():
     sarr = [1, 2, 3, 4, 5, 6, 7, 8, 10]
 
-    assert binary_search(sarr, 1) == True
-    assert binary_search(sarr, 10) == True
-    assert binary_search(sarr, 5) == True
-    assert binary_search(sarr, 12) == False
+    assert binary_search(sarr, 1)
+    assert binary_search(sarr, 10)
+    assert binary_search(sarr, 5)
+    assert binary_search(sarr, 12)
 
 
 def test_ex04():

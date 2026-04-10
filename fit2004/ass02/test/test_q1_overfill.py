@@ -1,5 +1,5 @@
-from assignment2 import crowdedCampus
-from helpers import make_full_prefs, make_full_prefs_random
+from fit2004.ass02.assignment2 import crowdedCampus
+from fit2004.ass02.helpers import make_full_prefs, make_full_prefs_random
 import unittest
 
 class TestQ1Overfill(unittest.TestCase):

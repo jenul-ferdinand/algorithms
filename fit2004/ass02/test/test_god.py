@@ -1,5 +1,5 @@
 import unittest
-from assignment2 import crowdedCampus, Bad_AI
+from fit2004.ass02.assignment2 import crowdedCampus, Bad_AI
 
 class TestA2(unittest.TestCase):
     def validate_allocation(

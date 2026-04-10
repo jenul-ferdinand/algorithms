@@ -1,5 +1,4 @@
-from assignment2 import crowdedCampus
-from helpers import make_full_prefs, make_full_prefs_random
+from fit2004.ass02.assignment2 import crowdedCampus
 import unittest
 
 class TestQ1GavinChandra(unittest.TestCase):
