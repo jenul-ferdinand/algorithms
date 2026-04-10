@@ -43,7 +43,7 @@ def plan(
 ) -> Road:
     #! Get the max location
     for road in roads:
-        max_location = max(max_location, road[0], road[1])
+        max_location = max(max_location, road[0], road[1]) # noqa
         
     #! Create the graph adjacency list
     graph = []
