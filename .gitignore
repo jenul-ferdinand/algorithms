@@ -30,6 +30,9 @@ Cargo.lock
 # Python files
 *.pyc
 
-# Assignments
+# Assignments for FIT3155 (still doing)
 fit3155/ass01/
 fit3155/ass02/
+
+# Coding agents
+.codex
