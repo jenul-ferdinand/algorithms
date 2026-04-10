@@ -5,7 +5,7 @@ requires-python = ">=3.10"
 [[package]]
 name = "algorithms"
 version = "0.0.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "pytest" },
     { name = "ruff" },
