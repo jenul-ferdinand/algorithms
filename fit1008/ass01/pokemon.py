@@ -1,4 +1,4 @@
-from pokemon_base import *
+from fit1008.ass01.pokemon_base import *
 import inspect
 
 class Bulbasaur(Pokemon):

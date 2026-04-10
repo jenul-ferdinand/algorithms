@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Generic, TypeVar
 
-from data_structures.referential_array import ArrayR
+from fit1008.ass02.data_structures.referential_array import ArrayR
 
 __author__ = "Jenul Ferdinand 33119805"
 

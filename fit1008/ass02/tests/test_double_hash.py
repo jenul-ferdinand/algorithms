@@ -1,7 +1,6 @@
 import unittest
-from ed_utils.decorators import number
-
-from double_key_table import DoubleKeyTable
+from fit1008.ass02.double_key_table import DoubleKeyTable
+from fit1008.ass02.ed_utils.decorators import number
 
 
 class TestDoubleHash(unittest.TestCase):

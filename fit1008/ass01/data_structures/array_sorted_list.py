@@ -3,8 +3,8 @@
     Items to store should be of time ListItem.
 """
 
-from data_structures.referential_array import ArrayR
-from data_structures.sorted_list_adt import *
+from fit1008.ass01.data_structures.referential_array import ArrayR
+from fit1008.ass01.data_structures.sorted_list_adt import *
 
 __author__ = 'Maria Garcia de la Banda and Brendon Taylor. Modified by Alexey Ignatiev and Graeme Gange'
 __docformat__ = 'reStructuredText'

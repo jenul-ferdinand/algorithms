@@ -1,9 +1,10 @@
 from __future__ import annotations
 from dataclasses import dataclass
-from computer import Computer
 from typing import TYPE_CHECKING, Union
-from branch_decision import BranchDecision
-from data_structures.linked_stack import LinkedStack
+
+from fit1008.ass02.branch_decision import BranchDecision
+from fit1008.ass02.computer import Computer
+from fit1008.ass02.data_structures.linked_stack import LinkedStack
 
 __author__ = "Michael Ridgway 35013370"
 

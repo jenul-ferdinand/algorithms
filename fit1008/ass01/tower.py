@@ -1,13 +1,14 @@
 import random
-from battle import Battle
-from battle_mode import BattleMode
-from poke_team import Trainer, PokeTeam
 from enum import Enum
-from data_structures.stack_adt import ArrayStack
-from data_structures.queue_adt import CircularQueue
-from data_structures.array_sorted_list import ArraySortedList
-from data_structures.sorted_list_adt import ListItem
 from typing import Tuple
+
+from fit1008.ass01.battle import Battle
+from fit1008.ass01.battle_mode import BattleMode
+from fit1008.ass01.data_structures.array_sorted_list import ArraySortedList
+from fit1008.ass01.data_structures.queue_adt import CircularQueue
+from fit1008.ass01.data_structures.sorted_list_adt import ListItem
+from fit1008.ass01.data_structures.stack_adt import ArrayStack
+from fit1008.ass01.poke_team import Trainer, PokeTeam
 
 class BattleTower:
     MIN_LIVES = 1

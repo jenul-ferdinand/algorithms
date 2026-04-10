@@ -1,11 +1,12 @@
 from __future__ import annotations
 from enum import Enum
 from math import ceil
-from data_structures.sorted_list_adt import ListItem
-from poke_team import Trainer, PokeTeam
 from typing import Tuple
-from battle_mode import BattleMode
-from pokemon_base import Pokemon
+
+from fit1008.ass01.battle_mode import BattleMode
+from fit1008.ass01.data_structures.sorted_list_adt import ListItem
+from fit1008.ass01.poke_team import Trainer, PokeTeam
+from fit1008.ass01.pokemon_base import Pokemon
 
 # Placeholder object for indeterminate outcome of a battle
 INDETERMINATE = object()

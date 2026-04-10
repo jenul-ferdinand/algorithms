@@ -1,5 +1,5 @@
-from data_structures.heap import MaxHeap
-from landsites import Land
+from fit1008.ass03.data_structures.heap import MaxHeap
+from fit1008.ass03.landsites import Land
 
 
 class Mode2Navigator:

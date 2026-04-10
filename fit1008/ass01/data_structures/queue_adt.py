@@ -9,7 +9,7 @@ __docformat__ = 'reStructuredText'
 import unittest
 from abc import ABC, abstractmethod
 from typing import Generic
-from data_structures.referential_array import ArrayR, T
+from fit1008.ass01.data_structures.referential_array import ArrayR, T
 
 class Queue(ABC, Generic[T]):
     """ Abstract class for a generic Queue. """

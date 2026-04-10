@@ -8,7 +8,7 @@ __since__ = '07/02/2023'
 
 
 from typing import TypeVar, Generic
-from data_structures.referential_array import ArrayR
+from fit1008.ass03.data_structures.referential_array import ArrayR
 
 K = TypeVar('K')
 V = TypeVar('V')

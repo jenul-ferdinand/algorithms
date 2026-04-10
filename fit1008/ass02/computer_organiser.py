@@ -1,9 +1,9 @@
 from __future__ import annotations
-from algorithms.binary_search import binary_search
-from algorithms.mergesort import merge, mergesort
-from computer import Computer
-from data_structures.hash_table import LinearProbeTable
-from infinite_hash_table import InfiniteHashTable
+from fit1008.ass02.algorithms.binary_search import binary_search
+from fit1008.ass02.algorithms.mergesort import merge, mergesort
+from fit1008.ass02.computer import Computer
+from fit1008.ass02.data_structures.hash_table import LinearProbeTable
+from fit1008.ass02.infinite_hash_table import InfiniteHashTable
 
 __author__ = "Jenul Ferdinand 33119805"
 

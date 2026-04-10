@@ -3,7 +3,7 @@
 """
 
 from __future__ import annotations
-from data_structures.set_adt import Set
+from fit1008.ass01.data_structures.set_adt import Set
 
 class BSet(Set[int]):
     """A bit-vector implementation of the set ADT. The set is represented

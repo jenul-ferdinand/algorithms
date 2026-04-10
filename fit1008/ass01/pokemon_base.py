@@ -3,8 +3,10 @@ This module contains PokeType, TypeEffectiveness and an abstract version of the 
 """
 from abc import ABC
 from enum import Enum
-from data_structures.referential_array import ArrayR
 from math import ceil
+from pathlib import Path
+
+from fit1008.ass01.data_structures.referential_array import ArrayR
 
 class PokeType(Enum):
     """
@@ -57,7 +59,9 @@ class TypeEffectiveness:
         
             # Open the type effectiveness csv file 
             try:
-                with open('type_effectiveness.csv', 'r') as csv:
+                with Path(__file__).with_name("type_effectiveness.csv").open(
+                    "r", encoding="utf-8"
+                ) as csv:
                     # Skip the header
                     next(csv)
                     

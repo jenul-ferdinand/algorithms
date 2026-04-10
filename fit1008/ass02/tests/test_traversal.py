@@ -1,9 +1,16 @@
 import unittest
-from ed_utils.decorators import number
-
-from computer import Computer
-from route import Route, RouteSeries, RouteSplit
-from virus import VirusType, TopVirus, BottomVirus, LazyVirus, RiskAverseVirus, FancyVirus, BranchDecision
+from fit1008.ass02.computer import Computer
+from fit1008.ass02.ed_utils.decorators import number
+from fit1008.ass02.route import Route, RouteSeries, RouteSplit
+from fit1008.ass02.virus import (
+    BottomVirus,
+    BranchDecision,
+    FancyVirus,
+    LazyVirus,
+    RiskAverseVirus,
+    TopVirus,
+    VirusType,
+)
 
 
 class TestRouteMethods(unittest.TestCase):

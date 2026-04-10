@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TypeVar
 
-from computer import Computer
+from fit1008.ass02.computer import Computer
 
 T = TypeVar("T")
 

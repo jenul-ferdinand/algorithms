@@ -1,6 +1,6 @@
-from data_structures.bst import BinarySearchTree
-from data_structures.linked_stack import LinkedStack
-from landsites import Land
+from fit1008.ass03.data_structures.bst import BinarySearchTree
+from fit1008.ass03.data_structures.linked_stack import LinkedStack
+from fit1008.ass03.landsites import Land
 
 class Mode1Navigator:
     """

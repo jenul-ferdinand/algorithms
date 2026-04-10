@@ -7,7 +7,7 @@ import inspect
 
 from unittest import result
 from unittest.signals import registerResult
-import ed_utils.decorators as decorators
+import fit1008.ass01.ed_utils.decorators as decorators
 
 DECORATOR_CLASSES = [
     klass for _name, klass in inspect.getmembers(decorators)

@@ -3,8 +3,8 @@
 """
 
 from __future__ import annotations
-from set import *
-from data_structures.referential_array import ArrayR
+from fit1008.ass03.data_structures.referential_array import ArrayR
+from fit1008.ass03.data_structures.set import *
 
 class ASet(Set[T]):
     """Simple array-based implementation of the set ADT.

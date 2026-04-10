@@ -1,8 +1,7 @@
 import unittest
-from ed_utils.decorators import number
-
-from computer import Computer
-from route import Route, RouteSeries, RouteSplit
+from fit1008.ass02.computer import Computer
+from fit1008.ass02.ed_utils.decorators import number
+from fit1008.ass02.route import Route, RouteSeries, RouteSplit
 
 
 class TestRouteMethods(unittest.TestCase):

@@ -1,7 +1,7 @@
 from __future__ import annotations
-from algorithms.mergesort import mergesort
-from computer import Computer
-from data_structures.hash_table import LinearProbeTable
+from fit1008.ass02.algorithms.mergesort import mergesort
+from fit1008.ass02.computer import Computer
+from fit1008.ass02.data_structures.hash_table import LinearProbeTable
 
 __author__ = "Jenul Ferdinand 33119805"
 

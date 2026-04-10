@@ -1,12 +1,13 @@
-from pokemon import *
 import random
-from battle_mode import BattleMode
-from data_structures.referential_array import ArrayR
-from data_structures.bset import BSet
-from data_structures.stack_adt import ArrayStack
-from data_structures.queue_adt import CircularQueue
-from data_structures.array_sorted_list import ArraySortedList
-from data_structures.sorted_list_adt import ListItem
+
+from fit1008.ass01.battle_mode import BattleMode
+from fit1008.ass01.data_structures.array_sorted_list import ArraySortedList
+from fit1008.ass01.data_structures.bset import BSet
+from fit1008.ass01.data_structures.queue_adt import CircularQueue
+from fit1008.ass01.data_structures.referential_array import ArrayR
+from fit1008.ass01.data_structures.sorted_list_adt import ListItem
+from fit1008.ass01.data_structures.stack_adt import ArrayStack
+from fit1008.ass01.pokemon import *
 
 
 

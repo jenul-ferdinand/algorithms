@@ -4,7 +4,7 @@ __author__ = "Brendon Taylor, modified by Jackson Goerner"
 __docformat__ = 'reStructuredText'
 
 from typing import Generic
-from data_structures.referential_array import ArrayR, T
+from fit1008.ass03.data_structures.referential_array import ArrayR, T
 
 
 class MaxHeap(Generic[T]):

@@ -1,9 +1,9 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
-from computer import Computer
-from route import Route, RouteSeries, RouteSplit
-from branch_decision import BranchDecision
-from data_structures.linked_stack import LinkedStack
+from fit1008.ass02.branch_decision import BranchDecision
+from fit1008.ass02.computer import Computer
+from fit1008.ass02.data_structures.linked_stack import LinkedStack
+from fit1008.ass02.route import Route, RouteSeries, RouteSplit
 
 __author__ = "Michael Ridgway 35013370"
 

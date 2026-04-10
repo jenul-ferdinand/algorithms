@@ -1,8 +1,7 @@
 from unittest import TestCase
-from ed_utils.decorators import number, visibility
-
-from landsites import Land
-from mode1 import Mode1Navigator
+from fit1008.ass03.ed_utils.decorators import number, visibility
+from fit1008.ass03.landsites import Land
+from fit1008.ass03.mode1 import Mode1Navigator
 
 
 class Mode1Tests(TestCase):

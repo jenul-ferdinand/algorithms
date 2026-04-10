@@ -1,7 +1,6 @@
 import unittest
-from ed_utils.decorators import number
-
-from infinite_hash_table import InfiniteHashTable
+from fit1008.ass02.ed_utils.decorators import number
+from fit1008.ass02.infinite_hash_table import InfiniteHashTable
 
 
 class TestInfiniteHash(unittest.TestCase):

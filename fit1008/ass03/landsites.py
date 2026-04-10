@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from random_gen import RandomGen
+from fit1008.ass03.random_gen import RandomGen
 
 # Land sites can have names other than the list follows.
 # This is just used for random generation.
