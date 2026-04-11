@@ -1,9 +1,10 @@
 {
     "editor.formatOnSave": true,
+    "editor.rulers": [80],
     // Python
     "python.defaultInterpreterPath": ".venv/bin/python",
     "python.testing.pytestEnabled": true,
-    "python.testing.pytestArgs": ["fit3155", "fit2004", "fit1008"],
+    "python.testing.pytestArgs": ["-s", "fit3155", "fit2004", "fit1008"],
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.codeActionsOnSave": {
@@ -12,11 +13,8 @@
         "editor.formatOnSave": true
     },
     "ruff.lineLength": 80,
-    "ruff.configuration": {
-        "format": {
-            "docstring-code-format": true
-        }
-    },
+    "ruff.importStrategy": "fromEnvironment",
+    "ruff.configuration": "${workspaceFolder}/pyproject.toml",
     // Markdown
     "[markdown]": {
         "editor.wordWrap": "bounded",
