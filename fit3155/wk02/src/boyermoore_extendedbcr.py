@@ -22,8 +22,10 @@ alignment based on the bad character alone.
   compared yet?"
 """
 
+from fit3155.wk02.src.models import BMOutput
 
-def boyermoore_extendedbcr(pat: str, string: str) -> bool:
+
+def boyermoore_extendedbcr(pat: str, txt: str) -> BMOutput:
     """
     Boyer Moore Extended BCR
 
@@ -33,24 +35,40 @@ def boyermoore_extendedbcr(pat: str, string: str) -> bool:
 
     Space complexity: O(m * |alphabet|) to store the 2D array
     """
-    n = len(string)
+    output = BMOutput()
+
+    n = len(txt)
     m = len(pat)
 
+    # Preprocess extended bad character table
     rarr = [[-1 for _ in range(128)] for _ in range(m)]
-    for k in range(1, m):
-        rarr[k] = rarr[k - 1].copy()
-        rarr[k][ord(pat[k - 1])] = k - 1
-        pass
+    for i in range(1, m):
+        rarr[i] = rarr[i - 1].copy()
+        rarr[i][ord(pat[i - 1])] = i - 1
 
     x = 0
     while x <= n - m:
-        k = m - 1
-        while k >= 0 and pat[k] == string[x + k]:
-            k -= 1
-        if k == -1:
-            return True
+        # Right to left scanning
+        j = m - 1
+        while j >= 0: 
+            output.compares += 1
+            if pat[j] != txt[x + j]:
+                break
+            
+            j -= 1
 
-        bad = string[x + k]
-        x += rarr[k][ord(bad)]
+        x_before = x
+        if j == -1:
+            # Full match
+            output.matches += 1
+            output.match_positions.append(x)
+            x += 1
+        else: 
+            # Extended bad character rule shift
+            bad = txt[x + j]
+            x += j - rarr[j][ord(bad)]
 
-    return False
+        assert x > x_before, "Must shift forwards atleast one"
+        output.shifts += 1
+
+    return output

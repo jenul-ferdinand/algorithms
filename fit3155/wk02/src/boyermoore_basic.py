@@ -7,14 +7,16 @@ easier to grasp without good suffix rule and galil's optimisation.
 - k is the position in the pattern where a mismatch occurs.
 
 - R(x) is the rightmost occurrence of a character x in the pattern P.
-    The thing about this here; unlike the real BM algo, it doesn't change.
+  The thing about this here; unlike the real BM algo, it doesn't changes.
 
 - On each mismatch do max(k - R(x), 1) to find out how much to the alignment
   shift by.
 """
 
+from fit3155.wk02.src.models import BMOutput
 
-def boyermoore_basic(pat: str, txt: str) -> bool:
+
+def boyermoore_basic(pat: str, txt: str) -> BMOutput:
     """
     Boyer Moore Basic
 
@@ -22,49 +24,41 @@ def boyermoore_basic(pat: str, txt: str) -> bool:
 
     Time complexity (worst): O(mn) where all shifts were one alignment.
 
-    Time complexity (best): O(n/m) when the last character of the pattern
-    doesn't appear in the string.
+    Time complexity (best): O(n/m) when each alignment does only one comparison,
+    then shifts by m positions every time.
 
     Space complexity: O(m + |alphabet|)=O(m) to store the dictionary to get the
     pattern occurrence positions.
     """
+    output: BMOutput = BMOutput()
+
     n = len(txt)
     m = len(pat)
 
-    rdict = dict([(pat[i], i) for i in range(m)])
-
-    def r(char):
-        return rdict.get(char, 0)
+    # Preprocess basic bad character array
+    rarr = {pat[i]: i for i in range(m)}
 
     x = 0
     while x <= n - m:
-        k = m - 1
-        while k >= 0 and pat[k] == txt[x + k]:
-            k -= 1
+        # Right to left scanning
+        j = m - 1
+        while j >= 0:
+            output.compares += 1
+            if pat[j] != txt[x + j]:
+                break
+            j -= 1
 
-        if k == -1:
-            return True
+        x_before = x
+        if j == -1:
+            # Full match
+            output.matches += 1
+            output.match_positions.append(x)
+            x += 1
+        else:
+            # Bad character rule shift
+            x += max(j - rarr.get(txt[x + j], -1), 1)
 
-        x += max(k - r(txt[x + k]), 1)
+        assert x > x_before, "Must shift by at least one"
+        output.shifts += 1
 
-    return False
-
-
-if __name__ == "__main__":
-    txt = "sphoorythy"
-    pat = "thy"
-    res = boyermoore_basic(pat, txt)
-    tru = True
-    assert res == tru, f"Expected {tru}, got {res}"
-
-    txt = "xyzsomething"
-    pat = "abc"
-    res = boyermoore_basic(pat, txt)
-    tru = False
-    assert res == tru, f"Expected {tru}, got {res}"
-
-    txt = "xxxxxxxxxabc"
-    pat = "abc"
-    res = boyermoore_basic(pat, txt)
-    tru = True
-    assert res == tru, f"Expected {tru}, got {res}"
+    return output
