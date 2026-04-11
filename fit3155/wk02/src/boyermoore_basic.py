@@ -34,7 +34,7 @@ def boyermoore_basic(pat: str, txt: str) -> BMOutput:
 
     n = len(txt)
     m = len(pat)
-
+    
     # Preprocess basic bad character array
     rarr = {pat[i]: i for i in range(m)}
 
