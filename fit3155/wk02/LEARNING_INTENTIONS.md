@@ -2,6 +2,6 @@
     - Bad character rule
     - Extended bad character rule
     - Good suffix rule
-    - optimisation
+    - Galil's optimisation
 
 - Optional: Knuth-Morris-Pratt algorithm
