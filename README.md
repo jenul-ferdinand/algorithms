@@ -22,9 +22,3 @@ within the file that test it. There are:
 - Python implementations _(run with `uv run <filename>.py`)_
 
     > You must have [uv](https://docs.astral.sh/uv/getting-started/installation/) installed.
-
-- C# Implementations _(run with `dotnet script <filename>.csx`)_
-
-    > You must have [.NET](https://dotnet.microsoft.com/en-us/download/dotnet)
-    > with the [dotnet-script](https://github.com/dotnet-script/dotnet-script)
-    > plugin installed.
