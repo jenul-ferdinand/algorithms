@@ -8,7 +8,7 @@ version = "0.0.0"
 requires-python = ">=3.10"
 dependencies = [
     "pytest>=9.0.3",
-    "ruff>=0.15.9",
+    "ruff>=0.15.10",
 ]
 
 [tool.hatch.build.targets.wheel]
