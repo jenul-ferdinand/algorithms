@@ -8,11 +8,18 @@ version = "0.0.0"
 requires-python = ">=3.10"
 dependencies = [
     "pytest>=9.0.3",
+    "pytest-clarity>=1.0.1",
+    "pytest-sugar>=1.1.1",
+    "rich>=14.3.4",
     "ruff>=0.15.10",
 ]
 
 [tool.hatch.build.targets.wheel]
 packages = ["fit1008", "fit2004", "fit3155"]
+
+[tool.pytest.ini_options]
+addopts = "-vv -s --color=yes"
+testpaths = ["fit1008", "fit2004", "fit3155"]
 
 [tool.ruff]
 line-length = 80
