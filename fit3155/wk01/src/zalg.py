@@ -1,7 +1,7 @@
 from fit3155.wk01.src.models import ZalgOutput
 
 
-def zalg(string: str) -> list[int]:
+def zalg(string: str) -> ZalgOutput:
     """
     Z-Algorithm
 

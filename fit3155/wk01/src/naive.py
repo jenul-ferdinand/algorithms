@@ -1,7 +1,7 @@
 from fit3155.wk01.src.models import ZalgOutput
 
 
-def naive(string: str) -> list[int]:
+def naive(string: str) -> ZalgOutput:
     output = ZalgOutput()
 
     n = len(string) 
