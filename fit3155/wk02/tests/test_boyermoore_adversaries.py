@@ -1,20 +1,25 @@
 from fit3155.wk02.src.boyermoore_basic import boyermoore_basic
 from fit3155.wk02.src.boyermoore_extendedbcr import boyermoore_extendedbcr
 from fit3155.wk02.src.models import BMOutput
+from hypothesis import given, strategies as st
 
+@given(st.text(alphabet="abc", min_size=900, max_size=1500))
+def test_bcr_vs_extended_bcr(txt):
+    pattern = "bbc"
 
-def test_bcr_vs_extended_bcr():
-    text = "a" * 10_000 + "cbcbcb" + "c" * 100 + "cbc" + "ccccccbcbc"
-    pattern = "cbc"
+    bcr: BMOutput = boyermoore_basic(pat=pattern, txt=txt)
+    ebcr: BMOutput = boyermoore_extendedbcr(pat=pattern, txt=txt)
 
-    bcr: BMOutput = boyermoore_basic(pat=pattern, txt=text)
-    ebcr: BMOutput = boyermoore_extendedbcr(pat=pattern, txt=text)
+    # Extended BCR will generally have less comparisons than BCR
+    # because we optimised to shift more 
+    assert ebcr.comparisons <= bcr.comparisons
 
-    print(bcr.comparisons)
-    print(ebcr.comparisons)
+    # Extended BCR should have less shifts, because it shifts more efficiently.
+    assert ebcr.shifts <= bcr.shifts
 
-    print(bcr.shifts)
-    print(ebcr.shifts)
+    # Compared correctness
+    assert bcr.match_positions == ebcr.match_positions
+    assert bcr.matches == ebcr.matches
 
     assert True
 
