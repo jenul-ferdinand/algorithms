@@ -41,34 +41,34 @@ def boyermoore_extendedbcr(pat: str, txt: str) -> BMOutput:
     m = len(pat)
 
     # Preprocess extended bad character table
-    rarr = [[-1 for _ in range(128)] for _ in range(m)]
+    R = [[-1 for _ in range(128)] for _ in range(m)]
     for i in range(1, m):
-        rarr[i] = rarr[i - 1].copy()
-        rarr[i][ord(pat[i - 1])] = i - 1
+        R[i] = R[i - 1].copy()
+        R[i][ord(pat[i - 1])] = i - 1
 
-    x = 0
-    while x <= n - m:
+    k = 0
+    while k <= n - m:
         # Right to left scanning
         j = m - 1
         while j >= 0:
             output.comparisons += 1
-            if pat[j] != txt[x + j]:
+            if pat[j] != txt[k + j]:
                 break
 
             j -= 1
 
-        x_before = x
+        k_before = k
         if j == -1:
             # Full match
             output.matches += 1
-            output.match_positions.append(x)
-            x += 1
+            output.match_positions.append(k)
+            k += 1
         else:
             # Extended bad character rule shift
-            bad = txt[x + j]
-            x += j - rarr[j][ord(bad)]
+            x = txt[k + j]
+            k += j - R[j][ord(x)]
 
-        assert x > x_before, "Must shift forwards atleast one"
+        assert k > k_before, "Must shift forwards atleast one"
         output.shifts += 1
 
     return output

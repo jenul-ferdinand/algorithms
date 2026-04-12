@@ -36,7 +36,7 @@ def boyermoore_basic(pat: str, txt: str) -> BMOutput:
     m = len(pat)
 
     # Preprocess basic bad character array
-    rarr = {pat[i]: i for i in range(m)}
+    R = {pat[i]: i for i in range(m)}
 
     x = 0
     while x <= n - m:
@@ -56,7 +56,7 @@ def boyermoore_basic(pat: str, txt: str) -> BMOutput:
             x += 1
         else:
             # Bad character rule shift
-            x += max(j - rarr.get(txt[x + j], -1), 1)
+            x += max(j - R.get(txt[x + j], -1), 1)
 
         assert x > x_before, "Must shift by at least one"
         output.shifts += 1
