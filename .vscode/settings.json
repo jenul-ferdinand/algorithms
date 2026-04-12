@@ -4,7 +4,6 @@
     // Python
     "python.defaultInterpreterPath": ".venv/bin/python",
     "python.testing.pytestEnabled": true,
-    "python.testing.pytestArgs": ["-s", "fit3155", "fit2004", "fit1008"],
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.codeActionsOnSave": {
