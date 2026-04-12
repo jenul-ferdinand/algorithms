@@ -50,11 +50,11 @@ def boyermoore_extendedbcr(pat: str, txt: str) -> BMOutput:
     while x <= n - m:
         # Right to left scanning
         j = m - 1
-        while j >= 0: 
-            output.compares += 1
+        while j >= 0:
+            output.comparisons += 1
             if pat[j] != txt[x + j]:
                 break
-            
+
             j -= 1
 
         x_before = x
@@ -63,7 +63,7 @@ def boyermoore_extendedbcr(pat: str, txt: str) -> BMOutput:
             output.matches += 1
             output.match_positions.append(x)
             x += 1
-        else: 
+        else:
             # Extended bad character rule shift
             bad = txt[x + j]
             x += j - rarr[j][ord(bad)]

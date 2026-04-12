@@ -34,7 +34,7 @@ def boyermoore_basic(pat: str, txt: str) -> BMOutput:
 
     n = len(txt)
     m = len(pat)
-    
+
     # Preprocess basic bad character array
     rarr = {pat[i]: i for i in range(m)}
 
@@ -43,7 +43,7 @@ def boyermoore_basic(pat: str, txt: str) -> BMOutput:
         # Right to left scanning
         j = m - 1
         while j >= 0:
-            output.compares += 1
+            output.comparisons += 1
             if pat[j] != txt[x + j]:
                 break
             j -= 1

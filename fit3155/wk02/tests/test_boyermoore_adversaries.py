@@ -10,8 +10,8 @@ def test_bcr_vs_extended_bcr():
     bcr: BMOutput = boyermoore_basic(pat=pattern, txt=text)
     ebcr: BMOutput = boyermoore_extendedbcr(pat=pattern, txt=text)
 
-    print(bcr.compares)
-    print(ebcr.compares)
+    print(bcr.comparisons)
+    print(ebcr.comparisons)
 
     print(bcr.shifts)
     print(ebcr.shifts)
@@ -32,9 +32,9 @@ def test_extended_bcr_does_equal_or_less_comparisons_vs_basic_bcr():
     assert ext.match_positions == basic.match_positions, (
         f"disagreement on correctness: {pat!r} in {text[:30]!r}..."
     )
-    assert ext.compares <= basic.compares, (
+    assert ext.comparisons <= basic.comparisons, (
         f"extended did MORE work than basic on pat={pat!r}: "
-        f"basic={basic.compares}, ext={ext.compares}"
+        f"basic={basic.comparisons}, ext={ext.comparisons}"
     )
 
 
@@ -43,9 +43,7 @@ def test_extended_bcr_strictly_beats_basic_bcr():
     pattern = "xxxxxxxxab"
     basic = boyermoore_basic(pattern, text)
     ext = boyermoore_extendedbcr(pattern, text)
-    # basic shifts by 1 each time, extended by 9 
+    # basic shifts by 1 each time, extended by 9
     # --> expect 3x fewer comparisons
-    ratio = basic.compares / ext.compares
-    assert ratio > 3, (
-        f"expected 3x speedup for Extended BCR, got {ratio:.1f}×"
-    )
+    ratio = basic.comparisons / ext.comparisons
+    assert ratio > 3, f"expected 3x speedup for Extended BCR, got {ratio:.1f}×"
