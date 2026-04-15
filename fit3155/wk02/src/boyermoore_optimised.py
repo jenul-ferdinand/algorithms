@@ -99,8 +99,8 @@ def boyermoore_optimised(pat: str, txt: str) -> BMOutput:
                 output.bcr_shifts += 1
                 shift = badchar_shift
 
-                # start = 0
-                # stop = -1
+                start = 0
+                stop = -1
 
         k += shift
 
