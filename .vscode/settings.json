@@ -1,9 +1,13 @@
 {
     "editor.formatOnSave": true,
     "editor.rulers": [80],
+    // Rewrap Extension
+    "rewrap.wrappingColumn": 80,
+    "rewrap.autoWrap.enabled": true,
     // Python
     "python.defaultInterpreterPath": ".venv/bin/python",
     "python.testing.pytestEnabled": true,
+    "python.analysis.typeCheckingMode": "basic",
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.codeActionsOnSave": {
@@ -18,14 +22,12 @@
     "[markdown]": {
         "editor.wordWrap": "bounded",
         "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
+        "editor.formatOnSave": true,
+        "rewrap.autoWrap.enabled": false,
     },
     // C
     "[c]": {
         "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.formatOnSave": true
     },
-    // Rewrap Extension
-    "rewrap.wrappingColumn": 80,
-    "rewrap.autoWrap.enabled": true
 }
