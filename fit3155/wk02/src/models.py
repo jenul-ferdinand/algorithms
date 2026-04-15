@@ -27,6 +27,9 @@ class BMOutput:
         z_suffix: Z suffix array
 
         goodsuffix: Good suffix array
+
+        galil_skips: How many times we skipped comparisons based on galil's
+        optimisation rule
     """
 
     match_positions: list[int] = field(default_factory=list)
@@ -43,3 +46,5 @@ class BMOutput:
     z_suffix: list[int] = field(default_factory=list)
     goodsuffix: list[int] = field(default_factory=list)
     mp: list[int] = field(default_factory=list)
+
+    galil_skips: int = 0

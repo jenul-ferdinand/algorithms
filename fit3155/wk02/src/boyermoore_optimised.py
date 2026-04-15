@@ -1,37 +1,9 @@
-from fit3155.wk01.src.zalg import zalg
 from fit3155.wk02.src.boyermoore_gs import process_gs, process_z_suffix
+from fit3155.wk02.src.boyermoore_mp import process_mp
 from fit3155.wk02.src.models import BMOutput
 
 
-def process_mp(pat: str):
-    """
-    For any good suffix
-
-    It will give the longest suffix of the good suffix
-    That also matches the prefix of the pattern.
-    """
-
-    m = len(pat)
-
-    z = zalg(pat).z_array
-
-    mp = [0] * m
-    mp[0] = m
-
-    for i in range(1, m):
-        if i + z[i] == m:
-            # Right to left assignment of z value
-            j = i
-            while mp[j] == 0:
-                mp[j] = z[i]
-                j -= 1
-
-    mp.append(0)
-
-    return mp
-
-
-def boyermoore_mp(pat: str, txt: str) -> BMOutput:
+def boyermoore_optimised(pat: str, txt: str) -> BMOutput:
     output = BMOutput()
 
     n = len(txt)
@@ -55,6 +27,9 @@ def boyermoore_mp(pat: str, txt: str) -> BMOutput:
 
     output.mp = mp
 
+    start = 0
+    stop = -1
+
     k = 0
     while k <= n - m:
         gs_shift = 0
@@ -63,7 +38,15 @@ def boyermoore_mp(pat: str, txt: str) -> BMOutput:
         # Right to left scanning
         j = m - 1
         while j >= 0:
+            # Galil's optimisation: skipping known segment
+            if j == stop:
+                j = start - 1
+                output.galil_skips += 1
+                if j < 0:
+                    break
+
             output.comparisons += 1
+
             if pat[j] != txt[k + j]:
                 if j < m - 1:
                     # Good suffix rule
@@ -73,10 +56,16 @@ def boyermoore_mp(pat: str, txt: str) -> BMOutput:
                         gs_shift = m - 1 - p
                         gs_shift_source = "gs"
 
+                        start = p - m + j + 2
+                        stop = p - 1
+
                     # Matched prefix rule
                     elif p == 0:
                         gs_shift = m - mp[j + 1]
                         gs_shift_source = "mp"
+
+                        start = 0
+                        stop = mp[j + 1] - 1
                 break
 
             output.matched_comparisons += 1
@@ -90,6 +79,9 @@ def boyermoore_mp(pat: str, txt: str) -> BMOutput:
 
             output.mp_shifts += 1
             shift = m - mp[1]
+
+            start = 0
+            stop = mp[1] - 1
         else:
             # Extended bad character rule
             x = txt[k + j]
@@ -106,6 +98,9 @@ def boyermoore_mp(pat: str, txt: str) -> BMOutput:
             else:
                 output.bcr_shifts += 1
                 shift = badchar_shift
+
+                # start = 0
+                # stop = -1
 
         k += shift
 
