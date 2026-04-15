@@ -18,7 +18,7 @@ def test_bcr_vs_extended_bcr(txt):
     assert ebcr.comparisons <= bcr.comparisons
 
     # Extended BCR should have less shifts, because it shifts more efficiently.
-    assert ebcr.shifts <= bcr.shifts
+    assert ebcr.total_shifts <= bcr.total_shifts
 
     # Compared correctness
     assert bcr.match_positions == ebcr.match_positions
