@@ -4,19 +4,12 @@ from fit3155.wk02.src.models import BMOutput
 
 
 def process_mp(pat: str):
-    """
-    For any good suffix
-
-    It will give the longest suffix of the good suffix
-    That also matches the prefix of the pattern.
-    """
-
     m = len(pat)
-
-    z = zalg(pat).z_array
 
     mp = [0] * m
     mp[0] = m
+
+    z = zalg(pat).z_array
 
     for i in range(1, m):
         if i + z[i] == m:
