@@ -59,6 +59,6 @@ def boyermoore_basic(pat: str, txt: str) -> BMOutput:
             x += max(j - R.get(txt[x + j], -1), 1)
 
         assert x > x_before, "Must shift by at least one"
-        output.shifts += 1
+        output.total_shifts += 1
 
     return output

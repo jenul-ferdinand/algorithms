@@ -69,6 +69,6 @@ def boyermoore_extendedbcr(pat: str, txt: str) -> BMOutput:
             k += j - R[j][ord(x)]
 
         assert k > k_before, "Must shift forwards atleast one"
-        output.shifts += 1
+        output.total_shifts += 1
 
     return output
