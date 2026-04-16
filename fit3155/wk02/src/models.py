@@ -24,9 +24,11 @@ class BMOutput:
 
         bcr_shifts: Count of the shifts caused by the bad character rule
 
-        z_suffix: Z suffix array
+        z_suffix: Preprocessed Z suffix array
 
-        goodsuffix: Good suffix array
+        goodsuffix: Preprocessed good suffix array
+
+        mp: Preprocessed matched prefix array
 
         galil_skips: How many times we skipped comparisons based on galil's
         optimisation rule

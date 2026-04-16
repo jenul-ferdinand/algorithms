@@ -25,12 +25,15 @@ def test_naive_invariants(txt):
     assert out.case2_times is None
 
 
-@given(st.text(alphabet="ab", max_size=100))
+@given(st.text(alphabet="ab", min_size=100, max_size=1000))
 def test_zalg_invariants(txt):
     out: ZalgOutput = zalg(txt)
     n = len(txt)
 
-    assume(n > 10)
+    assert out.case1_times is not None
+    assert out.case2_times is not None
+    assert out.reuse_times is not None
+    assert out.clamp_times is not None
 
     # Every position k=1...n-1 is exactly one of Case 1 or Case 2
     assert out.case1_times + out.case2_times == n - 1

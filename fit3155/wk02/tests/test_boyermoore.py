@@ -1,6 +1,7 @@
 from fit3155.wk02.src.boyermoore_basic import boyermoore_basic
 from fit3155.wk02.src.boyermoore_extendedbcr import boyermoore_extendedbcr
 from fit3155.wk02.src.boyermoore_gs import boyermoore_goodsuffix
+from fit3155.wk02.src.boyermoore_optimised import boyermoore_optimised
 from fit3155.wk02.src.models import BMOutput
 
 
@@ -44,3 +45,31 @@ def test_perfectly_fitting_match_at_end():
     assert bm_gs.match_positions == bm_ebcr.match_positions
     assert bm_gs.match_positions == bm_basic.match_positions
     assert bm_gs.match_positions == bm_basic.match_positions
+
+
+def test_time_complexity():
+    n = 1000
+    m = n // 2
+    txt = "a" * n
+    pat = "a" * m
+
+    opt: BMOutput = boyermoore_optimised(pat, txt)
+    gs: BMOutput = boyermoore_goodsuffix(pat, txt)
+    ebcr: BMOutput = boyermoore_extendedbcr(pat, txt)
+    basic: BMOutput = boyermoore_basic(pat, txt)
+
+    print("\n", "Character comparisons")
+    print(opt.comparisons)
+    print(gs.comparisons)
+    print(ebcr.comparisons)
+    print(basic.comparisons)
+
+    assert opt.comparisons == n
+    assert opt.comparisons < gs.comparisons
+    assert gs.comparisons == ebcr.comparisons == basic.comparisons
+
+    expected_quadratic_comparisons = m * (n - m + 1)
+
+    assert gs.comparisons == expected_quadratic_comparisons
+    assert ebcr.comparisons == expected_quadratic_comparisons
+    assert basic.comparisons == expected_quadratic_comparisons

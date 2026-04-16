@@ -33,7 +33,7 @@ def test_galils_beats_mp_on_notes_worst_case():
     # Without Galil: m comparisons per alignment
     # -> roughly m * (n - m + 1) = 3 * 18 = 54.
     #
-    # With Galil: m for the first alignment, then 1 per subsequent 
+    # With Galil: m for the first alignment, then 1 per subsequent
     # -> 3 + 17 = 20.
     assert bm_mp.comparisons == 54
     assert bm_opt.comparisons == 20
