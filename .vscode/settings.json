@@ -8,6 +8,7 @@
     "python.defaultInterpreterPath": ".venv/bin/python",
     "python.testing.pytestEnabled": true,
     "python.analysis.typeCheckingMode": "basic",
+    "python.testing.cwd": "${workspaceFolder}",
     "[python]": {
         "editor.defaultFormatter": "charliermarsh.ruff",
         "editor.codeActionsOnSave": {
