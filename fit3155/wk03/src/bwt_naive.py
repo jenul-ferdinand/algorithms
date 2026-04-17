@@ -22,8 +22,8 @@ def bwt_naive(string):
     Time complexity: O(n^2 log n)
     Space complexity: O(n^2)
     """
-
-    string = string + "$"
+    if string[-1] != "$":
+        string = string + "$"
 
     N = len(string)
 
