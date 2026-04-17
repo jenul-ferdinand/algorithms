@@ -1,25 +1,15 @@
-def suffix_array_naive(S: str) -> list[int]:
+def suffix_array_naive(string: str) -> list[int]:
     """
     Naive method to construct a suffix array.
 
     Time complexity: O(n^2 log n)
     Space complexity: O(n)
-    
+
     """
-    S = S + "$"
-    n = len(S)
+    string = string + "$"
+    n = len(string)
 
-    suffixes = []
-
-    for i in range(0, n):
-        suffixes.append(S[i:])
+    suffixes = [(string[i:], i) for i in range(n)]
     suffixes.sort()
 
-    for i, suffix in enumerate(suffixes):
-        sufflen = len(suffix)
-        suffixes[i] = n - sufflen
-
-    return suffixes
-
-
-suffix_array_naive("googol")
+    return [suffix[1] for suffix in suffixes]
