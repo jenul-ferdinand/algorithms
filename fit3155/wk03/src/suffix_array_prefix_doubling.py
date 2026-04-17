@@ -1,5 +1,7 @@
 def suffix_array_prefix_doubling(string: str) -> list[int]:
-    string = string + "$"
+    if string[-1] != "$":
+        string = string + "$"
+
     n = len(string)
 
     # Build the array of all suffixes and the ranks array

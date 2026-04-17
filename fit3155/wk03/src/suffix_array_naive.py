@@ -6,7 +6,9 @@ def suffix_array_naive(string: str) -> list[int]:
     Space complexity: O(n)
 
     """
-    string = string + "$"
+    if string[-1] != "$":
+        string = string + "$"
+        
     n = len(string)
 
     suffixes = [(string[i:], i) for i in range(n)]
