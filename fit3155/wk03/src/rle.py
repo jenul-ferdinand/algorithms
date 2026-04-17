@@ -4,7 +4,7 @@ counting how many we met
 """
 
 
-async def rlencode(string: str) -> str:
+def rlencode(string: str) -> str:
     """
     Run-Length-Encoding
 
