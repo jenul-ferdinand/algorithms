@@ -19,7 +19,7 @@ def zalgmatcher(pattern: str, string: str) -> list[bool]:
     patlen = len(pattern)
     n = len(patstring)
 
-    z = zalg(patstring)
+    z = zalg(patstring).z_array
     return [z[i] == patlen for i in range(seplen, n)]
 
 

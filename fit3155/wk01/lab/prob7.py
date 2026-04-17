@@ -30,7 +30,7 @@ def get_suffix_prefix_length(suffstring: str, prestring: str) -> int:
     string = prestring + "$" + suffstring
     n = len(string)
 
-    z = zalg(string)
+    z = zalg(string).z_array
     z[0] = 0
 
     # Return the match starting position z value that reaches the end of the
