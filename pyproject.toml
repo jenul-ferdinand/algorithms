@@ -1,19 +1,19 @@
 [build-system]
-requires = ["hatchling"]
 build-backend = "hatchling.build"
+requires = ["hatchling"]
 
 [project]
-name = "algorithms"
-version = "0.0.0"
-requires-python = ">=3.10"
 dependencies = [
-    "hypothesis>=6.152.1",
+    "hypothesis>=6.152.2",
     "pytest>=9.0.3",
     "pytest-clarity>=1.0.1",
     "pytest-sugar>=1.1.1",
     "rich>=14.3.4",
-    "ruff>=0.15.10",
+    "ruff>=0.15.12",
 ]
+name = "algorithms"
+requires-python = ">=3.10"
+version = "0.0.0"
 
 [tool.hatch.build.targets.wheel]
 packages = ["fit1008", "fit2004", "fit3155"]
@@ -23,10 +23,10 @@ addopts = "-vv -s --color=yes"
 testpaths = ["fit1008", "fit2004", "fit3155"]
 
 [tool.ruff]
-line-length = 80
 exclude = ["__pycache__", ".venv"]
+line-length = 80
 
 [tool.ruff.format]
 docstring-code-format = true
-quote-style = "double"
 indent-style = "space"
+quote-style = "double"
