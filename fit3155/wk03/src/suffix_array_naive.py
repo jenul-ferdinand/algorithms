@@ -1,3 +1,6 @@
+from fit3155.common.constants import TERMINAL_CHAR
+
+
 def suffix_array_naive(string: str) -> list[int]:
     """
     Naive method to construct a suffix array.
@@ -6,9 +9,9 @@ def suffix_array_naive(string: str) -> list[int]:
     Space complexity: O(n)
 
     """
-    if string[-1] != "$":
-        string = string + "$"
-        
+    if string[-1] != TERMINAL_CHAR:
+        string = string + TERMINAL_CHAR
+
     n = len(string)
 
     suffixes = [(string[i:], i) for i in range(n)]

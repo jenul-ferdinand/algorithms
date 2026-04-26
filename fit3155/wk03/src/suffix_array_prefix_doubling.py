@@ -1,6 +1,9 @@
+from fit3155.common.constants import TERMINAL_CHAR
+
+
 def suffix_array_prefix_doubling(string: str) -> list[int]:
-    if string[-1] != "$":
-        string = string + "$"
+    if string[-1] != TERMINAL_CHAR:
+        string = string + TERMINAL_CHAR
 
     n = len(string)
 
