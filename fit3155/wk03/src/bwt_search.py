@@ -9,6 +9,10 @@ def bwt_search(pat: str, txt: str):
     """
     Pattern matcher with BWT backward search
 
+    The pattern is searched from right to left by repeatedly shrinking a row
+    range [sp, ep]. After processing the whole pattern, SA[sp:ep+1] gives the 
+    starting positions of all matches in the text.
+
     Let n = length of txt 
     Let m = length of pat 
     Let sigma = fixed alphabet size of 90
@@ -36,6 +40,3 @@ def bwt_search(pat: str, txt: str):
             return []
 
     return SA[sp : ep + 1]
-
-
-print(bwt_search("a", "aaaaaaahhfdsfdsfbdsbfaaaaadsffdsfsd"))
