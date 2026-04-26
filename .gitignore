@@ -39,3 +39,6 @@ fit3155/ass02/
 
 # Hypothesis
 .hypothesis/
+
+# Ruff
+.ruff_cache/
