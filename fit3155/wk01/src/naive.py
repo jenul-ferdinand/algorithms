@@ -4,7 +4,7 @@ from fit3155.wk01.src.models import ZalgOutput
 def naive(string: str) -> ZalgOutput:
     output = ZalgOutput()
 
-    n = len(string) 
+    n = len(string)
     if n <= 0:
         return output
     z = [0] * n
