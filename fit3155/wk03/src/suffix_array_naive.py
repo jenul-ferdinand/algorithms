@@ -6,7 +6,7 @@ def suffix_array_naive(string: str) -> list[int]:
     Naive method to construct a suffix array.
 
     Time complexity: O(n^2 log n)
-    Space complexity: O(n)
+    Space complexity: O(n^2)
 
     """
     if string[-1] != TERMINAL_CHAR:
