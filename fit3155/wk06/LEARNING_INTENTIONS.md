@@ -1,0 +1,4 @@
+- Number-theoretic algorithms
+- Fast integer multiplication a divide-and-conquer approach
+- Modular exponentiation by repeated squaring
+- Miller-Rabin randomised Primality testing
