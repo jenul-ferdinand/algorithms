@@ -1,0 +1,3 @@
+- Aggregate method of amortization
+- Accounting method of amortization
+- Potential method of amortization
