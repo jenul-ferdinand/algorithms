@@ -1,5 +1,5 @@
 """
-Fixed-Length Encoding and Decoding
+Fixed-Length Coding
 
 Assumed ASCII Range: [37, 126]
 """
@@ -9,10 +9,10 @@ def flc_encode(string: str, bit_width: int = 8):
 
     arr = [c for c in string]
     for c in arr:
-        ascii = ord(c)
-        binary = bin(ascii)
-        binary = binary.replace("b", "")
-        binaries.append(binary)
+        binary = bin(ord(c))[2:]
+        padding = bit_width - len(binary)
+        codeword = "0" * padding + binary
+        binaries.append(codeword)
 
     for i in range(len(binaries)):
         m = len(binaries[i]) - 1
