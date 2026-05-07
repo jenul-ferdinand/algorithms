@@ -15,10 +15,6 @@ This repository consists of the work I've done for
 of work is organised into separate folders. The implementations have assertions
 within the file that test it. There are:
 
-- C implementations _(run with `runc.sh <filename>.c`)_
-
-    > You must have [tcc](https://bellard.org/tcc/) installed.
-
 - Python implementations _(run with `uv run <filename>.py`)_
 
     > You must have [uv](https://docs.astral.sh/uv/getting-started/installation/) installed.
