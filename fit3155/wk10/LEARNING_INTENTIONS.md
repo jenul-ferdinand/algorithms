@@ -1,0 +1,4 @@
+- Introduction to Linear Programming (LP)
+- Basic insights into solving LP problems
+- Solving canonical LP problems using Simplex method in Algebraic form (mainly to rationalize what simplex is doing)
+- Solving the above in a "tabular" form, aka "Tableau-simplex" method (which lays out the algorithm that can be converted into a computer program)

@@ -1,0 +1,3 @@
+- Introduction of approximation algorithms,
+- 2-approximation algorithms (and proofs) for Minimal vertex Cover and Metric Traveling Salesman problems
+- Polynomial-Time Approximation Scheme (PTAS) for 0/1 Knapsack problem.
