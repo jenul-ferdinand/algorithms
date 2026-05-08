@@ -1,4 +1,4 @@
-from fit3155.common.constants import ASCII_LOWER, ascii_order
+from fit3155.common.constants import ascii_order
 from fit3155.wk03.src.bwt import bwt, process_occ, process_rank
 from fit3155.wk03.src.suffix_array_prefix_doubling import (
     suffix_array_prefix_doubling,

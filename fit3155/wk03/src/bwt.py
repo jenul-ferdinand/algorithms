@@ -1,4 +1,4 @@
-from fit3155.common.constants import ALPHABET_SIZE, ASCII_LOWER, TERMINAL_CHAR, ascii_order
+from fit3155.common.constants import ALPHABET_SIZE, TERMINAL_CHAR, ascii_order
 from fit3155.wk03.src.suffix_array_prefix_doubling import (
     suffix_array_prefix_doubling,
 )
@@ -25,7 +25,7 @@ def bwt(txt):
     # Build the suffix array of the txt with terminal char
     SA = suffix_array_prefix_doubling(txt)
     L = ""
-    
+
     for i in range(n):
         # Form the BWT by taking the char before each suffix
         # In python, SA[i]=0 will wrap to terminal via txt[-1]
@@ -47,7 +47,7 @@ def process_rank(L: str):
     pos = 0
     for i in range(ALPHABET_SIZE):
         # Scanning the chars in sorted order
-        # The cumulative count gives each char's start pos in F 
+        # The cumulative count gives each char's start pos in F
         if freq[i] > 0:
             rank[i] = pos
             pos += freq[i]
