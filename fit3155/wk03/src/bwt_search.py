@@ -1,4 +1,4 @@
-from fit3155.common.constants import ASCII_LOWER
+from fit3155.common.constants import ASCII_LOWER, ascii_order
 from fit3155.wk03.src.bwt import bwt, process_occ, process_rank
 from fit3155.wk03.src.suffix_array_prefix_doubling import (
     suffix_array_prefix_doubling,
@@ -32,7 +32,7 @@ def bwt_search(pat: str, txt: str):
     ep = len(SA) - 1
 
     for x in range(m - 1, -1, -1):
-        idx = ord(pat[x]) - ASCII_LOWER
+        idx = ascii_order(pat[x])
         sp = rank[idx] + occ[idx][sp]
         ep = rank[idx] + occ[idx][ep + 1] - 1
 

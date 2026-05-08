@@ -1,4 +1,4 @@
-from fit3155.common.constants import ALPHABET_SIZE, ASCII_LOWER, TERMINAL_CHAR
+from fit3155.common.constants import ALPHABET_SIZE, ASCII_LOWER, TERMINAL_CHAR, ascii_order
 from fit3155.wk03.src.suffix_array_prefix_doubling import (
     suffix_array_prefix_doubling,
 )
@@ -41,7 +41,7 @@ def process_rank(L: str):
     # Count how many times each char appears in L
     freq = [0] * ALPHABET_SIZE
     for c in L:
-        freq[ord(c) - ASCII_LOWER] += 1
+        freq[ascii_order(c)] += 1
 
     rank = [-1] * ALPHABET_SIZE
     pos = 0
@@ -70,9 +70,9 @@ def process_occ(L: str):
     for i in range(n):
         # Copy previous column, then increment the row for L[i]
         for c in chars:
-            occ[ord(c) - ASCII_LOWER][i + 1] = occ[ord(c) - ASCII_LOWER][i]
+            occ[ascii_order(c)][i + 1] = occ[ascii_order(c)][i]
 
-        occ[ord(L[i]) - ASCII_LOWER][i + 1] += 1
+        occ[ascii_order(L[i])][i + 1] += 1
 
     return occ
 
@@ -86,7 +86,7 @@ def process_LF(L, rank, occ):
 
     for i in range(n):
         # Find where L[i] appears in F
-        idx = ord(L[i]) - 37
+        idx = ascii_order(L[i])
         LF[i] = rank[idx] + occ[idx][i]
 
     return LF
