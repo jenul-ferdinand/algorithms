@@ -42,3 +42,6 @@ fit3155/ass02/
 
 # Ruff
 .ruff_cache/
+
+# Recordings
+*.mp4
