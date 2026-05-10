@@ -11,26 +11,26 @@ The order is the order to learn in. Each section assumes everything above it. Im
 
 ## 1. Suffix tree foundations
 
-- [ ] The substring matching problem (Definition 1)
+- [x] The substring matching problem (Definition 1)
   - Pattern is unknown ahead of time, text is fixed. Preprocess `txt[1..n]` so any `pat[1..m]` answers in O(m).
   - Goal: explain why this flips the role of pattern and text vs. preprocessing-the-pattern algorithms.
-- [ ] Definition 2: suffix tree (the 5 defining properties)
+- [x] Definition 2: suffix tree (the 5 defining properties)
   - n leaves numbered 1..n; non-root internal nodes have >= 2 children; edges labelled with non-empty substrings of `str`; no two edges out of a node start with the same character; the root-to-leaf-i path spells `str[i..n]`.
   - Goal: state all 5 from memory and check a small example tree against each.
-- [ ] Why a terminal character is needed (Definition 3)
+- [x] Why a terminal character is needed (Definition 3)
   - Without `$`, a string like `abcab` produces a tree that violates property 1 (a suffix becomes a prefix of another). `$` is unique and lex-smallest.
   - Goal: explain why `abcab` fails the definition and why appending `$` fixes it.
 - [x] Naive O(n^2) suffix tree construction (overview)
   - Insert suffixes longest-first; walk root-down matching characters; split an edge when you hit a mismatch inside it.
   - Goal: explain edge splitting, i.e. when you mismatch mid-edge create a new internal node u, attach the existing child below u with the trimmed edge, attach a new leaf as the second child of u with the rest of the suffix.
   - [x] Lab notes-Q1: prove the naive construction is O(n^2).
-- [ ] Space-efficient edge labels (introduced here, proven later)
+- [x] Space-efficient edge labels (introduced here, proven later)
   - Replace each substring label with a tuple `(j, i)` referencing `str`. Each label is then O(1) space.
   - Goal: redraw the suffix tree of `abaaba$` using `(j,i)` tuples instead of substrings.
 - [ ] Lab notes-Q2: prove the (j,i) representation makes the suffix tree O(n) space (assume fixed alphabet). Theorem 2 (later) is the formal version.
 - [x] Impl: naive suffix trie construction.
   - File: `src/naive_suffix_trie.py` (done).
-- [ ] Impl: naive O(n^2) suffix tree construction.
+- [x] Impl: naive O(n^2) suffix tree construction.
   - File: `src/naive_suffix_tree.py` (in progress, currently a stub).
   - Goal: handle the three insertion cases by hand: (i) suffix branches off at an existing node, (ii) suffix walks into an existing edge and the path ends mid-edge with a mismatch (split), (iii) suffix is a prefix of an existing path (only happens before adding `$`, with `$` it cannot).
   - Use TERMINAL_CHAR from `fit3155/common/constants.py`. Append `$` if not already there.
