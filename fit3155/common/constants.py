@@ -4,6 +4,8 @@ ASCII_UPPER = 126
 TERMINAL_CHAR = "$"
 ALPHABET_OFFSET = ord(TERMINAL_CHAR)
 ALPHABET_SIZE = ASCII_UPPER - ALPHABET_OFFSET + 1
+ALPHABET = "".join(chr(order + ASCII_LOWER) for order in range(ALPHABET_SIZE - 1))
+print(len(ALPHABET))
 
 
 def ascii_order(c: str):
