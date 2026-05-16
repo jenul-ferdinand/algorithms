@@ -27,7 +27,7 @@ The order is the order to learn in. Each section assumes everything above it. Im
 - [x] Space-efficient edge labels (introduced here, proven later)
   - Replace each substring label with a tuple `(j, i)` referencing `str`. Each label is then O(1) space.
   - Goal: redraw the suffix tree of `abaaba$` using `(j,i)` tuples instead of substrings.
-- [ ] Lab notes-Q2: prove the (j,i) representation makes the suffix tree O(n) space (assume fixed alphabet). Theorem 2 (later) is the formal version.
+- [x] Lab notes-Q2: prove the (j,i) representation makes the suffix tree O(n) space (assume fixed alphabet). Theorem 2 (later) is the formal version.
 - [x] Impl: naive suffix trie construction.
   - File: `src/naive_suffix_trie.py` (done).
 - [x] Impl: naive O(n^2) suffix tree construction.
@@ -137,14 +137,14 @@ The order is the order to learn in. Each section assumes everything above it. Im
 
 ## 6. Space-efficient edge labels: O(n) space
 
-- [ ] (startIndex, endIndex) representation (Section 3.5)
+- [x] (startIndex, endIndex) representation (Section 3.5)
   - Already introduced in Section 1. Each edge stores two ints into `str`, both O(1).
 - [ ] Theorem 2: O(n) space for fixed alphabet
   - At most 2n - 1 nodes (perfect binary upper bound for n leaves), at most 2n - 2 edges, edges are O(1), nodes are O(alphabet) = O(1).
   - Goal: reproduce the n leaves -> n-1 internal nodes geometric-sum bound.
 - [ ] Lab Q7 (self-study): worst-case space for the suffix tree of `S[1..n]` over alphabet sigma.
   - Goal: state the bound and identify which factor depends on sigma vs n.
-- [ ] Impl: ensure your Node/Edge data structures already use (start, end). Lab04 implementation step 1 wants this from the very first naive version.
+- [x] Impl: ensure your Node/Edge data structures already use (start, end). Lab04 implementation step 1 wants this from the very first naive version.
 
 ---
 
