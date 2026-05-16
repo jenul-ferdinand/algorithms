@@ -8,18 +8,19 @@ from fit3155.common.constants import ALPHABET_SIZE, TERMINAL_CHAR, ascii_order
 @dataclass
 class TrieNode:
     outgoing: list[TrieEdge] = field(default_factory=[None] * ALPHABET_SIZE)
-    i: int | None = None
+    j: int | None = None
 
     def __repr__(self):
         outgoing = []
         for edge in self.outgoing:
             if edge is not None:
                 outgoing.append(edge)
-        return f"Node(suffix_start={self.i}, outgoing_edges={len(outgoing)})"
+        return f"Node(suffix_start={self.j}, outgoing_edges={len(outgoing)})"
+
 
 @dataclass
 class TrieEdge:
-    label: str 
+    label: str
     child: TrieNode
 
     def __repr__(self):
@@ -60,7 +61,7 @@ def naive_suffix_trie(string: str) -> TrieNode:
                 curr.outgoing[char_order] = new_edge
                 curr = new_edge.child
 
-        curr.i = i
+        curr.j = i
         print(curr)
 
     return root
