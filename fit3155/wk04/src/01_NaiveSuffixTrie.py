@@ -65,8 +65,3 @@ def naive_suffix_trie(string: str) -> TrieNode:
         print(curr)
 
     return root
-
-
-if __name__ == "__main__":
-    string = "aba$"
-    root = naive_suffix_trie(string)
