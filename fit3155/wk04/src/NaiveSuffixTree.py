@@ -34,6 +34,22 @@ class TreeEdge:
 
 
 class NaiveSuffixTree:
+    """
+    Constructs a Suffix Tree Naively (notes section 1)
+
+    For construction we insert each full suffix S[i..n] into T_{i-1} one at a
+    time.
+
+    Time complexity: O(n^2)
+        - Iterating through each of the n suffixes, and,
+        - Walking down at most O(n) characters per suffix to find its
+          insertion point (splitting an edge or attaching a new leaf).
+    Space complexity: O(n)
+        - Edge labels are stored implicitly as (start, end) index pairs into
+          S rather than as explicit substrings.
+        - The tree has at most 2n - 1 nodes for a string of length n.
+    """
+
     def __init__(self, S: str):
         if S[-1] != TERMINAL_CHAR:
             S = S + TERMINAL_CHAR
