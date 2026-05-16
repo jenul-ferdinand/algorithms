@@ -2,10 +2,10 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from fit3155.common.constants import ALPHABET, TERMINAL_CHAR
-from fit3155.wk04.src.naive_suffix_tree import (
+from fit3155.wk04.src.NaiveSuffixTree import (
     TreeEdge,
     TreeNode,
-    naive_suffix_tree,
+    NaiveSuffixTree,
 )
 
 """
@@ -38,7 +38,7 @@ def _collect_leaves(root: TreeNode):
             all_children_of_edges = [edge.child for edge in available_edges]
             stack.extend(all_children_of_edges)
 
-    return sorted(leaves, key=lambda x: x.suffix_start)
+    return sorted(leaves, key=lambda x: x.j)
 
 
 def _collect_edges(root: TreeNode):
@@ -71,7 +71,7 @@ def _collect_internal_nodes(root: TreeNode):
     # Filter out leaf nodes
     internal_nodes = []
     for node in nodes[1:]:
-        if node.suffix_start is not None:
+        if node.j is not None:
             internal_nodes.append(node)
 
     return internal_nodes
@@ -81,7 +81,7 @@ def _collect_internal_nodes(root: TreeNode):
 def test_sames_no_leaves_as_no_suffixes():
     string = "aabaa$"
     n = len(string)
-    root = naive_suffix_tree(string)
+    root = NaiveSuffixTree(string).get_root()
     leaves = _collect_leaves(root)
 
     assert len(leaves) == n
@@ -91,17 +91,17 @@ def test_sames_no_leaves_as_no_suffixes():
 def test_tree_has_same_number_of_leaves_as_suffixes_in_total(string):
     string = string + TERMINAL_CHAR
     n = len(string)
-    root = naive_suffix_tree(string)
+    root = NaiveSuffixTree(string).get_root()
     leaves = _collect_leaves(root)
 
     assert len(leaves) == n
 
 
-# Property (2) 
+# Property (2)
 @given(st.text(alphabet=ALPHABET, max_size=100))
 def test_all_internal_nodes_have_at_least_two_children(string):
     string = string + TERMINAL_CHAR
-    root = naive_suffix_tree(string)
+    root = NaiveSuffixTree(string).get_root()
     internal_nodes: list[TreeNode] = _collect_internal_nodes(root)
     for node in internal_nodes:
         assert len(node.outgoing) >= 2
@@ -111,19 +111,19 @@ def test_all_internal_nodes_have_at_least_two_children(string):
 @given(st.text(alphabet=ALPHABET, max_size=100))
 def test_all_edges_have_start_index_less_than_or_equal_to_end_index(string):
     string = string + TERMINAL_CHAR
-    root = naive_suffix_tree(string)
+    root = NaiveSuffixTree(string).get_root()
     edges = _collect_edges(root)
     for edge in edges:
-        assert edge.start <= edge.end
+        assert edge.j <= edge.i
 
 
-# Property (4) 
+# Property (4)
 # the same node can't have two or more outgoing whose labels start with the
 # same character
 @given(st.text(alphabet=ALPHABET, max_size=100, min_size=10))
 def test_a_node_cant_have_duplicate_edges_starting_with_same_char(string):
     string = string + TERMINAL_CHAR
-    root = naive_suffix_tree(string)
+    root = NaiveSuffixTree(string).get_root()
 
     stack = [root]
     while stack:
@@ -136,10 +136,11 @@ def test_a_node_cant_have_duplicate_edges_starting_with_same_char(string):
             for j in range(len(outgoing)):
                 if i == j:
                     continue
-                assert outgoing[i].start != outgoing[j].start
+                assert outgoing[i].j != outgoing[j].j
 
         children: list[TreeNode] = [edge.child for edge in outgoing]
         stack.extend(children)
+
 
 # Property (5)
 # if you start at the root node and walk to leaf i, the characters you read
@@ -147,4 +148,4 @@ def test_a_node_cant_have_duplicate_edges_starting_with_same_char(string):
 @given(st.text(alphabet=ALPHABET, max_size=100, min_size=10))
 def test_walking_from_root_to_leaf_i_spells_out_suffix_i(string):
     string = string + TERMINAL_CHAR
-    root = naive_suffix_tree(string)
+    root = NaiveSuffixTree(string).get_root() # noqa
