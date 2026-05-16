@@ -1,4 +1,8 @@
-from fit3155.wk04.src.naive_suffix_trie import TrieNode, naive_suffix_trie
+import importlib
+
+_mod = importlib.import_module("fit3155.wk04.src.01_NaiveSuffixTrie")
+TrieNode = _mod.TrieNode
+naive_suffix_trie = _mod.naive_suffix_trie
 
 
 def _collect_leaves(root: TrieNode):

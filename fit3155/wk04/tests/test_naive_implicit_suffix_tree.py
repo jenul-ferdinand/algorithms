@@ -2,11 +2,12 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from fit3155.common.constants import ascii_order
-from fit3155.wk04.src.NaiveImplicitSuffixTree import (
-    Edge,
-    NaiveImplicitSuffixTree,
-    Node,
-)
+import importlib
+
+_mod = importlib.import_module("fit3155.wk04.src.03_NaiveImplicitSuffixTree")
+Edge = _mod.Edge
+NaiveImplicitSuffixTree = _mod.NaiveImplicitSuffixTree
+Node = _mod.Node
 
 
 def assert_implicit_suffix_tree(root: Node, S):

@@ -2,11 +2,12 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 from fit3155.common.constants import ALPHABET, TERMINAL_CHAR
-from fit3155.wk04.src.NaiveSuffixTree import (
-    TreeEdge,
-    TreeNode,
-    NaiveSuffixTree,
-)
+import importlib
+
+_mod = importlib.import_module("fit3155.wk04.src.02_NaiveSuffixTree")
+TreeEdge = _mod.TreeEdge
+TreeNode = _mod.TreeNode
+NaiveSuffixTree = _mod.NaiveSuffixTree
 
 """
 Suffix Tree Properties
