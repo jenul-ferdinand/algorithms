@@ -14,7 +14,7 @@ def _collect_leaves(root: TrieNode):
             all_children_of_edges = [x.child for x in available_edges]
             stack.extend(all_children_of_edges)
 
-    return sorted(leaves, key=lambda x: x.i)
+    return sorted(leaves, key=lambda x: x.j)
 
 
 def test_ben_langmead_example():
@@ -28,7 +28,7 @@ def test_ben_langmead_example():
 
     # sorted leaves suffix start values = 0,1,2,3 correspondingly
     for i in range(n):
-        assert leaves[i].i == i
+        assert leaves[i].j == i
 
     # three outgoing edges from root
     root_available_outgoing_edges = [x for x in root.outgoing if x is not None]
