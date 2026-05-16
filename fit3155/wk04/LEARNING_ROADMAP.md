@@ -40,13 +40,13 @@ The order is the order to learn in. Each section assumes everything above it. Im
 
 ## 2. Implicit suffix trees
 
-- [ ] Definition 4: implicit suffix tree
+- [x] Definition 4: implicit suffix tree
   - Take the suffix tree of `str$`. Remove every `$`, drop edges that became empty, then path-compress any internal node left with one child.
   - Goal: produce the implicit suffix tree of `abcab` from the suffix tree of `abcab$` by hand.
-- [ ] Definition 5: implicit suffix trees (alternate)
+- [x] Definition 5: implicit suffix trees (alternate)
   - Build the suffix tree for `str` without first appending `$`.
   - Goal: convince yourself the two definitions yield the same tree.
-- [ ] Why implicit trees are the unit of incremental construction
+- [x] Why implicit trees are the unit of incremental construction
   - Ukkonen builds I_1, I_2, ..., I_n where I_i is the implicit suffix tree of the prefix `str[1..i]`. The final regular suffix tree is one more phase that appends `$`.
   - Goal: explain in one sentence why incremental growth is impossible if you insist on always being a regular suffix tree at every step.
 
@@ -54,8 +54,8 @@ The order is the order to learn in. Each section assumes everything above it. Im
 
 ## 3. Naive Ukkonen: phases and the three extension rules
 
-- [ ] High level structure (Section 3.1)
-  - n phases. Phase i+1 turns I_i into I_(i+1) by performing one extension for every j with 1 <= j <= i+1, in order. Extension j of phase i+1 grows the suffix `str[j..i]` into `str[j..i+1]`.
+- [x] High level structure (Section 3.1)
+  - n phases. Phase i+1 turns I*i into I*(i+1) by performing one extension for every j with 1 <= j <= i+1, in order. Extension j of phase i+1 grows the suffix `str[j..i]` into `str[j..i+1]`.
   - Goal: write the doubly nested loop pseudocode. Outer loop over phases, inner loop over j.
 - [ ] Lab Q1(a): what information is stored at the end of phase i?
   - Goal: state precisely "the implicit suffix tree of `str[1..i]`", and what that means about which suffixes are present (all of them, possibly implicitly along an internal path).
