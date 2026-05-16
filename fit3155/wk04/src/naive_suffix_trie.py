@@ -1,25 +1,26 @@
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
 from fit3155.common.constants import ALPHABET_SIZE, TERMINAL_CHAR, ascii_order
 
 
+@dataclass
 class TrieNode:
-    # At one node, no two outgoing edges start with the same character.
-
-    def __init__(self):
-        self.outgoing: list[TrieEdge] = [None for _ in range(ALPHABET_SIZE)]
-        self.suffix_start = None
+    outgoing: list[TrieEdge] = field(default_factory=[None] * ALPHABET_SIZE)
+    i: int | None = None
 
     def __repr__(self):
         outgoing = []
         for edge in self.outgoing:
             if edge is not None:
                 outgoing.append(edge)
-        return f"Node(suffix_start={self.suffix_start}, outgoing_edges={len(outgoing)})"
+        return f"Node(suffix_start={self.i}, outgoing_edges={len(outgoing)})"
 
-
+@dataclass
 class TrieEdge:
-    def __init__(self, label: str, child: TrieNode):
-        self.label = label
-        self.child: TrieNode = child
+    label: str 
+    child: TrieNode
 
     def __repr__(self):
         return f"Edge(label={self.label}, child={self.child})"
@@ -28,7 +29,7 @@ class TrieEdge:
 def naive_suffix_trie(string: str) -> TrieNode:
     """
     Constructs a Suffix Trie Naively
-    
+
     Time complexity: O(n^2)
         - Iterating through each character in the original string, and,
         - Inserting all suffixes of the original string into the Trie.
@@ -59,7 +60,7 @@ def naive_suffix_trie(string: str) -> TrieNode:
                 curr.outgoing[char_order] = new_edge
                 curr = new_edge.child
 
-        curr.suffix_start = i
+        curr.i = i
         print(curr)
 
     return root
