@@ -13,24 +13,24 @@ from fit3155.common.constants import ALPHABET_SIZE, TERMINAL_CHAR, ascii_order
 
 @dataclass
 class TreeNode:
-    outgoing: list[TreeEdge] = field(
+    outgoing: list[TreeEdge | None] = field(
         default_factory=lambda: [None] * ALPHABET_SIZE
     )
-    j: int | None = None
+    suffix_start: int | None = None
 
     def __repr__(self):
         outgoing = [edge for edge in self.outgoing if edge is not None]
-        return f"Node(j={self.j}, outgoing_edges={len(outgoing)})"
+        return f"Node(j={self.suffix_start}, outgoing_edges={len(outgoing)})"
 
 
 @dataclass
 class TreeEdge:
-    j: int
-    i: int
+    start: int
+    end: int
     child: TreeNode
 
     def __repr__(self):
-        return f"Edge(j={self.j}, i={self.i}, child={self.child})"
+        return f"Edge(j={self.start}, i={self.end}, child={self.child})"
 
 
 class NaiveSuffixTree:
@@ -79,18 +79,18 @@ class NaiveSuffixTree:
                 # First char of label doesn't match first char of suffix
                 # so we create a new leaf node with long edge containing the
                 # whole suffix.
-                leaf_node = TreeNode(j=i)
-                leaf_edge = TreeEdge(j=k, i=n - 1, child=leaf_node)
+                leaf_node = TreeNode(suffix_start=i)
+                leaf_edge = TreeEdge(start=k, end=n - 1, child=leaf_node)
                 curr.outgoing[ascii_order(S[k])] = leaf_edge
                 break
 
             # Edge comparisons + pointer progression down the edge
-            e = edge.j
-            while e <= edge.i and S[k] == S[e]:
+            e = edge.start
+            while e <= edge.end and S[k] == S[e]:
                 e += 1
                 k += 1
 
-            if e <= edge.i:
+            if e <= edge.end:
                 self._split_edge(e, i, k, n, edge)
                 break
 
@@ -103,23 +103,23 @@ class NaiveSuffixTree:
         # a new internal node is created, with a new edge and leaf node
         # for the remaining characters
         S = self.S
-        original_i = edge.i
+        original_i = edge.end
         original_child = edge.child
         u = TreeNode()
 
         # the original edge becomes a shortened trunk
         edge.child = u
-        edge.i = e - 1
+        edge.end = e - 1
 
         # add remaining edge from internal node to original node
         remainder_edge = TreeEdge(
-            j=e,
-            i=original_i,
+            start=e,
+            end=original_i,
             child=original_child,
         )
         u.outgoing[ascii_order(S[e])] = remainder_edge
 
         # create the leaf node for the suffix edge
-        new_leaf = TreeNode(j=i)
-        new_edge = TreeEdge(j=k, i=n - 1, child=new_leaf)
+        new_leaf = TreeNode(suffix_start=i)
+        new_edge = TreeEdge(start=k, end=n - 1, child=new_leaf)
         u.outgoing[ascii_order(S[k])] = new_edge
