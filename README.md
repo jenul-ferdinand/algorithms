@@ -1,6 +1,8 @@
 # FIT1008, FIT2004, & FIT3155 Coursework
 
-Coursework from Computer Science at Monash University
+Algorithms and data structures coursework from Computer Science at Monash University
+
+> Disclaimer: Assignment/exam related content is not for show here; especially in-semester.
 
 ## All you need to know
 
