@@ -7,7 +7,7 @@ from fit3155.common.constants import ALPHABET_SIZE, TERMINAL_CHAR, ascii_order
 
 @dataclass
 class TrieNode:
-    outgoing: list[TrieEdge] = field(
+    outgoing: list[TrieEdge | None] = field(
         default_factory=lambda: [None] * ALPHABET_SIZE
     )
     j: int | None = None
