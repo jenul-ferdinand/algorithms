@@ -110,7 +110,7 @@ Legend: `[ ]` concept / theorem / proof to learn. `[ ] Lab Qx`: question from `l
 - [x] Fermat randomised test
     - Pick random a in (1, n-1), check a^(n-1) mod n == 1. If not, composite.
     - Goal: write the pseudocode and explain why the witness range excludes 1 and n-1.
-    - [ ] Lab Q8 (= Question 4 in notes): show that for a = 1 and a = n - 1 the congruence holds trivially for any odd n.
+    - [x] Lab Q8 (= Question 4 in notes): show that for a = 1 and a = n - 1 the congruence holds trivially for any odd n.
 - [x] Pseudoprimes and Fermat liars
     - A composite n that satisfies the test for some base a is a pseudoprime to base a; a is a Fermat liar.
     - Goal: explain why the test can return a false positive but never a false negative.
@@ -125,12 +125,12 @@ Legend: `[ ]` concept / theorem / proof to learn. `[ ] Lab Qx`: question from `l
 
 ## 6. Square roots of unity (mod p)
 
-- [ ] Theorem 3: square roots of unity
-    - If p is an odd prime, the only solutions to x^2 == 1 mod p are x == +1 or x == -1 mod p.
+- [x] Theorem 3: square roots of unity
+    - If p is an odd prime, the only solutions to x^2 == 1 mod p are x == +1 or x == -1 mod p.;
     - Goal: state precisely.
-    - [ ] Lab Q10a: determine all solutions to y^2 == 1 mod n when n is prime.
-    - [ ] Lab Q10b: argue whether more solutions can exist when n is composite, and justify.
-- [ ] Why this is the bridge to Miller-Rabin
+    - [x] Lab Q10a: determine all solutions to y^2 == 1 mod n when n is prime.
+    - [x] Lab Q10b: argue whether more solutions can exist when n is composite, and justify.
+- [x] Why this is the bridge to Miller-Rabin
     - If a sequence of repeated squarings ever produces 1 from something that is not +1 or -1 mod n, then n cannot be prime.
     - Goal: explain in one sentence why this gives a way to detect Carmichael numbers that Fermat misses.
 
@@ -155,7 +155,7 @@ Legend: `[ ]` concept / theorem / proof to learn. `[ ] Lab Qx`: question from `l
     - No analog of Carmichael numbers for Miller-Rabin: at most n/4 witnesses lie for any composite n.
     - With k random witnesses, error probability is at most (1/4)^k.
     - Goal: state the accuracy bound and explain why doubling k roughly squares the confidence.
-- [ ] Implementation
+- [x] Implementation
     - File target: `src/miller_rabin.py`.
     - Goal: implement, then generate the first 10,000 primes; spot-check against a known list.
     - [ ] Lab Impl 2: implement Miller-Rabin and generate the first 10,000 primes.
@@ -164,7 +164,7 @@ Legend: `[ ]` concept / theorem / proof to learn. `[ ] Lab Qx`: question from `l
 
 ## 8. Big picture
 
-- [ ] Hierarchy of tests
+- [x] Hierarchy of tests
     - Trial division (slow, exact) -> Fermat (fast, fooled by Carmichael) -> Miller-Rabin (fast, robust).
     - Goal: explain the trade each step makes between speed, exactness, and which composites slip through.
 - [ ] Why probabilistic is acceptable
@@ -182,5 +182,5 @@ A re-listing of the implementation steps in order, each pointing at the section 
 - [X] Step 1: Karatsuba multiplication, `src/karatsuba.py` (Section 1, Lab Impl 3).
 - [x] Step 2: modular exponentiation by repeated squaring, `src/modular_exponentiation.py` (Section 3, Lab Impl 1). Test against Python's `pow(a, b, n)`.
 - [x] Step 3: Fermat randomised test, `src/fermat_test.py` (Section 5). Verify it is fooled by 561 with witness a = 7, then catches it with a = 3.
-- [ ] Step 4: Miller-Rabin primality test, `src/miller_rabin.py` (Section 7, Lab Impl 2). Generate the first 10,000 primes; spot-check against a known list.
+- [x] Step 4: Miller-Rabin primality test, `src/miller_rabin.py` (Section 7, Lab Impl 2). Generate the first 10,000 primes; spot-check against a known list.
 - [ ] Step 5 (stretch): swap the multiplication backend in steps 2-4 to use `karatsuba.py`. Confirm correctness, then time it against Python `pow` on cryptographic-sized inputs (Section 8).

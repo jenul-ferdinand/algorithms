@@ -22,16 +22,16 @@ The order is the order to learn in. Each section assumes everything above it.
 
 ## 2. Binary heaps (review)
 
-- [ ] Definition 1: binary heap
+- [x] Definition 1: binary heap
     - Structure: complete binary tree (every level full except possibly the last, which fills left to right). Order (min-heap): each node's key <= each child's key.
     - Goal: state both properties; identify which is needed for correctness vs which is needed for the array trick.
-- [ ] Array representation
+- [x] Array representation
     - Node at array index i has children at 2i and 2i + 1, parent at floor(i/2). Possible because of the structural completeness.
     - Goal: hand-verify the array `[A,B,E,F,H,K,L,M,T,X]` against the tree on notes pg 3.
-- [ ] Operation costs (table on notes pg 3)
+- [x] Operation costs (table on notes pg 3)
     - make-new-heap: O(1). min: O(1). extract-min: O(log N). decrease-key: O(log N). delete: O(log N). insert: O(log N) worst, O(1) amortised.
     - Goal: write the table from memory; argue each bound (sift-up / sift-down).
-- [ ] Why merge is slow on binary heaps
+- [x] Why merge is slow on binary heaps
     - Two heaps of size N each must be combined into a 2N array. Just copying is O(N). Merging without preserving the heap property is fine; restoring it via heapify is O(N) too. So merge is O(N).
     - Goal: argue why the array representation is the very thing that makes merge slow, motivating an explicit-pointer mergeable heap.
 
@@ -39,10 +39,10 @@ The order is the order to learn in. Each section assumes everything above it.
 
 ## 3. Fibonacci heaps: overview
 
-- [ ] Why Fibonacci heaps exist
+- [x] Why Fibonacci heaps exist
     - To make Dijkstra's run in O(|E| + |V| log |V|) instead of O((|E| + |V|) log |V|). The win comes from an O(1) amortised decrease-key.
     - Goal: state the Dijkstra speedup goal in one sentence.
-- [ ] Definition 3: Fibonacci heap
+- [x] Definition 3: Fibonacci heap
     - A forest of rooted trees, each tree min-heap ordered, each tree "almost binomial" (binomial tree with at most one child missing per node). Plus an `H.min` pointer to the global minimum, plus a "marked" bit on each non-root node.
     - Goal: state the order property, the structure constraint, and the bookkeeping (H.min + marks).
 - [ ] Lazy evaluation philosophy
