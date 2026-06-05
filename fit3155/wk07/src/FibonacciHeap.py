@@ -4,7 +4,7 @@ import math
 from dataclasses import dataclass, field
 
 
-@dataclass
+@dataclass(eq=False)
 class Node:
     key: int = None
     payload: int = None
