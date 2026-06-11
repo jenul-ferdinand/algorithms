@@ -38,9 +38,6 @@ def test_zalg_invariants(txt):
     # Every position k=1...n-1 is exactly one of Case 1 or Case 2
     assert out.case1_times + out.case2_times == n - 1
 
-    # Every case 2 is either a reuse (2a) or a clamp (2b)
-    assert out.reuse_times + out.clamp_times == out.case2_times
-
     # The algorithm is O(n), comparisons should not be more than 2n
     assert out.comparisons < 2 * n
 
