@@ -38,27 +38,27 @@ def boyermoore_basic(pat: str, txt: str) -> BMOutput:
     # Preprocess basic bad character array
     R = {pat[i]: i for i in range(m)}
 
-    x = 0
-    while x <= n - m:
+    j = 0
+    while j <= n - m:
         # Right to left scanning
-        j = m - 1
-        while j >= 0:
+        k = m - 1
+        while k >= 0:
             output.comparisons += 1
-            if pat[j] != txt[x + j]:
+            if pat[k] != txt[j + k]:
                 break
-            j -= 1
+            k -= 1
 
-        x_before = x
-        if j == -1:
+        j_before = j
+        if k == -1:
             # Full match
             output.matches += 1
-            output.match_positions.append(x)
-            x += 1
+            output.match_positions.append(j)
+            j += 1
         else:
             # Bad character rule shift
-            x += max(j - R.get(txt[x + j], -1), 1)
+            j += max(k - R.get(txt[j + k], -1), 1)
 
-        assert x > x_before, "Must shift by at least one"
+        assert j > j_before, "Must shift by at least one"
         output.total_shifts += 1
 
     return output

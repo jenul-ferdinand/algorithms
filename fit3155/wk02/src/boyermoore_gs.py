@@ -45,34 +45,34 @@ def boyermoore_goodsuffix(pat: str, txt: str) -> BMOutput:
     output.z_suffix = z_suffix
     output.goodsuffix = gs
 
-    k = 0
-    while k <= n - m:
+    j = 0
+    while j <= n - m:
         gs_shift = 0
 
         # Right to left scanning
-        j = m - 1
-        while j >= 0:
+        k = m - 1
+        while k >= 0:
             output.comparisons += 1
-            if pat[j] != txt[k + j]:
-                if j < m - 1:
+            if pat[k] != txt[j + k]:
+                if k < m - 1:
                     # Good suffix rule
-                    p = gs[j + 1]
+                    p = gs[k + 1]
                     gs_shift = m - 1 - p
                 break
 
             output.matched_comparisons += 1
-            j -= 1
+            k -= 1
 
-        k_before = k
-        if j == -1:
+        j_before = j
+        if k == -1:
             # Full match
             output.matches += 1
-            output.match_positions.append(k)
-            k += 1
+            output.match_positions.append(j)
+            j += 1
         else:
             # Extended bad character rule
-            x = txt[k + j]
-            badchar_shift = j - R[j][ord(x)]
+            x = txt[j + k]
+            badchar_shift = k - R[k][ord(x)]
 
             # Shifting either with good suffix or ext bad char shift
             if gs_shift > badchar_shift:
@@ -82,9 +82,9 @@ def boyermoore_goodsuffix(pat: str, txt: str) -> BMOutput:
                 output.bcr_shifts += 1
                 shift = badchar_shift
 
-            k += shift
+            j += shift
 
-        assert k > k_before, "Must shift forwards at least one position"
+        assert j > j_before, "Must shift forwards at least one position"
         output.total_shifts += 1
 
     return output

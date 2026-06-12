@@ -30,52 +30,52 @@ def boyermoore_optimised(pat: str, txt: str) -> BMOutput:
     start = 0
     stop = -1
 
-    k = 0
-    while k <= n - m:
+    j = 0
+    while j <= n - m:
         gs_shift = 0
         gs_shift_source = None
 
         # Right to left scanning
-        j = m - 1
-        while j >= 0:
+        k = m - 1
+        while k >= 0:
             # Galil's optimisation: skipping known segment
-            if j == stop:
-                j = start - 1
+            if k == stop:
+                k = start - 1
                 output.galil_skips += 1
-                if j < 0:
+                if k < 0:
                     break
 
             output.comparisons += 1
 
-            if pat[j] != txt[k + j]:
-                if j < m - 1:
+            if pat[k] != txt[j + k]:
+                if k < m - 1:
                     # Good suffix rule
-                    p = gs[j + 1]
+                    p = gs[k + 1]
 
                     if p > 0:
                         gs_shift = m - 1 - p
                         gs_shift_source = "gs"
 
-                        start = p - m + j + 2
+                        start = p - m + k + 2
                         stop = p - 1
 
                     # Matched prefix rule
                     elif p == 0:
-                        gs_shift = m - mp[j + 1]
+                        gs_shift = m - mp[k + 1]
                         gs_shift_source = "mp"
 
                         start = 0
-                        stop = mp[j + 1] - 1
+                        stop = mp[k + 1] - 1
                 break
 
             output.matched_comparisons += 1
-            j -= 1
+            k -= 1
 
-        k_before = k
-        if j == -1:
+        j_before = j
+        if k == -1:
             # Full match
             output.matches += 1
-            output.match_positions.append(k)
+            output.match_positions.append(j)
 
             output.mp_shifts += 1
             shift = m - mp[1]
@@ -84,8 +84,8 @@ def boyermoore_optimised(pat: str, txt: str) -> BMOutput:
             stop = mp[1] - 1
         else:
             # Extended bad character rule
-            x = txt[k + j]
-            badchar_shift = j - R[j][ord(x)]
+            x = txt[j + k]
+            badchar_shift = k - R[k][ord(x)]
 
             # Shifting either with good suffix or ext bad char shift
             if gs_shift > badchar_shift:
@@ -102,9 +102,9 @@ def boyermoore_optimised(pat: str, txt: str) -> BMOutput:
                 start = 0
                 stop = -1
 
-        k += shift
+        j += shift
 
-        assert k > k_before, "Must shift forwards at least one position"
+        assert j > j_before, "Must shift forwards at least one position"
         output.total_shifts += 1
 
     return output

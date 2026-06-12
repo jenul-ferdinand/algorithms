@@ -46,29 +46,29 @@ def boyermoore_extendedbcr(pat: str, txt: str) -> BMOutput:
         R[i] = R[i - 1].copy()
         R[i][ord(pat[i - 1])] = i - 1
 
-    k = 0
-    while k <= n - m:
+    j = 0
+    while j <= n - m:
         # Right to left scanning
-        j = m - 1
-        while j >= 0:
+        k = m - 1
+        while k >= 0:
             output.comparisons += 1
-            if pat[j] != txt[k + j]:
+            if pat[k] != txt[j + k]:
                 break
 
-            j -= 1
+            k -= 1
 
-        k_before = k
-        if j == -1:
+        j_before = j
+        if k == -1:
             # Full match
             output.matches += 1
-            output.match_positions.append(k)
-            k += 1
+            output.match_positions.append(j)
+            j += 1
         else:
             # Extended bad character rule shift
-            x = txt[k + j]
-            k += j - R[j][ord(x)]
+            x = txt[j + k]
+            j += k - R[k][ord(x)]
 
-        assert k > k_before, "Must shift forwards atleast one"
+        assert j > j_before, "Must shift forwards atleast one"
         output.total_shifts += 1
 
     return output
