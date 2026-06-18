@@ -1,0 +1,302 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{fancyhdr}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8em}
+\setlength{\headheight}{15pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{FIT3155 SAMPLE EXAM PAPER}
+\fancyfoot[C]{Page \thepage{} of 22}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\newcommand{\marksbox}[1]{%
+  \vfill
+  \begin{flushright}
+    \fbox{\parbox[c][1.1cm][c]{1.3cm}{\centering #1}}
+  \end{flushright}
+}
+
+\newcommand{\questiontitle}[2]{%
+  \textbf{Question #1}\hfill\textbf{(#2 marks)}
+}
+
+\newcommand{\workingpage}{%
+  \newpage
+  \begin{center}
+    (Page intentionally left blank for working space)
+  \end{center}
+}
+
+\begin{document}
+
+\begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{0.18\textheight}
+  {\Large FIT3155 \hfill SAMPLE EXAM PAPER\par}
+  \vspace{2.2cm}
+  \begin{center}
+    {\LARGE\bfseries FIT3155 SAMPLE EXAM PAPER\par}
+    \vspace{0.8cm}
+    {\large Generated Sample Exam 03\par}
+  \end{center}
+\end{titlepage}
+
+\setcounter{page}{2}
+
+\section*{INSTRUCTIONS}
+
+\begin{itemize}
+  \item This exam is worth 60 marks.
+\end{itemize}
+
+\begin{center}
+  \textbf{General exam technique}
+\end{center}
+
+\begin{itemize}
+  \item Some students lose marks by not attempting all questions.
+
+  \item Suppose you are likely to get 3/6 on a question after spending say 10 minutes on it.
+  Spending another 10 minutes on the same question may gain you at most 3 additional
+  marks. In contrast, spending those 10 minutes on a new question could earn you another
+  6 marks. The key point is: do not get stuck on one question.
+
+  \item A good strategy is to first answer the questions you are most confident about before
+  attempting the others. In other words, answering questions strictly serially during an
+  exam can be suboptimal.
+
+  \item Do not waste time answering an unrelated question in the hope of gaining partial marks.
+  Marking will be based on the question that was actually asked.
+
+  \item Where necessary, justify your answers with clear and concise explanations, without being
+  overly wordy.
+\end{itemize}
+
+\newpage
+
+\questiontitle{1}{6}
+
+Let $S[1 \ldots m]$ and $T[1 \ldots n]$ be two strings. An \emph{overlap} of
+$S$ into $T$ is an integer $\ell$ such that the suffix
+$S[m-\ell+1 \ldots m]$ is exactly equal to the prefix $T[1 \ldots \ell]$.
+
+Write pseudocode for an efficient algorithm that accepts $S$ and $T$ and
+outputs the maximum overlap length $\ell$.
+
+For this problem, you may assume that \texttt{zalg} is available as a built-in
+function that takes a string as input and returns the array of its Z-values. Do
+not write pseudocode for \texttt{zalg}. State the worst-case time and space
+complexity of your algorithm.
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{2}{6}
+
+In the Boyer--Moore algorithm, the extended bad-character rule stores
+$R_k(x)$, the position of the rightmost occurrence of character $x$ strictly to
+the left of position $k$ in the pattern $pat[1 \ldots m]$, or $0$ if no such
+occurrence exists.
+
+\begin{enumerate}
+  \item[(i)] Write pseudocode to construct the full $m \times |\Sigma|$ table
+  of $R_k(x)$ values for a fixed alphabet $\Sigma$.
+
+  \item[(ii)] Suppose a right-to-left scan mismatches at pattern position $k$
+  against text character $x$. Explain how the extended bad-character shift is
+  computed from $R_k(x)$, and state the preprocessing time and space
+  complexity.
+\end{enumerate}
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{3}{6=2+4}
+
+Assume that $\$$ is a unique terminal symbol that is lexicographically smaller
+than every other character. The string $S=\texttt{banana\$}$ has
+\[
+  L = BWT(S)=\texttt{annb\$aa}
+\]
+and suffix array
+\[
+  SA = [7,6,4,2,1,5,3].
+\]
+
+Using $L$ as a Burrows--Wheeler search index, search for the pattern
+$pat=\texttt{ana}$ by backward search.
+
+\begin{enumerate}
+  \item[(i)] Construct the needed $rank(c)$ values and the occurrence counts
+  needed during the search.
+
+  \item[(ii)] Show the values of $sp$ and $ep$ after each processed pattern
+  character. Then report the multiplicity of $pat$ in $S$ and the corresponding
+  starting positions using the suffix array.
+\end{enumerate}
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{4}{6=3+3}
+
+These questions relate to Ukkonen's linear-time suffix tree construction
+algorithm. Let $I_n$ be the implicit suffix tree for a string $S[1 \ldots n]$
+that does not contain the terminal character $\$$.
+
+\begin{enumerate}
+  \item[(i)] In the final phase that appends the unique terminal character
+  $\$$, can any explicit suffix extension be completed by Rule 3? Answer Yes or
+  No and justify your answer.
+
+  \item[(ii)] Explain why appending $\$$ converts the final implicit suffix tree
+  into a regular suffix tree with one leaf for every suffix. In your answer,
+  connect this to the role of Rule 2 and the rapid leaf-extension trick.
+\end{enumerate}
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{5}{6=3+3}
+
+\begin{enumerate}
+  \item[(i)] Decode the following Elias--Omega codeword to recover the positive
+  integer $N$ that it encodes:
+  \[
+    \texttt{00000010100}
+  \]
+  Show each component read during decoding.
+
+  \item[(ii)] The following tuples were produced by the LZ77 method:
+  \[
+    \langle 0,0,m\rangle,\quad
+    \langle 0,0,i\rangle,\quad
+    \langle 0,0,s\rangle,\quad
+    \langle 3,3,p\rangle,\quad
+    \langle 4,4,!\rangle.
+  \]
+  Decode these tuples to regenerate the original string.
+\end{enumerate}
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{6}{6}
+
+Perform one iteration of the Miller--Rabin primality test on $n = 91$ using
+base $a = 3$.
+
+Your answer should:
+\begin{itemize}
+  \item express $n-1$ in the form $2^s t$, where $t$ is odd;
+  \item compute the sequence of values checked by this Miller--Rabin iteration;
+  \item state whether this base proves that $91$ is composite, or whether this
+  iteration is inconclusive.
+\end{itemize}
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{7}{6}
+
+In a Fibonacci heap, after \textsc{Extract-Min} removes $H.min$, the children
+of the removed root are promoted into the root list. The consolidation step
+then repeatedly links roots of equal degree until no two roots in the root list
+have the same degree.
+
+Write pseudocode for this consolidation step. Your pseudocode should use an
+auxiliary array indexed by degree and should link two roots of equal degree by
+making the larger-key root a child of the smaller-key root.
+
+State the worst-case actual time and amortized time of \textsc{Extract-Min}.
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{8}{6}
+
+A dynamic array starts empty. The first append creates capacity $1$. Whenever
+an append is attempted on a full array, a new array with twice the previous
+capacity is allocated, all existing elements are copied into it, and then the
+new element is appended.
+
+Using the potential method, determine the amortized time complexity of an
+append operation over a sequence of $n$ appends. Use the potential function
+\[
+  \Phi(A_i)=2\cdot size(A_i)-capacity(A_i).
+\]
+
+Verify the required boundary conditions for $\Phi$, and show the amortized
+cost calculation for both a non-resizing append and a resizing append.
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{9}{6}
+
+Let $P$ be a node in a B-tree of minimum degree $t$. The node stores sorted keys
+$key_1,\ldots,key_r$ and, if it is not a leaf, child pointers
+$child_0,\ldots,child_r$.
+
+Write pseudocode for a function \textsc{Search}$(P,x)$ that returns whether key
+$x$ occurs in the subtree rooted at $P$. Your pseudocode should use binary
+search inside each visited node before deciding which child subtree to search.
+
+Justify that your procedure terminates correctly, and state its worst-case time
+complexity in terms of the B-tree height $h$ and minimum degree $t$.
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{10}{6}
+
+Use the Hungarian algorithm to solve the following minimum-cost assignment
+problem.
+
+\[
+\begin{array}{c|ccc}
+      & \text{Task 1} & \text{Task 2} & \text{Task 3} \\
+\hline
+\text{Agent 1} & 9 & 2 & 7 \\
+\text{Agent 2} & 6 & 4 & 3 \\
+\text{Agent 3} & 5 & 8 & 1
+\end{array}
+\]
+
+Show the row and column reductions you perform, identify a minimum-cost
+perfect matching, and state the total assignment cost.
+
+\marksbox{6}
+
+\workingpage
+
+\vfill
+\begin{center}
+  End of Exam
+\end{center}
+
+\end{document}

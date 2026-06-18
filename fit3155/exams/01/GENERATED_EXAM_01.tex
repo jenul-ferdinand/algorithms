@@ -1,0 +1,282 @@
+\documentclass[12pt,letterpaper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{fancyhdr}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8em}
+\setlength{\headheight}{15pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{FIT3155 SAMPLE EXAM PAPER}
+\fancyfoot[C]{Page \thepage{} of 22}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\newcommand{\marksbox}[1]{%
+  \vfill
+  \begin{flushright}
+    \fbox{\parbox[c][1.1cm][c]{1.3cm}{\centering #1}}
+  \end{flushright}
+}
+
+\newcommand{\questiontitle}[2]{%
+  \textbf{Question #1}\hfill\textbf{(#2 marks)}
+}
+
+\newcommand{\workingpage}{%
+  \newpage
+  \begin{center}
+    (Page intentionally left blank for working space)
+  \end{center}
+}
+
+\begin{document}
+
+\begin{titlepage}
+  \thispagestyle{empty}
+  \vspace*{0.18\textheight}
+  {\Large FIT3155 \hfill SAMPLE EXAM PAPER\par}
+  \vspace{2.2cm}
+  \begin{center}
+    {\LARGE\bfseries FIT3155 SAMPLE EXAM PAPER\par}
+    \vspace{0.8cm}
+    {\large Generated Sample Exam 01\par}
+  \end{center}
+\end{titlepage}
+
+\setcounter{page}{2}
+
+\section*{INSTRUCTIONS}
+
+\begin{itemize}
+  \item This exam is worth 60 marks.
+\end{itemize}
+
+\begin{center}
+  \textbf{General exam technique}
+\end{center}
+
+\begin{itemize}
+  \item Some students lose marks by not attempting all questions.
+
+  \item Suppose you are likely to get 3/6 on a question after spending say 10 minutes on it.
+  Spending another 10 minutes on the same question may gain you at most 3 additional
+  marks. In contrast, spending those 10 minutes on a new question could earn you another
+  6 marks. The key point is: do not get stuck on one question.
+
+  \item A good strategy is to first answer the questions you are most confident about before
+  attempting the others. In other words, answering questions strictly serially during an
+  exam can be suboptimal.
+
+  \item Do not waste time answering an unrelated question in the hope of gaining partial marks.
+  Marking will be based on the question that was actually asked.
+
+  \item Where necessary, justify your answers with clear and concise explanations, without being
+  overly wordy.
+\end{itemize}
+
+\newpage
+
+\questiontitle{1}{6}
+
+Two strings $S[1 \ldots n]$ and $T[1 \ldots n]$ have the same length. We say that
+$S$ is a cyclic rotation of $T$ if $S$ can be obtained by moving some prefix of
+$T$ to the end of $T$.
+
+Write pseudocode for an efficient algorithm that determines whether $S$ is a
+cyclic rotation of $T$. If it is, your algorithm should output all starting
+positions in $T$ that generate $S$ as a rotation. If it is not, your algorithm
+should output ``not a rotation''.
+
+For this problem, you may assume that \texttt{zalg} is available as a built-in
+function that takes a string as input and returns the array of its Z-values. Do
+not write pseudocode for \texttt{zalg}. State the worst-case time and space
+complexity of your algorithm.
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{2}{6}
+
+In the Boyer--Moore algorithm for exact matching of the pattern
+$pat[1 \ldots m]$ against the text $txt[1 \ldots n]$, consider a general
+iteration in which $pat$ is aligned with $txt[j \ldots j+m-1]$.
+
+Suppose a right-to-left scan results in a mismatch at position
+$1 \leq k \leq m$, and suppose the good-suffix array value satisfies
+$gs[k+1] = 0$. In this case the matched-prefix array is used, giving a shift of
+$m - mp[k]$ positions to the right.
+
+Prove that this matched-prefix shift is safe, i.e., such a shift can never skip
+$pat$ past any valid occurrence in $txt$.
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{3}{6}
+
+Let $S[1 \ldots n-1]\$$ be a string whose Burrows--Wheeler Transform is
+$L[1 \ldots n]$. Assume that the alphabet of $S$ is $\Sigma$, and that $\$$ is a
+unique terminal symbol.
+
+Assume the following two preprocessed structures are available:
+\[
+  rank(c) = \text{the number of characters in } S \text{ that are strictly
+  smaller than } c,
+\]
+and
+\[
+  Occ(c,i) = \text{the number of occurrences of } c \text{ in } L[1 \ldots i].
+\]
+
+Write pseudocode for the backward-search algorithm that takes $L$ and a pattern
+$pat[1 \ldots m]$ as input, and returns the number of occurrences of $pat$ in
+$S$. State the worst-case time complexity of the search, assuming
+$rank$ and $Occ$ queries take $O(1)$ time.
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{4}{6}
+
+These questions relate to Ukkonen's linear-time suffix tree construction
+algorithm for a string $S[1 \ldots n]$.
+
+\begin{enumerate}
+  \item[(i)] In phase $i+1$, suppose suffix extension $j$ is completed by Rule 3.
+  Explain why the remaining suffix extensions in the same phase do not need to
+  be performed explicitly.
+
+  \item[(ii)] Suppose suffix extension $j$ creates a new internal node whose
+  path-label is $\alpha = c\beta$ using Rule 2 regular. Explain when and why a
+  suffix link should be created from this new internal node to the internal node
+  whose path-label is $\beta$.
+\end{enumerate}
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{5}{6}
+
+\begin{enumerate}
+  \item[(i)] Work out the Elias-Omega binary codeword for the positive integer
+  $31$.
+
+  \item[(ii)] The following tuples were derived using the LZ77 method of
+  encoding:
+  \[
+    [0,0,a]\quad
+    [0,0,b]\quad
+    [2,2,c]\quad
+    [5,4,d]\quad
+    [3,3,e]
+  \]
+
+  Decode these LZ77 tuples to regenerate the original string.
+\end{enumerate}
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{6}{6}
+
+Perform one iteration of the Miller--Rabin primality test on $n = 77$ using
+base $a = 10$.
+
+Your answer should:
+\begin{itemize}
+  \item express $n-1$ in the form $2^s t$, where $t$ is odd;
+  \item compute the values checked during this Miller--Rabin iteration using
+  modular exponentiation; and
+  \item state whether this base proves that $77$ is composite, or whether this
+  iteration is inconclusive.
+\end{itemize}
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{7}{6}
+
+Write pseudocode for the \textsc{Decrease-Key} operation on a Fibonacci heap.
+Your pseudocode should include any required \textsc{Cut} and
+\textsc{Cascading-Cut} operations.
+
+Then state the worst-case actual time and the amortized time of
+\textsc{Decrease-Key}, using the potential function
+\[
+  \Phi(H) = \operatorname{nTrees}(H) + 2\operatorname{nMarked}(H).
+\]
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{8}{6}
+
+A dynamic array starts empty. The first append creates capacity $1$. Whenever an
+append is attempted on a full array, a new array with twice the previous capacity
+is allocated, all existing elements are copied into it, and then the new element
+is appended.
+
+Using the aggregate method of amortized analysis, determine the amortized time
+complexity of an append operation over a sequence of $n$ append operations.
+Your answer should clearly account for both ordinary writes and copying work
+caused by resizing.
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{9}{6}
+
+For any B-tree with minimum degree $t$ that contains $N$ keys, derive a lower
+bound on the height of the B-tree in terms of $N$ and $t$.
+
+State clearly which convention you are using for the height of the tree.
+
+\marksbox{6}
+
+\workingpage
+\newpage
+
+\questiontitle{10}{6}
+
+Solve the following optimization problem using the tableau simplex algorithm.
+If the optimal solution is not unique, state this clearly.
+
+\[
+\begin{array}{rl}
+\text{Maximize} & z = x + 2y \\
+\text{Subject to} & 2x + 4y \leq 12, \\
+                  & 4x + 3y \leq 16, \\
+                  & x \geq 0,\quad y \geq 0.
+\end{array}
+\]
+
+\marksbox{6}
+
+\workingpage
+
+\vfill
+\begin{center}
+  End of Exam
+\end{center}
+
+\end{document}
