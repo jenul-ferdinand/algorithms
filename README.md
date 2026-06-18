@@ -10,3 +10,7 @@ This repository consists of the work I've done for [FIT1008](https://handbook.mo
 
 - Python implementations *(run with `uv run <filename>.py`)*
   > You must have [uv](https://docs.astral.sh/uv/getting-started/installation/) installed.
+
+## Generated sample exams
+
+Since FIT3155 doesn't have many sample exams to support students, I have used coding agents to generate sample exams. [Find out how it's done](./fit3155/exams/README.md).
