@@ -37,6 +37,7 @@ fit3155/ass02/
 # LaTeX build artifacts
 *.aux
 *.log
+*.synctex.gz
 
 # Coding agents
 .codex
