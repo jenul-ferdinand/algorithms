@@ -34,6 +34,10 @@ Cargo.lock
 fit3155/ass01/
 fit3155/ass02/
 
+# LaTeX build artifacts
+*.aux
+*.log
+
 # Coding agents
 .codex
 
