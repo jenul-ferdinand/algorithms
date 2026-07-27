@@ -1,5 +1,5 @@
 ---
-name: generate-exam
+name: fit3155-generate-exam
 description: Generate the next FIT3155 sample exam PDF by following the observed exam structure, teaching material, labs, and original sample exam.
 ---
 

@@ -1,0 +1,1 @@
+../../../.agents/skills/fit3155-generate-exam/SKILL.md

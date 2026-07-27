@@ -1,1 +1,0 @@
-../../../.agents/skills/generate-exam/SKILL.md
