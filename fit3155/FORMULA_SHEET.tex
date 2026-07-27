@@ -1,0 +1,259 @@
+\documentclass[9pt]{extarticle}
+\usepackage[a4paper,margin=0.36in]{geometry}
+\usepackage{multicol}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage[T1]{fontenc}
+% readable sans-serif for normal text; math stays Computer Modern
+\usepackage[scaled=0.94]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% ---- global tightness ----
+\setlength{\parindent}{0pt}
+\linespread{1.0}
+\setlength{\columnsep}{9pt}
+\pagestyle{empty}
+\setlist[itemize]{nosep,leftmargin=1.0em,topsep=0pt,parsep=0pt,itemsep=0.5pt,label=\textbullet}
+\setlist[enumerate]{nosep,leftmargin=1.5em,topsep=0pt,parsep=0pt,itemsep=0.5pt,label=\textbf{\arabic*.}}
+
+% ---- shorthands ----
+\newcommand{\To}{\ensuremath{\Rightarrow}}
+\newcommand{\C}[1]{\texttt{#1}}
+\definecolor{hl}{HTML}{FFE873}
+\newcommand{\key}[1]{\colorbox{hl}{\ensuremath{\,#1\,}}}     % highlight the slip-formula
+\newcommand{\T}[1]{\textbf{#1}\;}                            % bold trigger lead-in
+\newcommand{\R}{\textcolor{red!75!black}{$\blacktriangleright$}\;}  % do-this recipe marker
+\newcommand{\ex}{\textcolor{black!55}{\scriptsize\textsf{WORKED}}\\[1pt]} % example label
+
+% ---- per-week accent colours ----
+\definecolor{w1}{HTML}{C0392B}\definecolor{w2}{HTML}{CB4B16}\definecolor{w3}{HTML}{B7950B}
+\definecolor{w4}{HTML}{1E8449}\definecolor{w5}{HTML}{0E6655}\definecolor{w6}{HTML}{1A5276}
+\definecolor{w7}{HTML}{2471A3}\definecolor{w8}{HTML}{5B2C6F}\definecolor{w9}{HTML}{884EA0}
+\definecolor{w10}{HTML}{A93226}\definecolor{w11}{HTML}{6E2C00}
+\definecolor{wgray}{HTML}{515A5A}
+\definecolor{pproof}{HTML}{145A32}\definecolor{pslip}{HTML}{922B21}
+
+% ---- box styles ----
+\tcbset{
+  base/.style={
+    enhanced, breakable, sharp corners, boxrule=0.6pt,
+    left=3pt, right=3pt, top=2pt, bottom=2.5pt, boxsep=1pt,
+    before skip=3.5pt, after skip=3.5pt,
+    fonttitle=\bfseries\small, coltitle=white,
+    fontupper=\fontsize{8.7}{10}\selectfont,
+    colbacklower=black!7,
+    fontlower=\fontsize{7.7}{8.7}\selectfont
+  }
+}
+\newtcolorbox{wk}[2]{base, colframe=#1, colback=#1!6, colbacktitle=#1, title=#2}
+\newtcolorbox{panel}[2]{base, colframe=#1, colback=#1!10, colbacktitle=#1, title=#2,
+  fontupper=\fontsize{9}{10.4}\selectfont}
+
+\begin{document}
+
+% ============================ PAGE 1: STRINGS + COMPRESSION ============================
+{\centering\bfseries\small FIT3155 CRAM SHEET \ (p1/2: strings \& compression) $\;\cdot\;$ EVERYTHING 1-INDEXED $\;\cdot\;$ \colorbox{hl}{yellow = the bit you slip on}\par}
+\vspace{2pt}
+
+\begin{multicols}{2}
+\begin{panel}{pproof}{PROOF PUNCHLINES -- say only the load-bearing line}
+\begin{itemize}
+\item \textbf{BM safe:} the stored shift (gs / $R_k$ / mp) is the RIGHTMOST/LONGEST match, so a smaller shift would need a closer match that does not exist \To{} skip nothing.
+\item \textbf{$\sqrt{1}\bmod p$:} $x^2{=}1\To(x{-}1)(x{+}1){\equiv}0\bmod p\To p\,|\,(x{-}1)$ or $p\,|\,(x{+}1)\To x{=}\pm1$.
+\item \textbf{Fib max-degree:} at link $x$ had $i{-}1$ kids \& degrees must be EQUAL, so $\deg(y_i)\ge i{-}1$; minus the $\le1$ child it later lost $=i{-}2$; subtree size $\ge F_{k+2}\ge\varphi^k$.
+\item \textbf{Suffix tree:} unique \C{\$} \To{} no suffix is a prefix of another \To{} exactly $n$ leaves; every internal node branches $\ge2\To\le n{-}1$ internal nodes.
+\item \textbf{B-tree height} grows ONLY when the root splits (a new root is made from the median).
+\end{itemize}
+\end{panel}
+
+\begin{panel}{pslip}{DON'T-SLIP -- exact values you have gotten wrong}
+\begin{itemize}
+\item Z border length: condition is \key{i+Z[i]=n{+}1} (NOT $n$); border $=Z[i]$.
+\item B-tree height: \key{h\le\log_t\tfrac{N+1}{2}} \ and \ \key{h\ge\log_{2t}(N{+}1)-1} (mind the $-1$).
+\item Amortized $=$ TOTAL$/n$: $k$-bit counter total flips $=2n\To O(1)$ per op (not $O(n)$).
+\item BWT inversion: FOLLOW the LF chain from the \C{\$} row; do not read $L$ in row order.
+\item \key{LF(i)=C[L[i]]+Occ(L[i],i)};\ \ $C[c]{=}\#\{\text{chars}{<}c\}$,\ $Occ{=}$ count of $c$ in $L[1..i]$.
+\end{itemize}
+\end{panel}
+\end{multicols}
+
+\vspace{-2pt}
+\begin{multicols}{3}
+
+\begin{wk}{w1}{wk01 \ Z-algorithm \ $O(n)$}
+\T{IDEA} $Z[i]=$ length of the longest substring at $i$ matching a prefix of $S$; $Z[1]=n$.\\[1pt]
+Window $[l,r]$, $k'{=}i{-}l{+}1$: if $Z[k']{<}r{-}i{+}1$ copy; ${>}$ clamp to $r{-}i{+}1$; ${=}$ extend past $r$.\\[1pt]
+\T{Exact match} $S{=}pat\,\C{\$}\,txt$: where $Z[i]{=}m$ \To{} hit at \key{i-(m{+}1)}.\\
+\T{Period} smallest $p\,|\,n$ with $Z[p{+}1]{=}n{-}p$, else $n$.\\
+\T{Border} \key{i+Z[i]=n{+}1}\To{} border len $Z[i]$.\\
+$Z^{suf}=$ rev$(\,Z($rev$ S)\,)$.
+\end{wk}
+
+\begin{wk}{w2}{wk02 \ Boyer-Moore (scan R$\to$L)}
+\T{IDEA} on mismatch at $k$, jump by \key{\max(\text{bad-char},\,\text{good-suffix})}.\\[1pt]
+\textbf{Bad char} $=k-R_k(x)$.\ $R_k(x)=$ rightmost \emph{POSITION} of $x$ to the left of $k$ (a position, not a count); $0$ if none.\\[1pt]
+\textbf{Good suffix} $=m-gs[k{+}1]$; fallback matched-prefix $=m-mp$.\\
+\R Build gs: for each $i$ set \key{gs[\,m-Z^{suf}_i+1\,]=i}.\\
+gs stores the RIGHTMOST such re-occurrence $\To$ shift is safe. Worst $O(n{+}m)$.
+\end{wk}
+
+\begin{wk}{w3}{wk03 \ BWT}
+\T{Build} $L[i]=S[\,SA[i]-1\,]$ ($SA[i]{=}1\To\C{\$}$); $F=$sort$(L)$.\\[1pt]
+\key{LF(i)=C[L[i]]+Occ(L[i],i)}\\[1pt]
+\R \textbf{Invert:} follow LF from the \C{\$}-row, collect each $L$, then REVERSE $=S$.\\
+\R \textbf{Backward search} pat R$\to$L, $[sp,ep]{=}[1,n]$, per char $c$:\\
+\hspace*{0.5em}\C{sp = C[c]+Occ(c,sp-1)+1}\\
+\hspace*{0.5em}\C{ep = C[c]+Occ(c,ep)}\ (empty if $sp{>}ep$)\\
+\#hits $=ep{-}sp{+}1$; positions $SA[sp..ep]$.
+\tcblower
+\ex
+\ttfamily
+S = banana\$\\
+\ i : 1 2 3 4 5 6 7\\
+\ L : a n n b \$ a a\\
+\ F : \$ a a a b n n\\
+LF : 2 6 7 5 1 3 4\\
+\$-row=5; chain 5{>}1{>}2{>}6{>}3{>}7{>}4\\
+read L = \$,a,n,a,n,a,b; reverse = banana\$
+\end{wk}
+
+\begin{wk}{w4}{wk04 \ Ukkonen suffix tree \ $O(n)$}
+\textbf{Each extension is ONE of 3 rules:}
+\begin{enumerate}
+\item leaf path: extend for free via global \C{end}.
+\item ends \& next char absent \To{} new leaf (and SPLIT $=$ new internal node if mid-edge).
+\item char already present \To{} SHOWSTOPPER: stop the phase, resume next.
+\end{enumerate}
+\textbf{Suffix link} node($c\alpha$)$\to$node($\alpha$).\\
+$O(n)$ from: links $+$ skip/count $+$ global end $+$ rule-3 early stop.\\
+\T{Apps} occ count $=\#$leaves under the node ($O(n)$ DFS prep, $O(m)$ query); longest repeat $=$ deepest internal node.
+\end{wk}
+
+\begin{wk}{w5}{wk05 \ Compression}
+\textbf{Elias-$\omega$ encode} $N$: write min-binary of $N$; recursively PREPEND $L{=}($len$-1)$ of the previous part, until a part has length $1$; flip the MSB $1{\to}0$ of every LENGTH part; the value $N$ keeps its leading $1$.\\[1pt]
+\R \textbf{Decode:} read a part. MSB $0$ \To{} it is a length: flip to $1$, next part has len $=$ val$+1$. MSB $1$ \To{} this part is the final value.\\[1pt]
+\textbf{LZ77} \key{\langle off,len,ch\rangle}: longest window match (overlap allowed) then 1 literal. Decode: copy \C{len} chars from \C{off} back, append \C{ch}.\\[1pt]
+\textbf{Huffman} merge the 2 smallest; codelen $=$ depth; total bits $=\sum f\cdot$depth.
+\tcblower
+\ex
+\ttfamily
+LZ77 decode \textless off,len,ch\textgreater:\\
+\textless0,0,a\textgreater $\to$ a\\
+\textless1,4,b\textgreater $\to$ aaaaab\ \ (copy 4 @1-back, overlap)\\
+\textless2,2,c\textgreater $\to$ aaaaababc
+\end{wk}
+
+\begin{wk}{wgray}{Pick the right tool (strings)}
+\begin{itemize}
+\item 1 pattern in 1 text: \textbf{Z} or \textbf{Boyer-Moore} (BM skips more in practice). $O(n{+}m)$.
+\item many patterns vs fixed text: preprocess into \textbf{suffix tree} (Ukkonen) or \textbf{BWT/FM-index}.
+\item count / locate occurrences: leaves under a suffix-tree node, or \textbf{BWT backward search}.
+\item find repeats / period: deepest internal node; Z-period rule.
+\item compress: \textbf{Huffman} (char freq) $\cdot$ \textbf{LZ77} (repeats) $\cdot$ \textbf{Elias-$\omega$} (integers).
+\end{itemize}
+\end{wk}
+
+\end{multicols}
+
+\clearpage
+% ============================ PAGE 2: NUMBERS, STRUCTURES, OPTIMISATION ============================
+{\centering\bfseries\small FIT3155 CRAM SHEET \ (p2/2: number theory, structures, optimisation) $\;\cdot\;$ 1-INDEXED $\;\cdot\;$ \colorbox{hl}{yellow = slip}\par}
+\vspace{2pt}
+
+\begin{multicols}{3}
+
+\begin{wk}{w6}{wk06 \ Number theory}
+\textbf{Karatsuba} \key{uv=2^nP_1+2^{n/2}(P_3{-}P_1{-}P_2)+P_2}\\
+$P_1{=}U_1V_1,\ P_2{=}U_0V_0,\ P_3{=}(U_1{+}U_0)(V_1{+}V_0)$.\\
+$T(n){=}3T(\tfrac n2){+}O(n){=}O(n^{1.585})$.\\[2pt]
+\textbf{Mod-exp} repeated squaring: $O(\log b)$ multiplications.\\[2pt]
+\R \textbf{Miller-Rabin:} write \key{n{-}1=2^s t} ($t$ ODD). Build $a^t,a^{2t},\dots,a^{2^s t}$ by squaring.\\
+COMPOSITE if $a^{n-1}{\ne}1$ OR a nontrivial $\sqrt1$ appears ($x^2{=}1$ with $x{\ne}\pm1$). Witness $=$ a base proving compositeness. Error $\le4^{-k}$.
+\end{wk}
+
+\begin{wk}{w7}{wk07 \ Fibonacci heap}
+\textbf{insert / merge} lazy: splice trees into root list, update min. \ $O(1)^*$\\[2pt]
+\R \textbf{extract-min:} remove min, promote its children to roots, then CONSOLIDATE: degree array, link equal-degree trees (smaller key becomes parent). \ $O(\log n)^*$\\[2pt]
+\R \textbf{decrease-key:} cut node to root; CASCADING-CUT its parent (mark on its 1st lost child, cut on the 2nd). \ $O(1)^*$\\[2pt]
+\key{\Phi=\#\text{trees}+2\cdot\#\text{marked}} \quad($^*=$amortised; actual extract-min $O(n)$)
+\end{wk}
+
+\begin{wk}{w8}{wk08 \ Amortized analysis}
+\textbf{Aggregate} worst-case total over a sequence, divided by $n$.\\[2pt]
+\textbf{Accounting} charge $\ge$ actual cost, credit never negative (stack: push $2$, pop $0$; queue from 2 stacks: enqueue $3$ $=2$ credit/elem, dequeue $1$).\\[2pt]
+\textbf{Potential} \key{a_i=c_i+\Delta\Phi}, with $\Phi(D_0){=}0$ and $\Phi\ge0$ always.\\
+binary counter $\Phi{=}\#1$-bits; dynamic array $\Phi{=}2\cdot$size$-$cap.
+\end{wk}
+
+\begin{wk}{w9}{wk09 \ B-trees (min degree $t$)}
+keys per node $t{-}1..2t{-}1$; children $t..2t$; root $\ge1$ key.\\[1pt]
+\key{h\le\log_t\tfrac{N+1}{2}}\quad\key{h\ge\log_{2t}(N{+}1)-1}\\[2pt]
+\R \textbf{split full child} ($2t{-}1$ keys): median $key[t]$ goes UP to parent; left gets $key[1..t{-}1]$, right gets $key[t{+}1..2t{-}1]$ (split the child pointers too). $O(t)$.\\[1pt]
+\textbf{insert} proactive: split any full node on the way down (height grows only at a root split).\\
+\textbf{delete} replace an internal key with its predecessor; borrow if a sibling has ${>}t{-}1$ keys, else merge.
+\tcblower
+\ex
+\ttfamily
+t=3, full node = [a b c d e]\\
+median c moves UP\\
+left = [a b]\quad right = [d e]
+\end{wk}
+
+\begin{wk}{w10}{wk10 \ Simplex (LP)}
+\textbf{Standard form} max, all ${\le}$ constraints, $x\ge0$, add $1$ slack per constraint.
+\begin{enumerate}
+\item \textbf{entering} $=$ MOST POSITIVE objective-row coeff.
+\item \textbf{leaving} $=$ min ratio $\dfrac{\text{RHS}}{\text{+ve col entry}}$.
+\item pivot on that cell; repeat.
+\end{enumerate}
+\key{\text{OPTIMAL: all obj coeffs}\le0}\\
+\key{\text{UNBOUNDED: entering col all}\le0}
+\tcblower
+\ex
+\ttfamily
+max 3x1+2x2; x1+x2<=4; x1+3x2<=6\\
+\ \ \ x1 x2 s1 s2|RHS\\
+s1\ \ 1\ 1\ 1\ 0|\ 4\\
+s2\ \ 1\ 3\ 0\ 1|\ 6\\
+ob\ \ 3\ 2\ 0\ 0|\ 0\\
+enter x1; ratios 4,6 -> s1 leaves\\
+x1\ \ 1\ 1\ 1\ 0|\ 4\\
+s2\ \ 0\ 2 -1\ 1|\ 2\\
+ob\ \ 0 -1 -3\ 0|-12  all<=0 OPT z=12
+\end{wk}
+
+\begin{wk}{w11}{wk11 \ Hungarian (assignment)}
+\textbf{Minimise:}
+\begin{enumerate}
+\item row-reduce (subtract row min), then col-reduce.
+\item cover ALL zeros with the MINIMUM number of lines.
+\item if \#lines $=n$ \To{} optimal: choose INDEPENDENT zeros (one per row \& column, not the diagonal).
+\end{enumerate}
+\R else \key{\text{subtract min-uncovered from UNCOVERED}}, ADD it to DOUBLY-covered cells (once-covered unchanged); go to 2.\\[1pt]
+\textbf{Maximise:} replace $a_{ij}\to M-a_{ij}$ ($M{=}\max$), then minimise. \ Cost $O(n^3)$.
+\tcblower
+\ex
+\ttfamily
+C = 4 2 8 / 4 3 7 / 3 1 6\\
+row+col reduce -> cover row2,col2 (2<3)\\
+\ 1 0 2\\
+\ 0 0 0\\
+\ 1 0 1\\
+min uncov=1: -1 uncov, +1 at (2,2):\\
+\ 0 0 1\\
+\ 0 1 0\\
+\ 0 0 0  -> zeros (1,1)(2,3)(3,2)=12
+\end{wk}
+
+\begin{wk}{wgray}{Complexities (memorise)}
+Z / BM / Ukkonen build $O(n)$; exact search $O(n{+}m)$; suffix-tree occ query $O(m)$.\\
+Karatsuba $O(n^{1.585})$; mod-exp $O(\log b)$; Miller-Rabin $O(k\log^3 n)$.\\
+Fib heap ins/merge/dec-key $O(1)^*$, extract-min $O(\log n)^*$.\\
+B-tree search/insert/delete $O(t\log_t N)$.\\
+Hungarian $O(n^3)$; Simplex exp worst-case / fast in practice.
+\end{wk}
+
+\end{multicols}
+\end{document}
